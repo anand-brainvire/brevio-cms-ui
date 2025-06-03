@@ -1,0 +1,18 @@
+// Custom Variable File
+@charset 'utf-8';
+// Font family and Icons File
+@import './common/fonts';
+// Reset CSS and Base CSS File
+@import './common/base';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+// Custom Mixin File
+@import './common/mixin';
+// Component Files
+@import './layouts/button';
+@import './layouts/badge';
+@import './layouts/model';
+@import './layouts/card';
+@import './layouts/header';
+@import './layouts/table';

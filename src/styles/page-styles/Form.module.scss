@@ -1,0 +1,200 @@
+.form-group {
+	& > label {
+		@apply block text-gray-700 text-sm font-normal mb-2;
+	}
+
+	input:focus,
+	select:focus,
+	textarea:focus {
+		@apply shadow-shadow-1;
+	}
+
+	.form-control {
+		
+		@apply bg-white border rounded w-full py-1.5 px-3 text-base-font-4 border-b-color-1;
+
+		&:focus,
+		&:active {
+			@apply border-primary outline-0;
+		}
+
+		&.disabled,
+		&[disabled] {
+			@apply border-gray-300 bg-slate-300 cursor-not-allowed opacity-70;
+		}
+
+		&::placeholder {
+			@apply text-gray-500;
+		}
+
+	}
+
+	textarea {
+		resize: none;
+	}
+
+	.input-group {
+		@apply relative;
+		&.with-icon {
+			.input-icon {
+				@apply absolute top-0 left-0 w-10 flex items-center justify-center rounded rounded-tr-none rounded-br-none h-full border border-b-color-1 bg-bg-1;
+
+				svg,
+				img {
+					@apply h-5 w-5;
+				}
+
+				svg {
+					@apply fill-base-font-4;
+				}
+
+				&.error {
+					@apply bg-error border-error text-white;
+
+					svg {
+						@apply fill-white;
+					}
+				}
+			}
+
+			.form-control {
+				@apply ml-10;
+			}
+
+			.input-login {
+				@apply w-11/12 border rounded-tl-none rounded-bl-none   border-gray-200 bg-white focus:border focus:border-primary bg-bg-2 bg-opacity-60;
+			}
+		}
+		.input-password {
+			@apply pr-10;
+		}
+		input,
+		select {
+			@apply h-9;
+		}
+
+		option {
+			@apply text-gray-600;
+		}
+
+		select:disabled {
+			@apply bg-slate-300;
+		}
+	}
+
+	.radio-btn-group {
+		@apply flex flex-wrap items-center;
+
+		.radio-btn {
+			@apply mr-3 my-1 relative;
+
+			> span {
+				@apply inline-flex items-center cursor-pointer px-5;
+
+				&:before {
+					content: '';
+					@apply inline-block h-4 w-4 rounded-full border border-gray-300 mr-2.5 absolute top-0.5 left-0 bg-gray-200 hover:bg-gray-300;
+				}
+
+				&:after {
+					@apply absolute left-1 top-1.5 bg-primary rounded-full w-2 h-2;
+				}
+			}
+
+			input[type='radio'] {
+				@apply absolute left-0 opacity-0;
+
+				&:checked {
+					~ span {
+						&:before {
+							@apply ring-2 ring-primary border-primary bg-white;
+						}
+
+						&:after {
+							@apply absolute left-1 top-1.5 bg-primary rounded-full w-2 h-2;
+						}
+					}
+				}
+
+				&.disabled,
+				&[disabled] {
+					~ span {
+						@apply text-gray-600 cursor-not-allowed;
+
+						&:before,
+						&:after {
+							@apply opacity-70;
+						}
+					}
+				}
+			}
+		}
+
+		&.radio-btn-group-list {
+			@apply block;
+
+			.radio-btn {
+				@apply block mr-0;
+			}
+		}
+	}
+
+	.checkbox-group {
+		.checkbox-item {
+			@apply mr-3 my-1 inline-block relative;
+
+			> span {
+				@apply inline-flex items-center cursor-pointer px-5 relative;
+
+				&:before {
+					content: '';
+					@apply inline-block h-4 w-4 border border-primary mr-2 absolute left-0 rounded;
+				}
+
+				&:after {
+					@apply absolute inline-block rotate-45 left-1 h-2.5 w-1.5 border-b-2 border-r-2 border-white;
+				}
+			}
+
+			input[type='checkbox'] {
+				@apply absolute left-0 opacity-0;
+
+				&:checked {
+					~ span {
+						&:before {
+							@apply bg-primary border-primary;
+						}
+
+						&:after {
+							content: '';
+						}
+					}
+				}
+
+				&.disabled,
+				&[disabled] {
+					~ span {
+						@apply text-gray-600 cursor-not-allowed;
+
+						&:before,
+						&:after {
+							@apply opacity-70;
+						}
+					}
+				}
+			}
+		}
+
+		&.checkbox-group-list {
+			.checkbox-item {
+				@apply block mr-0;
+			}
+		}
+	}
+}
+
+:global {
+	.error {
+		@apply border-red-500 text-red-500 font-thin;
+	}
+}

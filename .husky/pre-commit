@@ -1,0 +1,22 @@
+RESTRICTED_ITEMS="
+.husky
+tsconfig.json 
+.eslintrc.json
+.stylelintrc.json
+commitlint.config.js
+package.json 
+craco.config.js
+.gitignore"
+
+# Check for staged files
+for item in $RESTRICTED_ITEMS; do
+  if git diff --cached --name-only | grep -q "^$item" || git diff --cached --name-only | grep -q "^$item/"; then
+    echo "Commit failed: You cannot commit restricted item '$item'."
+    exit 1
+  fi
+done
+
+# Run linting
+npm run lint
+
+exit 0

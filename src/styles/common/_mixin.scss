@@ -1,0 +1,158 @@
+:root {
+	// Font Family
+	--font-family-primary: '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'sans-serif';
+
+	// Theme colors list
+	--primary: #bb3f42;
+}
+
+@mixin font-family($face, $weight) {
+	font-family: $face;
+	font-weight: $weight;
+}
+
+@mixin font-detail($font-size-value, $line-height-value) {
+	font-size: $font-size-value;
+	line-height: $line-height-value;
+}
+
+@mixin common-font-size {
+	@include font-detail(1rem, 1.5rem);
+
+	@screen xl {
+		@include font-detail(1.125rem, 1.688rem);
+	}
+}
+
+@mixin body-font {
+	@include font-family(var(--font-family-primary), 400);
+	@include common-font-size;
+	font-style: normal;
+	letter-spacing: normal;
+	color: var(--b3);
+}
+
+@mixin font-xl {
+	@include font-detail(2rem, 2.5rem);
+	@include font-family(var(--font-family-primary), normal);
+	@screen md {
+		@include font-detail(3rem, 3.938rem);
+	}
+	@screen xl {
+		@include font-detail(5.313rem, 7.063rem);
+	}
+}
+
+@mixin font-lg {
+	@include font-detail(1.75rem, 2.125rem);
+	@include font-family(var(--font-family-primary), normal);
+	margin-bottom: 0;
+	@screen md {
+		@include font-detail(2.375rem, 2.5rem);
+	}
+	@screen xl {
+		@include font-detail(3.125rem, 4.063rem);
+	}
+}
+
+@mixin font-md {
+	@include font-family(var(--font-family-primary), normal);
+	@include font-detail(1.5rem, 1.875rem);
+	margin-bottom: 0;
+	@screen md {
+		@include font-detail(1.75rem, 2.125rem);
+	}
+	@screen xl {
+		@include font-detail(2rem, 2.625rem);
+	}
+}
+
+@mixin font-sl {
+	@include font-detail(1.25rem, 1.75rem);
+	@include font-family(var(--font-family-primary), normal);
+	margin-bottom: 0;
+	@screen md {
+		@include font-detail(1.5rem, 1.875rem);
+	}
+	@screen xl {
+		@include font-detail(1.75rem, 2.313rem);
+	}
+}
+
+@mixin font-sm {
+	@include font-detail(1.25rem, 1.75rem);
+	@include font-family(var(--font-family-primary), normal);
+	margin-bottom: 0;
+	@screen md {
+		@include font-detail(1.375rem, 1.875rem);
+	}
+	@screen xl {
+		@include font-detail(1.5rem, 2.25rem);
+	}
+}
+
+@mixin font-xs {
+	@include font-detail(1rem, 1.25rem);
+	@include font-family(var(--font-family-primary), 500);
+	margin-bottom: 0;
+	@screen md {
+		@include font-detail(1.125rem, 1.5rem);
+	}
+	@screen xl {
+		@include font-detail(1.25rem, 1.875rem);
+	}
+}
+
+@mixin font-xxs {
+	@include font-detail(0.875rem, 1.125rem);
+	@include font-family(var(--font-family-primary), normal);
+	margin-bottom: 0;
+	@screen md {
+		@include font-detail(1rem, 1.25rem);
+	}
+	@screen xl {
+		@include font-detail(1.125rem, 1.688rem);
+	}
+}
+
+@mixin border-radius($radius) {
+	-webkit-border-radius: $radius;
+	-moz-border-radius: $radius;
+	-o-border-radius: $radius;
+	border-radius: $radius;
+}
+
+@mixin opacity($opacity) {
+	-webkit-opacity: $opacity;
+	-moz-opacity: $opacity;
+	-o-opacity: $opacity;
+	-ms-opacity: $opacity;
+	opacity: $opacity;
+}
+
+@mixin transition($seconds, $timing: ease) {
+	-webkit-transition: all $seconds ease;
+	-moz-transition: all $seconds ease;
+	-ms-transition: all $seconds ease;
+	-o-transition: all $seconds ease;
+	transition: all $seconds $timing;
+}
+
+@mixin transform($property) {
+	-o-transform: $property;
+	-webkit-transform: $property;
+	-ms-transform: $property;
+	-moz-transform: $property;
+	transform: $property;
+}
+
+@mixin bg-cmn {
+	background-position: top center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+@mixin figure {
+	margin: 0;
+	display: inherit;
+}

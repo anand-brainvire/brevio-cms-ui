@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "baseUrl": ".",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "paths": {
+      "@components/*": ["./src/components/*"],
+      "@views/*": ["./src/views/*"],
+      "@framework/*": ["./src/framework/*"],
+      "@config/*": ["./src/config/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@layout/*": ["./src/layout/*"],
+      "@type/*": ["./src/types/*"],
+      "@services/*": ["./src/services/*"],
+      "@src/*": ["./src/*"],
+      "@assets/*": ["./src/assets/*"]
+    },
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "alwaysStrict": true, //Ensures that your files are parsed in the ECMAScript strict mode
+    "exactOptionalPropertyTypes": false, // TypeScript applies stricter rules around how it handles properties on type or interfaces which have a ? prefix
+    "noImplicitAny": true, //TypeScript will fall back to a type of any for a variable when it cannot infer the type
+    "noImplicitThis": true, // Raise error on ‘this’ expressions with an implied ‘any’ type.
+    "strictBindCallApply": true, //When set, TypeScript will check that the built-in methods of functions call, bind, and apply are invoked with correct argument for the underlying function
+    "strictFunctionTypes": true, //When enabled, this flag causes functions parameters to be checked more correctly.
+    "strictNullChecks": true, // When strictNullChecks is false, null and undefined are effectively ignored by the language. This can lead to unexpected errors at runtime.
+    "strictPropertyInitialization": true, // When set to true, TypeScript will raise an error when a class property was declared but not set in the constructor.
+    "useUnknownInCatchVariables": true // In TypeScript 4.0, support was added to allow changing the type of the variable in a catch clause from any to unknown
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

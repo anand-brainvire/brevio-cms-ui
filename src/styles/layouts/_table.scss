@@ -1,0 +1,90 @@
+.custom-datatable {
+	@apply w-full max-w-table-wide-2;
+	margin: 0 auto;
+
+	@screen sm {
+		@apply max-w-table-wide-4;
+	}
+
+	table {
+		@apply w-full text-sm text-left text-gray-500;
+
+		thead {
+			@apply text-sm text-black capitalize;
+
+			tr {
+				th {
+					@apply text-sm font-bold px-2.5 py-2 border border-gray-300 resize-x overflow-auto text-ellipsis whitespace-nowrap;
+				}
+				th::-webkit-resizer {
+					@apply bg-transparent;
+				}
+			}
+		}
+
+		tbody {
+			@apply text-gray-800;
+
+			tr {
+				@apply hover:bg-gray-200 hover:shadow border border-gray-300 transition-all duration-300;
+
+				td,
+				th {
+					@apply text-sm px-2.5 py-2 border border-slate-300 overflow-auto whitespace-nowrap;
+				}
+			}
+		}
+	}
+	.no-data {
+		@apply flex justify-center py-2.5;
+	}
+}
+
+.sidebar-show {
+	& ~ div {
+		.custom-datatable {
+			@apply max-w-table-wide-1;
+
+			@screen sm {
+				@apply max-w-table-wide-3;
+			}
+		}
+	}
+}
+
+.p-rating {
+	.p-rating-icon {
+		@apply text-primary;
+
+		&::after {
+			@apply text-black fill-black;
+		}
+
+		&::before {
+			@apply text-black bg-black;
+		}
+	}
+	.p-rating-item:focus {
+		box-shadow: none !important;
+	}
+}
+
+.datatable-footer {
+	@apply w-full flex items-center flex-wrap gap-2 justify-between mt-1 border-t border-black border-opacity-10;
+
+	& .datatable-total-records {
+		@apply text-slate-400 text-xs px-5;
+	}
+}
+
+.table-select-dropdown-container {
+	@apply flex items-center mb-4;
+
+	.table-select-dropdown {
+		@apply border rounded px-3 text-sm py-1.5 text-gray-500 mx-1 bg-white border-b-color-1 w-wide-4;
+	}
+
+	.table-select-dropdown-label {
+		@apply text-sm text-gray-700 font-normal;
+	}
+}

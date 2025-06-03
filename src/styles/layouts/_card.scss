@@ -1,0 +1,48 @@
+.card {
+	@apply w-full bg-white rounded mb-6 border border-default;
+}
+
+.card-table {
+	@apply mb-6 bg-white rounded overflow-auto border border-default;
+}
+
+.card-header {
+	@apply py-3 px-5 flex items-center justify-between border-b border-default bg-bg-1 text-base-font-2  flex-wrap gap-2;
+
+	div {
+		span {
+			svg {
+				@apply text-base-font-2;
+			}
+		}
+
+		button {
+			svg {
+				@apply text-white;
+			}
+		}
+	}
+}
+
+.card-body {
+	@apply p-5;
+
+	.card-title-container {
+		@apply flex justify-end mb-4;
+
+		p {
+			@apply text-gray-700 px-4;
+		}
+	}
+}
+.card-grid-filter {
+	@apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-4 sm:gap-x-3.5 lg:gap-x-8 [.show-menu~div_&]:grid-cols-1 [.show-menu~div_&]:md:grid-cols-2 [.show-menu~div_&]:lg:grid-cols-3;
+}
+
+.card-grid-addedit-page {
+	@apply grid grid-cols-1 gap-y-4 gap-x-8;
+}
+
+.card-footer {
+	@apply flex items-start justify-start px-5 py-3 border-t border-default bg-bg-1;
+}

@@ -1,0 +1,170 @@
+aside {
+	@apply overflow-visible;
+
+	&.menu-horizontal {
+		@apply overflow-visible bg-bg-4;
+		@screen sm {
+			@apply min-w-wide-1;
+		}
+		.sidebar-li {
+			@apply fixed top-0 bottom-0 left-0 overflow-auto bg-transparent w-auto max-w-none;
+
+			&::-webkit-scrollbar {
+				@apply hidden;
+			}
+
+			> li {
+				@apply overflow-auto;
+
+				li {
+					@apply overflow-hidden w-wide-3;
+
+					&.sub-menu-active {
+						@apply bg-bg-4;
+					}
+
+					a {
+						span:first-child {
+							display: block !important;
+							margin-left: 0 !important;
+						}
+					}
+
+					.sub-menu-active {
+						span:first-child {
+							margin-left: 0 !important;
+						}
+					}
+
+					&:hover,
+					&.sub-list,
+					&.sub-menu-active {
+						@apply overflow-visible w-wide-9;
+
+						span {
+							&:not(.svg-icon) {
+								@apply block ml-4;
+							}
+						}
+
+						svg {
+							&.angle-down {
+								@apply block ml-5;
+							}
+						}
+					}
+
+					&.sub-list {
+						svg {
+							@apply text-white mr-4 ml-6;
+						}
+						li {
+							@apply ml-6;
+						}
+					}
+
+					svg {
+						@apply my-0.5 mx-0;
+
+						&.angle-down {
+							@apply hidden;
+						}
+					}
+
+					span {
+						&:not(.svg-icon) {
+							@apply hidden;
+						}
+					}
+				}
+
+				> svg {
+					@apply m-0;
+				}
+
+				&:last-child {
+					@apply bottom-0 w-wide-3;
+				}
+			}
+		}
+	}
+
+	.sidebar-li {
+		@apply border-transparent border-r-2 border-solid;
+		> li {
+			@apply overflow-x-hidden;
+			&::-webkit-scrollbar {
+				@apply h-0.5 w-1.5;
+			}
+
+			/* Track */
+			&::-webkit-scrollbar-track {
+				@apply bg-transparent;
+			}
+
+			/* Handle */
+			&::-webkit-scrollbar-thumb {
+				@apply bg-bg-6 rounded-lg bg-opacity-60;
+			}
+
+			/* Handle on hover */
+			&::-webkit-scrollbar-thumb:hover {
+				@apply bg-bg-7;
+			}
+			> ul {
+				&:not(.menu-horizontal) {
+					@apply w-wide-11;
+				}
+			}
+		}
+	}
+	.show-sidebar-names {
+		ul {
+			li {
+				svg {
+					width: 1.125rem !important;
+					height: 1.125rem !important;
+				}
+				.toggle-active {
+					svg {
+						width: 0.925rem !important;
+						height: 0.925rem !important;
+					}
+				}
+				.toggle-text-sidebar {
+					@apply block;
+				}
+				.angle-down {
+					width: 0.5rem !important;
+					svg {
+						width: 0.5rem !important;
+						height: 0.875rem !important;
+					}
+				}
+			}
+		}
+	}
+	.hide-sidebar-names {
+		ul {
+			li {
+				svg {
+					width: 1.125rem !important;
+					height: 1.125rem !important;
+				}
+
+				.toggle-text-sidebar {
+					@apply hidden;
+				}
+				.angle-down {
+					width: 0.5rem !important;
+				}
+			}
+		}
+	}
+}
+
+.toggle-scrollbar {
+	&::-webkit-scrollbar {
+		display: none !important;
+	}
+}

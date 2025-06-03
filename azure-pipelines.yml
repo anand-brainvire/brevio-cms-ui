@@ -1,0 +1,23 @@
+trigger:
+  branches:
+    include:
+    - '*'
+
+steps:
+# Prepare Analysis Configuration task
+- task: SonarQubePrepare@7
+  inputs:
+    SonarQube: 'Sonarqube_Brainvire_Inhouse_server'
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: 'NodeJS-Base-Structure-sonarqube'
+
+# Run Code Analysis task
+- task: SonarQubeAnalyze@7
+  inputs:
+    jdkversion: 'JAVA_HOME_17_X64'
+
+# Publish Quality Gate Result task
+- task: SonarQubePublish@7
+  inputs:
+    pollingTimeoutSec: '300'

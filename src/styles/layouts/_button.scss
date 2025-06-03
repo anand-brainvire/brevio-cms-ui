@@ -1,0 +1,191 @@
+// Global Button Component
+//no-sonar
+.btn {
+	@apply inline-flex items-center font-normal text-center align-middle select-none bg-transparent border border-transparent py-1.5 px-3 text-sm rounded leading-5;
+
+	
+
+	@screen sm {
+		@apply py-1.5 px-3 leading-5 text-sm;
+	}
+
+	&:hover,
+	&:active,
+	&:focus {
+		@apply opacity-90;
+	}
+
+	&.disabled,
+	&[disabled] {
+		@apply cursor-not-allowed opacity-60;
+
+		&:hover {
+			@apply opacity-60;
+		}
+	}
+
+	&.btn-small {
+		@apply py-1 px-2 text-xs;
+	}
+
+	&.btn-large {
+		@apply py-2 px-4 text-base leading-5;
+	}
+
+	&.btn-login {
+		@apply px-6 py-1.5;
+	}
+
+	&.btn-action {
+		@apply mr-1 p-0 text-primary;
+	}
+
+	// Primary Button
+	&.btn-primary {
+		@apply bg-primary text-white border-primary;
+
+		&:hover,
+		&:active,
+		&:focus {
+			@apply border-primary;
+		}
+	}
+
+	&.btn-primary-outline {
+		@apply bg-transparent text-black border-primary;
+
+		&:hover,
+		&:active,
+		&:focus {
+			@apply bg-primary text-white border-primary;
+		}
+	}
+
+	// Secondary Button
+	&.btn-secondary {
+		@apply bg-secondary text-neutral-900 border-secondary;
+
+		&:hover,
+		&:active,
+		&:focus {
+			@apply border-neutral-400 bg-secondary;
+		}
+	}
+
+	&.btn-secondary-outline {
+		@apply bg-transparent text-black border-secondary;
+
+		&:hover,
+		&:active,
+		&:focus {
+			@apply bg-secondary text-black border-neutral-400 opacity-100;
+		}
+	}
+
+	// Warning Button
+	&.btn-warning {
+		@apply bg-warning text-white border-warning;
+
+		&:hover,
+		&:active,
+		&:focus {
+			@apply bg-warning border-warning opacity-90;
+		}
+	}
+
+	&.btn-warning-outline {
+		@apply bg-transparent text-black border-warning;
+
+		&:hover,
+		&:active,
+		&:focus {
+			@apply bg-warning text-black border-warning;
+		}
+	}
+
+	// Info Button
+	&.btn-info {
+		@apply bg-info text-neutral-900 border-info;
+
+		&:hover,
+		&:active,
+		&:focus {
+			@apply bg-cyan-300 opacity-100 border-info;
+		}
+	}
+
+	&.btn-info-outline {
+		@apply bg-transparent text-black border-info;
+
+		&:hover,
+		&:active,
+		&:focus {
+			@apply bg-info text-black border-info;
+		}
+	}
+
+	// Success Button
+	&.btn-success {
+		@apply bg-success text-white border-success;
+
+		&:hover,
+		&:active,
+		&:focus {
+			@apply bg-success border-success opacity-90;
+		}
+	}
+
+	&.btn-success-outline {
+		@apply bg-transparent text-black border-success;
+
+		&:hover,
+		&:active,
+		&:focus {
+			@apply bg-success text-black border-success;
+		}
+	}
+
+	// Danger Button
+	&.btn-danger {
+		@apply text-white bg-danger border-danger;
+
+		&:hover,
+		&:active,
+		&:focus {
+			@apply bg-danger border-danger;
+		}
+	}
+
+	&.btn-gray {
+		@apply bg-gray-500;
+	}
+
+	&.btn-pink {
+		@apply bg-red-400 text-white;
+	}
+
+	&.btn-default {
+		@apply py-1.5 px-1.5 leading-5 text-sm text-primary;
+	}
+
+	&.btn-danger-outline {
+		@apply bg-transparent text-black border-error;
+
+		&:hover,
+		&:active,
+		&:focus {
+			@apply bg-error text-white border-error;
+		}
+	}
+}
+
+// For multiple button group
+.btn-group {
+	.btn {
+		@apply mr-2;
+
+		&:last-child {
+			@apply mr-0;
+		}
+	}
+}

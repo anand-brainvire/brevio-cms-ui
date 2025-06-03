@@ -1,0 +1,11 @@
+.auth-wrapper {
+    @apply min-h-screen flex items-center justify-center p-6 sm:p-8 lg:p-12;
+
+    .auth-box {
+        @apply bg-white shadow-md rounded px-8 pt-6 pb-8;
+    }
+
+    .auth-box-heading {
+        @apply text-gray-800 text-2xl lg:text-3xl font-bold mb-4 md:mb-6 font-primary;
+    }
+}
