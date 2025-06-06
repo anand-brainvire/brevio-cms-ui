@@ -38,7 +38,7 @@ export type ColArrType = {
 
 export type PaginationParams = {
 	limit: number;
-	page: number;
+	offset: number;
 	sortBy: string;
 	sortOrder: string;
 	search: string;

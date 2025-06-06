@@ -42,9 +42,9 @@ const ManageRulesSets = () => {
 	const [selectedAllRules, setSelectedAllRules] = useState<boolean>(false);
 	const [selectedRules, setSelectedRules] = useState<string[]>([]);
 	const [filterData, setFilterData] = useState<PaginationParamsRulesSets>({
-		page: DEFAULT_PAGE,
+		offset: DEFAULT_PAGE,
 		ruleName: '',
-		status: null,
+		isActive: null,
 		limit: DEFAULT_LIMIT,
 		sortOrder: sortOrder,
 		sortBy: '',
@@ -168,8 +168,8 @@ const ManageRulesSets = () => {
 		setFilterData({
 			...filterData,
 			ruleName: values.ruleName,
-			status: values.RulesStatus === '' ? null : +values.RulesStatus,
-			page: DEFAULT_PAGE,
+			isActive: values.RulesStatus === '' ? null : +values.RulesStatus,
+			offset: DEFAULT_PAGE,
 		});
 	}, []);
 	/**
@@ -416,7 +416,7 @@ const ManageRulesSets = () => {
 							{`${data?.fetchSetRules.data?.count === null || data?.fetchSetRules.data?.count === undefined ? '0' : data?.fetchSetRules.data?.count}`}
 							<span className='ml-1'>{t(' Total Records')}</span>
 						</div>
-						<Pagination currentPage={filterData.page} totalPages={totalPages} onPageChange={handlePageChangeRules} recordsPerPage={recordsPerPage} />
+						<Pagination currentPage={filterData.offset} totalPages={totalPages} onPageChange={handlePageChangeRules} recordsPerPage={recordsPerPage} />
 					</div>
 				</div>
 			</div>

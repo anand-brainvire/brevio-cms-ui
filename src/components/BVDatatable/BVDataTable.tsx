@@ -21,7 +21,7 @@ import ImageCell from './imageCell';
 import TextCell from './textCell';
 import BadgeCell from './badgeCell';
 
-const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteMutation, updateStatusMutation, sessionFilterName, updatedFilterData, actionWisePermissions, defaultActions, actionData, extraActions, statusKey, idKey, multipleDeleteApiId, singleDeleteApiId, statusChangeApiId, statusChangeApiKeyTitle, rowRefData }: IBVDataTablesProps): ReactElement => {
+const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteMutation, updateStatusMutation, sessionFilterName, updatedFilterData, actionWisePermissions, defaultActions, actionData, extraActions, statusKey, idKey, multipleDeleteApiId, rowRefData }: IBVDataTablesProps): ReactElement => {
 	const { localFilterData } = useSaveFilterData();
 	const navigate = useNavigate();
 	const { t } = useTranslation();
@@ -101,19 +101,18 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 	 * Particular Format Filter Data Settings
 	 */
 	const handleToSetDataListing = () => {
-		const firstLevelKey = Object.keys(data);
-		if (data?.[`${firstLevelKey}`]?.data) {
-			const thirdLevelKey = Object.keys(data?.[`${firstLevelKey}`]?.data);
-			let finalKey = '';
-			thirdLevelKey?.map((ele) => {
-				if (Array.isArray(data?.[`${firstLevelKey}`]?.data?.[`${ele}`])) {
-					finalKey = ele;
-				}
-			});
+		const firstLevelKey = Object.keys(data)?.[0]; // "getAllSubAdmins"
+		const topLevel = data?.[firstLevelKey];
 
-			setListData(data?.[`${firstLevelKey}`]?.data?.[`${finalKey}`] ?? []);
-			setTotalPages(Math.ceil(data?.[`${firstLevelKey}`]?.data?.count / filterData.limit) ?? 0);
-			setTotalRecords(data?.[`${firstLevelKey}`]?.data?.count ?? 0);
+		if (Array.isArray(topLevel?.data)) {
+			setListData(topLevel.data);
+			setTotalRecords(topLevel.data.length); // If meta.count isn't present
+			setTotalPages(Math.ceil(topLevel.data.length / filterData.limit));
+		} else {
+			// In case data is not directly an array (for future-proofing)
+			setListData([]);
+			setTotalRecords(0);
+			setTotalPages(0);
 		}
 	};
 
@@ -264,7 +263,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 					fetchPolicy: 'network-only',
 					mutation: singleDeleteMutation,
 					variables: {
-						[singleDeleteApiId ? `${singleDeleteApiId}` : `${idKey}`]: singleDeleteId,
+						uuid: singleDeleteId,
 					},
 				})
 				.then((res) => {
@@ -284,9 +283,15 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 		}
 	}, [isDeletePopup, singleDeleteId, loadingState]);
 
-	/**
-	 * Change ths status of items
-	 */
+	const statusPopup = useCallback(
+		(id: string, status: string | number) => {
+			setStatusChangeId(id);
+			setCurrentStatus(status);
+			setIsStatusPopup(true);
+		},
+		[statusChangeId, isStatusPopup, currentStatus]
+	);
+
 	const changeStatusAction = useCallback(() => {
 		setLoadingState(true);
 		if (updateStatusMutation) {
@@ -295,8 +300,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 					fetchPolicy: 'network-only',
 					mutation: updateStatusMutation,
 					variables: {
-						[statusChangeApiId ? `${statusChangeApiId}` : `${idKey}`]: statusChangeId,
-						[statusChangeApiKeyTitle ? `${statusChangeApiKeyTitle}` : `${idKey}`]: currentStatus === STATUS.active ? STATUS.inactive : STATUS.active,
+						uuid: statusChangeId, // <--- THIS IS WHERE THE UUID IS SENT
 					},
 				})
 				.then((res) => {
@@ -331,18 +335,6 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 			}
 		},
 		[isDeletePopup, isStatusPopup]
-	);
-
-	/**
-	 * Handle Status changes popup action.
-	 */
-	const statusPopup = useCallback(
-		(id: string, status: string | number) => {
-			setStatusChangeId(id);
-			setCurrentStatus(status);
-			setIsStatusPopup(true);
-		},
-		[statusChangeId, isStatusPopup, currentStatus]
 	);
 
 	/**
@@ -454,14 +446,27 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 												row={row}
 												openImageModel={openImageModel}
 											/>}
-											{column.type === 'date' && getDateFromat(row?.[column.fieldName], DATE_FORMAT.momentDateTime24Format)}
+											{column.type === 'date' && getDateFromat(
+												typeof row?.[column.fieldName] === 'string' && /^\d+$/.test(row?.[column.fieldName])
+													? Number(row?.[column.fieldName])
+													: row?.[column.fieldName],
+												DATE_FORMAT.momentDateTime24Format
+											)}
 											{column.type === 'number' && row?.[column.fieldName]}
 											{column.type === 'text' &&
 												(<TextCell
 													text={getApiColumnName(column.fieldName, row)}
 													descriptionHandler={descriptionHandler}
 												/>)}
-											{column.type === 'status' && <div className=' flex justify-center'>{row?.[column.fieldName] === 1 ? <span className='badge badge-success rounded'>{t('Active')}</span> : <span className='badge badge-danger rounded'>{t('InActive')}</span>}</div>}
+											{column.type === 'status' && (
+												<div className=' flex justify-center'>
+													{row?.[column.fieldName] === true || row?.[column.fieldName] === 1 ? (
+														<span className='badge badge-success rounded'>{t('Active')}</span>
+													) : (
+														<span className='badge badge-danger rounded'>{t('InActive')}</span>
+													)}
+												</div>
+											)}
 											{column.type === 'ratings' && <Rating value={+row?.[column.fieldName]} cancel={false} style={{ display: 'flex' }} />}
 											{column.type === 'badge' && (
 												<BadgeCell

@@ -1,8 +1,8 @@
 export type PaginationParamsRulesSets = {
   limit: number;
-  page: number;
+  offset: number;
   ruleName: string;
-  status: number | null;
+  isActive: number | null;
   sortOrder: string;
   sortBy: string;
 };

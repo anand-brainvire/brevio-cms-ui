@@ -3,19 +3,8 @@ import { META_FRAGMENT } from '@framework/graphql/fragments';
 
 export const CHANGE_SUBADMIN_STATUS = gql`
 	${META_FRAGMENT}
-	mutation ChangeSubAdminStatus($changeSubAdminStatusId: UUID, $status: Int) {
-		changeSubAdminStatus(uuid: $changeSubAdminStatusId, status: $status) {
-			data {
-				id
-				first_name
-				last_name
-				user_name
-				email
-				role
-				status
-				created_at
-				updated_at
-			}
+	mutation ToggleSubAdminStatus($uuid: ID!) {
+		toggleSubAdminStatus(uuid: $uuid) {
 			meta {
 				...MetaFragment
 			}
@@ -25,8 +14,8 @@ export const CHANGE_SUBADMIN_STATUS = gql`
 
 export const DELETE_SUBADMIN = gql`
 	${META_FRAGMENT}
-	mutation DeleteSubAdmin($deleteSubAdminId: UUID) {
-		deleteSubAdmin(uuid: $deleteSubAdminId) {
+	mutation DeleteSubAdmin($uuid: ID!) {
+		deleteSubAdmin(uuid: $uuid) {
 			meta {
 				...MetaFragment
 			}
@@ -47,19 +36,23 @@ export const CHANGE_SUBADMIN_PASSWORD = gql`
 
 export const CREATE_SUBADMIN = gql`
 	${META_FRAGMENT}
-	mutation CreateSubAdmin($userName: String, $firstName: String, $lastName: String, $email: String, $password: String, $confirmPassword: String, $role: Int) {
-		createSubAdmin(user_name: $userName, first_name: $firstName, last_name: $lastName, email: $email, password: $password, confirm_password: $confirmPassword, role: $role) {
-			data {
-				id
-				first_name
-				last_name
-				user_name
-				email
-				role
-				status
-				created_at
-				updated_at
-			}
+	mutation CreateSubAdmin($email: String!, $password: String!, $firstName: String!, $lastName: String!, $middleName: String, $roleId: String) {
+		createSubAdmin(email: $email, password: $password, first_name: $firstName, last_name: $lastName, middle_name: $middleName, role_id: $roleId) {
+    			data {
+    				uuid
+    				email
+    				first_name
+    				last_name
+    				middle_name
+    				role_id
+    				role_name
+    				role_uuid
+    				is_active
+    				created_at
+    				updated_at
+    				updated_by
+    				created_by
+    			}
 			meta {
 				...MetaFragment
 			}
@@ -69,19 +62,9 @@ export const CREATE_SUBADMIN = gql`
 
 export const UPDATE_SUBADMIN = gql`
 	${META_FRAGMENT}
-	mutation UpdateSubAdmin($updateSubAdminId: UUID, $firstName: String, $lastName: String, $email: String, $role: Int) {
-		updateSubAdmin(uuid: $updateSubAdminId, first_name: $firstName, last_name: $lastName, email: $email, role: $role) {
-			data {
-				first_name
-				last_name
-				user_name
-				email
-				role
-				status
-				created_at
-				updated_at
-			}
-			meta {
+	mutation UpdateSubAdmin($uuid: ID!, $firstName: String, $lastName: String, $middleName: String, $roleId: String) {
+		updateSubAdmin(uuid: $uuid, first_name: $firstName, last_name: $lastName, middle_name: $middleName, role_id: $roleId) {
+				meta {
 				...MetaFragment
 			}
 		}

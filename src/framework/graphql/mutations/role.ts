@@ -28,13 +28,23 @@ export const CREATE_ROLE = gql`
 		createRole(role_name: $roleName) {
 			data {
 				id
-				uuid
-				role_name
-				key
-				status
-				created_at
-				updated_at
-				serialNo
+    			uuid
+    			role_name
+    			is_active
+    			created_at
+    			updated_at
+    			updated_by
+    			created_by	
+				permissions {
+        			id
+        			uuid
+        			module_id
+        			permission_name
+        			key
+        			is_active
+        			created_at
+        			updated_at
+      			}		
 			}
 			meta {
 				...MetaFragment

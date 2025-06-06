@@ -38,12 +38,13 @@ const SubAdmin = (): ReactElement => {
 	);
 	const COL_ARR_SUB_ADMIN = [
 		{ name: t('First Name'), sortable: true, fieldName: 'first_name', type: 'text' },
+		{ name: t('Middle Name'), sortable: true, fieldName: 'middle_name', type: 'text' },
 		{ name: t('Last Name'), sortable: true, fieldName: 'last_name', type: 'text' },
 		{ name: t('Email'), sortable: true, fieldName: 'email', type: 'text' },
-		{ name: t('Role'), sortable: false, fieldName: 'Role.role_name', type: 'text' },
+		{ name: t('Role'), sortable: false, fieldName: 'role_name', type: 'text' },
 		{ name: t('Created At'), sortable: true, fieldName: 'created_at', type: 'date' },
 		{ name: t('Updated At'), sortable: true, fieldName: 'updated_at', type: 'date' },
-		{ name: t('Status'), sortable: true, fieldName: 'status', type: 'status', headerCenter: true },
+		{ name: t('Status'), sortable: true, fieldName: 'is_active', type: 'status', headerCenter: true },
 	] as ColArrType[];
 
 	/**
@@ -141,7 +142,7 @@ const SubAdmin = (): ReactElement => {
 						idKey={'uuid'}
 						multipleDeleteApiId={'groupDeleteSubAdminsId'}
 						singleDeleteApiId={'deleteSubAdminId'}
-						statusChangeApiId={'changeSubAdminStatusId'}
+						statusChangeApiId={'toggleSubAdminStatus'}
 						statusChangeApiKeyTitle={'status'}
 						rowRefData={handleRowRef}
 						extraActions={

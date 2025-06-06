@@ -254,13 +254,12 @@ const useValidation = () => {
 	};
 	const subAdminValidationSchema = ({ params }: validationProps) => {
 		return Yup.object({
-			role: roleDropDown,
+			roleId: roleDropDown,
 			firstName: firstName,
 			lastName: lastName,
 			...(params !== undefined
 				? {}
 				: {
-					userName: userName,
 					email: email,
 					password: password,
 					confirmPassword: confirmPasswordcomman,

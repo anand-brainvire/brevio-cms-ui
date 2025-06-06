@@ -47,13 +47,13 @@ export type ChangeSubAdminPassword = {
 };
 
 export type CreateSubAdmin = {
-	userName: string;
+	middleName: string;
 	firstName: string;
 	lastName: string;
 	email: string;
 	password: string;
 	confirmPassword: string;
-	role: string;
+	roleId: string;
 };
 
 export type latlongProps = {
