@@ -28,10 +28,10 @@ const FilterSubAdmin = ({ onSearchSubAdmin, filterData }: SubAdminProps): ReactE
 	 * Method that fetch's role data and set to dropdown
 	 */
 	useEffect(() => {
-		if (data?.fetchRoles?.data?.Roledata) {
+		if (data?.roles?.data) {
 			const tempDataArr = [] as DropdownOptionType[];
-			data?.fetchRoles?.data?.Roledata.map((data: RoleDataArr) => {
-				tempDataArr.push({ name: data.role_name, key: data.id });
+			data.roles.data.map((role: RoleDataArr) => {
+				tempDataArr.push({ name: role.role_name, key: role.uuid });
 			});
 			setRoleDrpData(tempDataArr);
 		}

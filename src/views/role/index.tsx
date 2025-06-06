@@ -29,17 +29,18 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 	const [filterData, setFilterData] = useState<PaginationParams>(
 		localFilterData('filterRuleSets') ?? {
 			limit: DEFAULT_LIMIT,
-			page: DEFAULT_PAGE,
+			offset: DEFAULT_PAGE,
 			sortBy: sortBy,
 			sortOrder: sortOrder,
 			search: '',
+			isActive: true 
 		}
 	);
 	const { data, refetch } = useQuery(GET_ROLES_DATA, { variables: { ...filterData }, fetchPolicy: 'network-only' });
 
 	const COL_ARR_ROLE = [
 		{ name: t('Title'), sortable: true, fieldName: 'role_name', type: 'text' },
-		{ name: t('Status'), sortable: true, fieldName: 'status', type: 'status', headerCenter: 'true' },
+		{ name: t('Status'), sortable: true, fieldName: 'is_active', type: 'status', headerCenter: 'true' },
 	] as IColumnsProps[];
 
 	/**
@@ -87,7 +88,7 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 		const updatedFilterData = {
 			...filterData,
 			search: e.target.value,
-			page: DEFAULT_PAGE,
+			offset: DEFAULT_PAGE,
 		};
 		setFilterData(updatedFilterData);
 		filterServiceProps.saveState('filterRuleSets', JSON.stringify(updatedFilterData));

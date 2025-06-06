@@ -29,55 +29,48 @@ export const SEARCH_SUBADMIN = gql`
 
 export const GET_SUBADMIN = gql`
 ${META_FRAGMENT}
-	query GetSubAdmins($page: Int, $limit: Int, $firstName: String, $lastName: String, $email: String, $status: Int, $role: Int, $sortBy: String, $sortOrder: String) {
-		getSubAdmins(page: $page, limit: $limit, first_name: $firstName, last_name: $lastName, email: $email, status: $status, role: $role, sortBy: $sortBy, sortOrder: $sortOrder) {
-		  data {
-			subAdminData {
-			  id
-			  uuid
-			  first_name
-			  last_name
-			  user_name
-			  email
-			  role
-			  status
-			  created_at
-			  updated_at
-			  serialNo
-			  Role {
-				id
+	query GetAllSubAdmins($search: String, $isActive: Boolean, $sortBy: String, $sortOrder: String, $limit: Int, $offset: Int) {
+		getAllSubAdmins(search: $search, is_active: $isActive, sortBy: $sortBy, sortOrder: $sortOrder, limit: $limit, offset: $offset) {
+			data {
 				uuid
-				role_name
-				key
-				status
-				created_at
-				updated_at
-				serialNo
-			  }
-			}
-			count
-		  }
-		  meta {
+    			email
+    			first_name
+    			last_name
+    			middle_name
+    			role_id
+    			role_name
+    			role_uuid
+    			is_active
+    			created_at
+    			updated_at
+    			updated_by
+    			created_by
+		}
+			meta {
 			...MetaFragment
 		  }
 		}
-	  }
+	}
 `;
 
 export const GET_SUBADMIN_BY_ID = gql`
 	${META_FRAGMENT}
-	query GetSubAdmin($getSubAdminId: UUID) {
-		getSubAdmin(uuid: $getSubAdminId) {
+	query GetSubAdminById($uuid: ID!) {
+		getSubAdminById(uuid: $uuid) {
 			data {
-				id
-				first_name
-				last_name
-				user_name
-				email
-				role
-				status
-				created_at
-				updated_at
+    			uuid
+    			email
+    			first_name
+    			last_name
+    			middle_name
+    			role_id
+    			role_name
+    			role_uuid
+    			is_active
+    			created_at
+    			updated_at
+    			updated_by
+    			created_by
 			}
 			meta {
 				...MetaFragment

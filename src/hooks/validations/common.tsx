@@ -6,7 +6,7 @@ const useCommanValidationFields = () => {
 	const password = Yup.string().required(translationFun('Please enter password')).matches(PASSWORD_REGEX, translationFun('Password must contain 1 lower case, 1 upper case, 1 number, 1 special character ( @  $ % ^ & #) & minimum 8 characters')).min(8, translationFun('Password should not be less than 8 characters')).max(20, translationFun('Password should not be greater than 20 characters'));
 	const confirmPasswordcomman = Yup.string()
 		.required(translationFun('Please enter confirm password'))
-		.oneOf([Yup.ref('newPassword'), null], translationFun('Confirm Password should match with password'))
+		.oneOf([Yup.ref('password'), null], translationFun('Confirm Password should match with password'))
 		.min(8, translationFun('Confirm password should not be less than 8 characters'))
 		.max(20, translationFun('Confirm password should not be greater than 20 characters'));
 	const firstName = Yup.string().required(translationFun('Please enter first name')).min(3, translationFun('First Name should not be less than 3 characters')).max(50, translationFun('First Name should not be greater than 50 characters')).matches(NAMEVALIDATION, translationFun('Please enter valid first name (only character allow)'));
