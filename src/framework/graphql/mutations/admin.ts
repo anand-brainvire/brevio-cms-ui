@@ -2,8 +2,8 @@ import { gql } from '@apollo/client';
 import { META_FRAGMENT } from '@framework/graphql/fragments';
 export const UPDATE_ADMIN_PROFILE = gql`
 	${META_FRAGMENT}
-	mutation UpdateUserProfile($firstName: String, $lastName: String) {
-		updateUserProfile(first_name: $firstName, last_name: $lastName) {
+	mutation UpdateProfile($firstName: String, $lastName: String) {
+		updateProfile(first_name: $firstName, last_name: $lastName) {
 			meta {
 				...MetaFragment
 			}

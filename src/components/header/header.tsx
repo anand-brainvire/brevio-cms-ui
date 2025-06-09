@@ -2,7 +2,7 @@ import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { AccesibilityNames, IMAGE_BASE_URL, LANGUAGE_DROPDOWN_LIST, PROFILE_DROPDOWN_LIST, ROUTES } from '@config/constant';
 import { Link } from 'react-router-dom';
 import defaultUser from '@assets/images/default-user-image.png';
-import defaultLogoLarge from '@assets/images/brainvire-logo.png';
+import defaultLogoLarge from '@assets/images/brevio-logo.png';
 import defaultLogoSmall from '@assets/images/icon-72x72.png';
 import { HamburgerMenu } from '@components/icons/icons';
 import { useTranslation } from 'react-i18next';

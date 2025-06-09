@@ -26,7 +26,9 @@ const ForgetModel = ({ onClose, action, show }: ForgetModelProps): ReactElement 
 		validationSchema: forgotPasswordValidationSchema,
 		onSubmit: (values) => {
 			forgotPassword({
-				variables: values,
+				variables: {
+					input: values,
+				},
 			})
 				.then((res) => {
 					const data = res?.data as ForgotPasswordResponse;
