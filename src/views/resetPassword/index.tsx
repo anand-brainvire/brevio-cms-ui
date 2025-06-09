@@ -1,7 +1,7 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import TextInput from '@components/textinput/TextInput';
-import { USER_RESET_PASSWORD, VERIFY_USER_RESET_PASSWORD } from '@framework/graphql/mutations/user';
+import { VERIFY_USER_RESET_PASSWORD } from '@framework/graphql/mutations/user';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -16,6 +16,7 @@ import { Loader } from '@components/index';
 const ResetPassword = (): ReactElement => {
 	const { t } = useTranslation();
 	const [params] = useSearchParams();
+	const token = params.get('token');
 
 	useEffect(() => {
 		localStorage.clear();
@@ -25,7 +26,7 @@ const ResetPassword = (): ReactElement => {
 	}, []);
 
 	const { resetPasswordValidationSchema } = useValidation();
-	const [resetPassword, { loading: resetLoader }] = useMutation(USER_RESET_PASSWORD);
+	// const [resetPassword, { loading: resetLoader }] = useMutation(USER_RESET_PASSWORD);
 	const [verifyResetPassword, { loading: verifyPassword }] = useMutation(VERIFY_USER_RESET_PASSWORD);
 
 	const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -41,21 +42,22 @@ const ResetPassword = (): ReactElement => {
 		initialValues,
 		validationSchema: resetPasswordValidationSchema,
 		onSubmit: (values) => {
-			verifyResetPassword()
+			verifyResetPassword({
+				variables: {
+					input: {
+						token: token,
+						password: values.password,
+						confirmPassword: values.confirmPassword,
+					},
+				},
+			})
 				.then((res) => {
 					const data = res?.data;
-					if (data?.verifyForgotPasswordToken?.meta?.statusCode === 200) {
-						resetPassword({
-							variables: { confirmPass: values.confirmPassword, password: values.password },
-						}).then((res) => {
-							const data = res?.data;
-							if (data?.resetPassword?.meta?.statusCode === 200) {
-								toast.success(data?.resetPassword?.meta?.message);
-								localStorage.clear();
-								sessionStorage.clear();
-								navigate(`/${ROUTES.login}`);
-							}
-						});
+					if (data?.resetPassword?.meta?.statusCode === 200) {
+						toast.success(data?.resetPassword?.meta?.message);
+						localStorage.clear();
+						sessionStorage.clear();
+						navigate(`/${ROUTES.login}`);
 					} else {
 						navigate(`/${ROUTES.login}`);
 					}
@@ -78,7 +80,7 @@ const ResetPassword = (): ReactElement => {
 
 	return (
 		<div className='flex w-full h-full mx-auto items-center justify-center'>
-			{(resetLoader || verifyPassword) && <Loader />}
+			{(verifyPassword) && <Loader />}
 			<div className='w-full sm:max-w-wide-2 lg:max-w-wide-3 bg-white  rounded py-0 px-1 md:p-6 border border-default'>
 				<form onSubmit={formik.handleSubmit}>
 					<div className='card-body'>

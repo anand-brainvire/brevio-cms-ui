@@ -10,7 +10,7 @@ const useValidationFields = () => {
 	const confirmPassword = Yup.string()
 		.required(translationFun('Please enter confirm password'))
 		.max(20, translationFun('Enter less than or equal to 20 characters'))
-		.oneOf([Yup.ref('newPassword'), null], translationFun('Confirm Password should match with new password'));
+		.oneOf([Yup.ref('password'), null], translationFun('Confirm Password should match with new password'));
 	const descriptionEnglish = Yup.string().required(translationFun('Please enter description'));
 	const metaTitleEnglish = Yup.string().required(translationFun('Please enter meta title'));
 	const metaDescriptionEnglish = Yup.string().required(translationFun('Please enter meta description'));

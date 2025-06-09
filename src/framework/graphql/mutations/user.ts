@@ -36,8 +36,8 @@ export const LOGIN_USER = gql`
 `;
 export const USER_FORGOT_PASSWORD = gql`
 	${META_FRAGMENT}
-	mutation ForgotPassword($email: String) {
-		forgotPassword(email: $email) {
+	mutation ForgotPassword($input: ForgotPasswordInput!) {
+		forgotPassword(input: $input) {
 			meta {
 				...MetaFragment
 			}
@@ -167,23 +167,22 @@ export const GRP_DEL_USER = gql`
 `;
 
 export const VERIFY_USER_RESET_PASSWORD = gql`
-	mutation VerifyForgotPasswordToken {
-		verifyForgotPasswordToken {
-			meta {
-				message
-				messageCode
-				statusCode
-				status
-				type
-				errors {
-					errorField
-					error
-				}
-				errorType
-			}
-		}
-	}
-`;
+mutation ResetPassword($input: ResetPasswordInput!) {
+  	resetPassword(input: $input) {
+  	  meta {
+  	    message
+  	    messageCode
+  	    statusCode
+  	    status
+  	    type
+  	    errors {
+  	      errorField
+  	      error
+  	    }
+  	    errorType
+  	  }
+  	}
+}`;
 
 export const LOGOUT = gql`
 	${META_FRAGMENT}

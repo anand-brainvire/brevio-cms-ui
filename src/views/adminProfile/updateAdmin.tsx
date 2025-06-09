@@ -26,12 +26,12 @@ const UpdateProfileForm = (): ReactElement => {
 	const { updateAdminValidationSchema } = useValidation();
 	useEffect(() => {
 		if (adminData) {
-			const data = adminData?.getProfileInformation?.data;
+			const data = adminData?.getProfile?.data;
 			formik.setValues({
-				firstName: data?.first_name,
-				lastName: data?.last_name,
-				userName: data?.user_name,
-				email: data?.email,
+				firstName: data?.first_name ?? '',
+				lastName: data?.last_name ?? '',
+				email: data?.email ?? '',
+				// middleName: data?.middle_name ?? '',
 			});
 		}
 	}, [adminData]);
@@ -39,8 +39,8 @@ const UpdateProfileForm = (): ReactElement => {
 	const initialValues = {
 		firstName: '',
 		lastName: '',
-		userName: '',
 		email: '',
+		// middleName: '',
 	};
 	/**
 	 * handles errorin put input fields
@@ -65,8 +65,8 @@ const UpdateProfileForm = (): ReactElement => {
 					variables: {
 						firstName: values.firstName,
 						lastName: values.lastName,
+						// middleName: values.middleName,
 						email: values.email,
-						userName: values.userName,
 					},
 				})
 					.then((res) => {
@@ -113,11 +113,11 @@ const UpdateProfileForm = (): ReactElement => {
 								<div>
 									<TextInput required={true} onBlur={OnBlur} placeholder={t('First Name')} type='text' label={t('First Name')} id='firstName' name='firstName' value={formik.values.firstName} onChange={formik.handleChange} error={formik.errors.firstName && formik.touched.firstName ? formik.errors.firstName : ''} />
 								</div>
+								{/* <div>
+									<TextInput onBlur={OnBlur} placeholder={t('Middle Name')} type='text' label={t('Middle Name')} id='middleName' name='middleName' value={formik.values.middleName} onChange={formik.handleChange} error={formik.errors.middleName && formik.touched.middleName ? formik.errors.middleName : ''} />
+								</div> */}
 								<div>
 									<TextInput required={true} onBlur={OnBlur} placeholder={t('Last Name')} type='text' id='lastName' name='lastName' label={t('Last Name')} value={formik.values.lastName} onChange={formik.handleChange} error={formik.errors.lastName && formik.touched.lastName ? formik.errors.lastName : ''} />
-								</div>
-								<div>
-									<TextInput placeholder='' type='text' id='userName' name='userName' label={t('Username')} disabled value={formik.values.userName} />
 								</div>
 								<div>
 									<TextInput placeholder='' disabled type='text' id='email' name='email' label={t('Email')} value={formik.values.email} />

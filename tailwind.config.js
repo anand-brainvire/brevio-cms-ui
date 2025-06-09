@@ -49,7 +49,7 @@ module.exports = {
         primary: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'sans-serif']
       },
       colors: {
-        primary: '#bb3f42',
+        primary: '#6200FF',
         secondary: '#d9d51c',
         warning: '#ffc107',
         default: '#c8ced3',
