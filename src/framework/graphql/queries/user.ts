@@ -11,31 +11,22 @@ export const testGetUser = gql`
 
 export const GET_USER = gql`
 	${META_FRAGMENT}
-	query FetchUsers($page: Int, $limit: Int, $sortBy: String, $sortOrder: String, $fullName: String, $email: String, $status: Int, $gender: Int, $phoneNo: String, $isAll: Boolean) {
-		fetchUsers(page: $page, limit: $limit, sortBy: $sortBy, sortOrder: $sortOrder, full_name: $fullName, email: $email, status: $status, gender: $gender, phone_no: $phoneNo, is_all: $isAll) {
-			data {
-				userList {
-					id
-					uuid
-					first_name
-					middle_name
-					last_name
-					user_name
-					email
-					gender
-					date_of_birth
-					phone_no
-					phone_country_id
-					role
-					profile_img
-					device_type
-					status
-					created_at
-					updated_at
-					serialNo
-				}
-				count
-			}
+	query GetAllUsers($search: String, $isActive: Boolean, $sortBy: String, $sortOrder: String, $limit: Int, $offset: Int) {
+		getAllUsers(search: $search, is_active: $isActive, sortBy: $sortBy, sortOrder: $sortOrder, limit: $limit, offset: $offset) {
+    		data {
+    			uuid
+    			email
+    			first_name
+    			last_name
+    			middle_name
+    			role_id
+    			role
+    			is_active
+    			created_at
+    			updated_at
+    			last_login_at
+    			last_login_ip
+    		}
 			meta {
 				...MetaFragment
 			}

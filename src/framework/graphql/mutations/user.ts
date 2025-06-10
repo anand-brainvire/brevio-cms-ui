@@ -186,8 +186,8 @@ mutation ResetPassword($input: ResetPasswordInput!) {
 
 export const LOGOUT = gql`
 	${META_FRAGMENT}
-	mutation LogoutUser {
-		logoutUser {
+	mutation Logout {
+		logout {
 			meta {
 				...MetaFragment
 			}

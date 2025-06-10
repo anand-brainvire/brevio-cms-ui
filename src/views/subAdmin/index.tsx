@@ -29,11 +29,7 @@ const SubAdmin = (): ReactElement => {
 			page: DEFAULT_PAGE,
 			sortBy: sortBy,
 			sortOrder: sortOrder,
-			firstName: '',
-			lastName: '',
-			email: '',
-			status: null,
-			role: null,
+			search: '',
 		}
 	);
 	const COL_ARR_SUB_ADMIN = [
@@ -54,16 +50,12 @@ const SubAdmin = (): ReactElement => {
 	const onSearchSubAdmin = useCallback((values: FilterSubadminProps) => {
 		const updatedFilterData = {
 			...filterData,
-			firstName: values?.firstName,
-			lastName: values?.lastName,
-			email: values?.email,
-			status: parseInt(values?.status),
-			role: parseInt(values?.role),
+        	search: values.search,
 			page: DEFAULT_PAGE,
 		};
 		setFilterData(updatedFilterData);
 		filterServiceProps.saveState('filtersubadmin', JSON.stringify(updatedFilterData));
-	}, []);
+	}, [filterData]);
 
 	/**
 	 * Method used for close model
@@ -132,13 +124,13 @@ const SubAdmin = (): ReactElement => {
 							changeStatus: PERMISSION_LIST.SubAdmin.ChangeStatusAccess,
 							multipleDelete: PERMISSION_LIST.SubAdmin.GroupDeleteAcsess,
 						}}
-						updatedFilterData={filterData}
+						updatedFilterData={filterData} // Pass the full filterData object
 						actionData={{
 							edit: {
 								route: ROUTES.subAdmin,
 							},
 						}}
-						statusKey={'status'}
+						statusKey={'is_active'}
 						idKey={'uuid'}
 						multipleDeleteApiId={'groupDeleteSubAdminsId'}
 						singleDeleteApiId={'deleteSubAdminId'}

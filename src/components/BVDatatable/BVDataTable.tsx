@@ -63,8 +63,10 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 	/**
 	 * Data Fetching Query
 	 */
-	const { data, refetch, loading } = useQuery(queryName, {
-		variables: { ...filterData },
+	const { data, refetch } = useQuery(queryName, {
+		variables: {
+			...filterData, // Use the merged filterData state
+		},
 		fetchPolicy: 'network-only',
 	});
 
@@ -503,7 +505,13 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 															<div title={t('Change Status') ?? ''} className='flex justify-center'>
 																<span aria-label={row?.[`${statusKey}`]} aria-hidden='true' onClick={() => statusPopup(row?.[`${idKey}`], row?.[`${statusKey}`])} className='font-medium text-blue-600 mt-2 hover:underline'>
 																	<label aria-label={row?.[`${statusKey}`]} aria-hidden='true' title={t(AccesibilityNames.ChangeStatus).toString()} className='relative inline-flex items-center cursor-pointer'>
-																		<input type='checkbox' className='sr-only peer' value={row?.[`${statusKey}`]} checked={row?.[`${statusKey}`] === STATUS.active} readOnly />
+																		<input
+																			type='checkbox'
+																			className='sr-only peer'
+																			value={+row?.[`${statusKey}`]} // Converts true → 1, false → 0
+																			checked={+row?.[`${statusKey}`] === STATUS.active}
+																			readOnly
+																		/>
 																		<div className={'w-7 h-4 bg-gray-400 rounded-full peer peer-focus:ring-3 peer-focus:ring-red-200   peer-checked:after:translate-x-full peer-checked:after:border-white after:content- after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all  peer-checked:bg-primary'}></div>
 																	</label>
 																</span>
@@ -526,7 +534,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 					</tbody>
 				</table>
 
-				{loading && (
+				{loadingState && (
 					<div className='w-full px-2.5 py-2 bg-white bg-opacity-75 flex justify-center transition-all duration-200 ease-in-out absolute top-10 '>
 						<div className='text-xl'>{t('Processing...')}</div>
 					</div>

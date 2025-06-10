@@ -65,7 +65,7 @@ module.exports = {
         'bg-1': '#efefef',
         'bg-2': '#d8eaff',
         'bg-3': '#e4e5e6',
-        'bg-4': '#2f353a',
+        'bg-4': '#ffffff',
         'bg-5': '#f8faff',
         'bg-6': '#aaaaaa',
         'bg-7': '#999999',

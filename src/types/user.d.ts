@@ -5,11 +5,7 @@ export type UserProps = {
 };
 
 export type FilterUserProps = {
-	fullName: string;
-	email: string;
-	status: string;
-	gender: string;
-	phoneNo: string;
+	search: string;
 };
 
 export type PaginationParams = {
@@ -17,11 +13,11 @@ export type PaginationParams = {
 	page: number;
 	sortBy: string;
 	sortOrder: string;
-	fullName: string;
-	email: string;
-	status: number | null;
-	gender: number | null;
-	phoneNo: string;
+	search: string;
+	// email: string;
+	// status: number | null;
+	// gender: number | null;
+	// phoneNo: string;
 };
 
 export type UserChangeProps = {

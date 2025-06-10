@@ -136,19 +136,51 @@ const NormalSideBar = ({ show, menuHandler, setToggleImage }: SideBarProps): Rea
 							onFocus={mouseOverHandler}
 							onBlur={mouseLeaveHandler}>
 							<li className='first:mt-2 box-border relative'>
-								<NavLink to={ROUTES.dashboard} className={`flex items-center justify-start font-normal h-11 px-4 py-3 text-sm text-white hover:bg-primary  ${locationChangerNormalSidebar(RedirectPages.dashBoard, 'bg-primary')}`}>
-									<span className={`svg-icon ${toggler ? '' : 'toggle-active'} inline-block mr-3 h-3.5 w-3.5 ${colorChangerNormalSidebar(RedirectPages.dashBoard, 'text-base-font-1')}`}>{<Home />}</span>
-									<span className='toggle-text-sidebar'> {t('Dashboard')}</span>
-								</NavLink>
+							<NavLink
+								to={ROUTES.dashboard}
+								className={({ isActive }) =>
+									`flex items-center justify-start font-normal h-11 px-4 py-3 text-sm 
+									${isActive ? 'bg-primary text-white' : 'text-black hover:bg-primary hover:text-white'} 
+									${locationChangerNormalSidebar(RedirectPages.dashBoard, 'bg-primary')}`
+								}
+							>
+								{({ isActive }) => (
+									<>
+										<span
+											className={`svg-icon ${toggler ? '' : 'toggle-active'} inline-block mr-3 h-3.5 w-3.5 
+											${colorChangerNormalSidebar(RedirectPages.dashBoard, isActive ? 'text-white' : 'text-base-font-1')}`}
+										>
+											<Home />
+										</span>
+										<span className='toggle-text-sidebar'>{t('Dashboard')}</span>
+									</>
+								)}
+							</NavLink>
 							</li>
 							{SIDEBAR_NAVLINKS.map((listName: sidebarNavlinksArray) => {
 								return (
 									<li className='first:mt-2 box-border relative' key={listName.to}>
 										{listName.childRoutes.length <= 0 && (
 											<RoleBaseGuard permissions={listName.permissions}>
-												<NavLink to={listName.to} className={`flex items-center justify-start font-normal h-11 px-4 py-3 text-sm text-white hover:bg-primary  ${locationChangerNormalSidebar(listName.redirectPage, 'bg-primary')}`}>
-													<span className={`svg-icon ${toggler ? '' : 'toggle-active'} inline-block mr-3 h-3.5 w-3.5 ${colorChangerNormalSidebar(listName.redirectPage, 'text-base-font-1')}`}>{listName.icon}</span>
-													<span className='toggle-text-sidebar'> {t(`${listName.text}`)}</span>
+												<NavLink
+													to={listName.to}
+													className={({ isActive }) =>
+														`flex items-center justify-start font-normal h-11 px-4 py-3 text-sm 
+														${isActive ? 'bg-primary text-white' : 'text-black hover:bg-primary hover:text-white'} 
+														${locationChangerNormalSidebar(listName.redirectPage, 'bg-primary')}`
+													}
+												>
+													{({ isActive }) => (
+														<>
+															<span
+																className={`svg-icon ${toggler ? '' : 'toggle-active'} inline-block mr-3 h-3.5 w-3.5 
+																${colorChangerNormalSidebar(listName.redirectPage, isActive ? 'text-white' : 'text-base-font-1')}`}
+															>
+																{listName.icon}
+															</span>
+															<span className='toggle-text-sidebar'>{t(`${listName.text}`)}</span>
+														</>
+													)}
 												</NavLink>
 											</RoleBaseGuard>
 										)}
