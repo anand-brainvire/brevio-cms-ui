@@ -17,6 +17,7 @@ import EncryptionFunction from 'src/services/encryption';
 import { getCookie, setCookie } from '@utils/helpers';
 import DecryptionFunction from 'src/services/decryption';
 import { Loader } from '@components/index';
+import brevioLogo from '@assets/images/brevio-logo.png';
 
 const Login = (): ReactElement => {
 	const { t } = useTranslation();
@@ -131,7 +132,11 @@ const Login = (): ReactElement => {
 	return (
 		<React.Fragment>
 			{loading && <Loader />}
-			<div className='flex w-full h-full mx-auto items-center justify-center'>
+			<div className='flex w-full h-full mx-auto items-center justify-center flex-col'>
+				{/* Logo centered on top, outside the form card */}
+				<div className='flex justify-center items-center mt-6 mb-10'>
+					<img src={brevioLogo} alt='Brevio Logo' className='h-50 w-50' />
+				</div>
 				<div className='w-full sm:max-w-wide-2 lg:max-w-wide-3 bg-white rounded py-0 px-1 md:p-6 border border-default'>
 					<form onSubmit={formik.handleSubmit}>
 						<div className='card-body'>

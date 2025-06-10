@@ -43,7 +43,7 @@ export type ChangeSubAdminPassword = {
 };
 
 export type CreateSubAdmin = {
-	middleName: string;
+	// middleName: string;
 	firstName: string;
 	lastName: string;
 	email: string;

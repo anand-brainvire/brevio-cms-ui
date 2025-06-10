@@ -1,7 +1,7 @@
 import React from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 // import { BannerIcon, ClipBoardIcon, Document, Email, Gift, Lock, PhoneCall, ProfileIcon, Question, SettingsSliders, User, ArrowRight, Marker, TimerIcon, SuggestionIcon, UserReportIcon, Star, Megaphone, QrCodeIcon, GeoLocationIcon, PlanManagementIcon, SubscriptionIcon } from '@components/icons/icons';
-import { Gift, Lock, ProfileIcon, Question, SettingsSliders, User } from '@components/icons/icons';
+import { BannerIcon, Gift, Lock, ProfileIcon, Question, User } from '@components/icons/icons';
 
 import { uuid } from '@utils/helpers';
 import { PERMISSION_LIST } from '@config/permission';
@@ -16,9 +16,9 @@ const AddEditState = React.lazy(() => import('@views/state/addEditState'));
 const CMS = React.lazy(() => import('@views/CMS'));
 const AddEditCms = React.lazy(() => import('@views/CMS/addEditCms'));
 const AddSuggestion = React.lazy(() => import('@views/suggestion/addSuggestion'));
-const FaqManagement = React.lazy(() => import('@views/faq'));
+const FaqManagement = React.lazy(() => import('@views/categoryManagement'));
 const Enquiry = React.lazy(() => import('@views/enquiry'));
-const AddEditFaq = React.lazy(() => import('@views/faq/addEditFaq'));
+const AddEditFaq = React.lazy(() => import('@views/categoryManagement/addEditCategory'));
 const AddEnquiry = React.lazy(() => import('@views/enquiry/addEnquiry'));
 const ManageCategory = React.lazy(() => import('@views/manageCategory'));
 const Settings = React.lazy(() => import('@views/settingsPage'));
@@ -94,7 +94,7 @@ export const CONFIGCONSTANTS = {
 export const DATE_FORMAT = {
 	dateFormat: 'MM/dd/yyyy hh:mm:ss',
 	dateShortFormat: 'MM/dd/yyyy',
-	momentDateTime24Format: 'MM/DD/YYYY hh:mm:ss',
+	momentDateTime24Format: 'MM/DD/YYYY hh:mm:ss A',
 	momentDateTime12Format: 'MM/DD/YYYY h:mm A',
 	momentTime24Format: 'hh:mm:ss',
 	momentTime12Format: 'hh:mm A',
@@ -495,13 +495,22 @@ export const SIDEBAR_NAVLINKS: sidebarNavlinksArray[] = [
 		permissions: [PERMISSION_LIST.Role.ListAccess, PERMISSION_LIST.Permission.ListAccess],
 	},
 	{
-		to: `/${ROUTES.app}/${ROUTES.settings}`,
-		text: 'Settings',
-		icon: <SettingsSliders />,
-		redirectPage: RedirectPages.settings,
+		to: `/${ROUTES.app}/${ROUTES.banner}/${ROUTES.list}`,
+		text: 'Author Management',
+		icon: <BannerIcon />,
+		redirectPage: RedirectPages.banner,
 		childRoutes: [],
-		permissions: [PERMISSION_LIST.Settings.ListAccess],
+		permissions: [PERMISSION_LIST.Banner.ListAccess],
 	},
+
+	// {
+	// 	to: `/${ROUTES.app}/${ROUTES.settings}`,
+	// 	text: 'Settings',
+	// 	icon: <SettingsSliders />,
+	// 	redirectPage: RedirectPages.settings,
+	// 	childRoutes: [],
+	// 	permissions: [PERMISSION_LIST.Settings.ListAccess],
+	// },
 	// {
 	// 	to: `/${ROUTES.app}/${ROUTES.location}`,
 	// 	text: 'Manage Location',
@@ -589,15 +598,6 @@ export const SIDEBAR_NAVLINKS: sidebarNavlinksArray[] = [
 	// 	redirectPage: RedirectPages.activityTracking,
 	// 	childRoutes: [],
 	// 	permissions: [PERMISSION_LIST.ActivityTracking.ListAccess],
-	// },
-
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.banner}/${ROUTES.list}`,
-	// 	text: 'Manage Banner',
-	// 	icon: <BannerIcon />,
-	// 	redirectPage: RedirectPages.banner,
-	// 	childRoutes: [],
-	// 	permissions: [PERMISSION_LIST.Banner.ListAccess],
 	// },
 	// {
 	// 	to: `/${ROUTES.app}/${ROUTES.review}/${ROUTES.list}`,

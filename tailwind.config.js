@@ -50,7 +50,7 @@ module.exports = {
       },
       colors: {
         primary: '#6200FF',
-        secondary: '#d9d51c',
+        secondary: '#21005D',
         warning: '#ffc107',
         default: '#c8ced3',
         info: '#28d3cd',

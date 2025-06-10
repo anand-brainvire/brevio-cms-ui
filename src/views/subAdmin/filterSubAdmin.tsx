@@ -52,7 +52,7 @@ const FilterSubAdmin = ({ onSearchSubAdmin, filterData }: SubAdminProps): ReactE
                                         <Search />
                                     </span>
                                 </Button>
-                                <Button onClick={onReset} className='btn-warning ' label={t('Reset')}>
+                                <Button onClick={onReset} className='btn-secondary' label={t('Reset')}>
                                     <span className='svg-icon inline-block h-3.5 w-3.5 mr-1'>
                                         <Refresh />
                                     </span>

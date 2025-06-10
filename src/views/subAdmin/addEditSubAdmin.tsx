@@ -61,7 +61,7 @@ const AddEditSubdmin = (): ReactElement => {
 			if (data) {
 				formik.setValues({
 					firstName: data.first_name || '',
-					middleName: data.middle_name || '',
+					// middleName: data.middle_name || '',
 					lastName: data.last_name || '',
 					email: data.email || '',
 					password: '',
@@ -74,7 +74,7 @@ const AddEditSubdmin = (): ReactElement => {
 
 	const initialValues: CreateSubAdmin = {
 		firstName: '',
-		middleName: '',
+		// middleName: '',
 		lastName: '',
 		email: '',
 		password: '',
@@ -86,7 +86,7 @@ const AddEditSubdmin = (): ReactElement => {
 			variables: {
 				uuid: params?.id,
 				firstName: values?.firstName,
-				middleName: values?.middleName,
+				// middleName: values?.middleName,
 				lastName: values?.lastName,
 				roleId: values?.roleId,
 			},
@@ -109,7 +109,7 @@ const AddEditSubdmin = (): ReactElement => {
 		})
 			.then((res) => {
 				const data = res.data as CreateSubAdminRes;
-				if (data.createSubAdmin.meta.statusCode === 200) {
+				if (data.createSubAdmin.meta.statusCode === 201) {
 					toast.success(data.createSubAdmin.meta.message);
 					formik.resetForm();
 					onCancelSubAdmin();
@@ -176,9 +176,9 @@ const AddEditSubdmin = (): ReactElement => {
 						<div>
 							<TextInput id={'firstName'} onBlur={OnBlur} required={true} placeholder={t('First Name')} name='firstName' onChange={formik.handleChange} label={t('First Name')} value={formik.values.firstName} error={getErrorSubAdmin('firstName')} />
 						</div>
-						<div>
+						{/* <div>
 							<TextInput id={'middleName'} onBlur={OnBlur} required={false} placeholder={t('Middle Name')} name='middleName' onChange={formik.handleChange} label={t('Middle Name')} value={formik.values.middleName} error={getErrorSubAdmin('middleName')} />
-						</div>
+						</div> */}
 						<div>
 							<TextInput id={'lastName'} onBlur={OnBlur} required={true} placeholder={t('Last Name')} name='lastName' onChange={formik.handleChange} label={t('Last Name')} value={formik.values.lastName} error={getErrorSubAdmin('lastName')} />
 						</div>
