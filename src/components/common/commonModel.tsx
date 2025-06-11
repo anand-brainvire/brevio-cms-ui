@@ -58,8 +58,8 @@ const CommonModel = ({ onClose, action, show, warningText, actionLabel = 'Yes', 
 					<div className='model-footer'>
 						{!modalFooter && (
 							<>
-								<Button className='btn-primary ' onClick={action} label={t(actionLabel)} />
-								<Button className='btn-warning ' onClick={onClose} label={t(onCloseLabel)} />
+								<Button className='btn-primary' onClick={action} label={t(actionLabel)} />
+								<Button className='btn-secondary' onClick={onClose} label={t(onCloseLabel)} />
 							</>
 						)}
 						{modalFooter && <>{modalFooter}</>}

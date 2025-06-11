@@ -30,6 +30,7 @@ const SubAdmin = (): ReactElement => {
 			sortBy: sortBy,
 			sortOrder: sortOrder,
 			search: '',
+			offset: ((DEFAULT_PAGE ?? DEFAULT_PAGE) - 1) * DEFAULT_LIMIT,
 		}
 	);
 	const COL_ARR_SUB_ADMIN = [
@@ -52,6 +53,7 @@ const SubAdmin = (): ReactElement => {
 			...filterData,
         	search: values.search,
 			page: DEFAULT_PAGE,
+			offset: ((DEFAULT_PAGE ?? filterData.page) - 1) * filterData.limit,
 		};
 		setFilterData(updatedFilterData);
 		filterServiceProps.saveState('filtersubadmin', JSON.stringify(updatedFilterData));

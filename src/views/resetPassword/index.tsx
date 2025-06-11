@@ -93,7 +93,7 @@ const ResetPassword = (): ReactElement => {
 						</div>
 						<div className='flex items-center space-x-2'>
 							<Button className='btn-primary   ' type='submit' label={t('Reset')} />
-							<Button className='btn-warning  ' label={t('Cancel')} onClick={onCancelClick} />
+							<Button className='btn-secondary  ' label={t('Cancel')} onClick={onCancelClick} />
 						</div>
 					</div>
 				</form>

@@ -33,7 +33,7 @@ const AddEditSubdmin = (): ReactElement => {
 		fetchPolicy: 'network-only',
 	});
 	const [showPassword, setShowPassword] = useState<boolean>(false);
-	const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+	// const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
 	const { subAdminValidationSchema } = useValidation();
 
 	/**
@@ -65,7 +65,7 @@ const AddEditSubdmin = (): ReactElement => {
 					lastName: data.last_name || '',
 					email: data.email || '',
 					password: '',
-					confirmPassword: '',
+					// confirmPassword: '',
 					roleId: data.role_uuid || '', // <-- Use role_uuid here
 				});
 			}
@@ -78,7 +78,7 @@ const AddEditSubdmin = (): ReactElement => {
 		lastName: '',
 		email: '',
 		password: '',
-		confirmPassword: '',
+		// confirmPassword: '',
 		roleId: '',
 	};
 	const UpdateSubAdminFunction = (values: CreateSubAdmin) => {
@@ -139,9 +139,9 @@ const AddEditSubdmin = (): ReactElement => {
 	/**
 	 * method that handle's password view
 	*/
-	const handleToggleConfirmPassword = useCallback(() => {
-		setShowConfirmPassword((prevState) => !prevState);
-	}, []);
+	// const handleToggleConfirmPassword = useCallback(() => {
+	// 	setShowConfirmPassword((prevState) => !prevState);
+	// }, []);
 	/**
 	 * method that handle's password view
 	 */
@@ -186,7 +186,7 @@ const AddEditSubdmin = (): ReactElement => {
 							<TextInput id={'email'} onBlur={OnBlur} required={true} disabled={params.id !== undefined} placeholder={t('Email')} name='email' onChange={formik.handleChange} label={t('Email')} value={formik.values.email} error={getErrorSubAdmin('email')} />
 						</div>
 						{!params.id && <TextInput btnShowHide={showPassword} btnShowHideFun={handleToggleShowPassword} id={'password'} password={true} onBlur={OnBlur} required={true} placeholder={t('Password')} name='password' type={showPassword ? 'text' : 'password'} onChange={formik.handleChange} label={t('Password')} value={formik.values.password} error={formik.errors.password && formik.touched.password ? formik.errors.password : ''} />}
-						{!params.id && <TextInput btnShowHide={showConfirmPassword} btnShowHideFun={handleToggleConfirmPassword} password={true} id={'confirmPassword'} onBlur={OnBlur} required={true} placeholder={t('Confirm Password')} type={showConfirmPassword ? 'text' : 'password'} name='confirmPassword' onChange={formik.handleChange} label={t('Confirm Password')} value={formik.values.confirmPassword} error={formik.errors.confirmPassword && formik.touched.confirmPassword ? formik.errors.confirmPassword : ''} />}
+						{/* {!params.id && <TextInput btnShowHide={showConfirmPassword} btnShowHideFun={handleToggleConfirmPassword} password={true} id={'confirmPassword'} onBlur={OnBlur} required={true} placeholder={t('Confirm Password')} type={showConfirmPassword ? 'text' : 'password'} name='confirmPassword' onChange={formik.handleChange} label={t('Confirm Password')} value={formik.values.confirmPassword} error={formik.errors.confirmPassword && formik.touched.confirmPassword ? formik.errors.confirmPassword : ''} />} */}
 
 						<Dropdown placeholder={t('-- Select Role --')} required={true} name='roleId' onChange={formik.handleChange} value={formik.values.roleId} options={roleDrpData} id='roleId' label={t('Role')} error={formik.errors.roleId && formik.touched.roleId ? formik.errors.roleId : ''} />
 					</div>

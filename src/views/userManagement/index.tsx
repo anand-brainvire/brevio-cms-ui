@@ -12,11 +12,11 @@ import { PERMISSION_LIST } from '@config/permission';
 import useSaveFilterData from '@src/hooks/useSaveFilterData';
 import BVDataTable from '@components/BVDatatable/BVDataTable';
 import { IColumnsProps, IListData } from '@components/BVDatatable/DataTable';
-import { ProfileIcon, ExcelFile, PdfFile, CsvFile, PlusCircle, Key } from '@components/icons/icons';
-import { DEFAULT_LIMIT, DEFAULT_PAGE, sortBy, sortOrder, UserGenderEnum, ROUTES, EXPORT_CSV_PDF_EXCEL_CONSTANTS, AccesibilityNames } from '@config/constant';
+import { ProfileIcon, PlusCircle, Key } from '@components/icons/icons';
+import { DEFAULT_LIMIT, DEFAULT_PAGE, sortBy, sortOrder, ROUTES, AccesibilityNames } from '@config/constant';
 import { UserData } from '@framework/graphql/graphql';
 import { DELETE_USER, CHANGE_USER_STATUS, GRP_DEL_USER } from '@framework/graphql/mutations/user';
-import { downloadFile } from '@utils/helpers';
+// import { downloadFile } from '@utils/helpers';
 import { useNavigate } from 'react-router-dom';
 
 const UserManagement = (): ReactElement => {
@@ -35,14 +35,18 @@ const UserManagement = (): ReactElement => {
 			search: '',
 		}
 	);
-	const [isLoadingDownloadFile, setIsLoadingDownloadFile] = useState<boolean>(false);
+	// const [isLoadingDownloadFile, setIsLoadingDownloadFile] = useState<boolean>(false);
 
 	const COL_ARR_USER_MNGT = [
 		{ name: t('First Name'), sortable: true, type: 'text', fieldName: 'first_name' },
 		{ name: t('Email'), sortable: true, type: 'text', fieldName: 'email' },
 		{ name: t('Registration At'), sortable: true, type: 'date', fieldName: 'created_at' },
 		{ name: t('Last Updated At'), sortable: true, type: 'date', fieldName: 'updated_at' },
-		{ name: t('Status'), sortable: true, type: 'status', fieldName: 'status' },
+		{ name: t('Status'), sortable: true, type: 'status', fieldName: 'is_active' },
+		// { name: t('Gender'), sortable: true, type: 'badge', fieldName: 'gender', conversationValue: UserGenderEnum },
+		// { name: t('Date of Birth'), sortable: true, type: 'date', fieldName: 'date_of_birth' },
+		// { name: t('Phone Number'), sortable: true, type: 'text', fieldName: 'phone_no' },
+
 	] as IColumnsProps[];
 	const [userObj, setUserObj] = useState<UserData>({} as UserData);
 
@@ -93,41 +97,41 @@ const UserManagement = (): ReactElement => {
 		setSelectedUsers([]);
 	}, [selectedUsers]);
 
-	const onDownload = useCallback(
-		async (e: React.MouseEvent<HTMLButtonElement>) => {
-			e.stopPropagation();
-			const target = e.currentTarget as HTMLButtonElement;
-			const updateFilterData: { [key: string]: string | number | null | Date } = {
-				search: filterData.search,
-				page: filterData.page,
-				sortBy: filterData.sortBy,
-				sortOrder: filterData.sortOrder,
-				// status: filterData.status,
-				// email: filterData.email,
-				// gender: filterData.gender,
-			};
-			switch (target.id) {
-				case 'csv':
-					setIsLoadingDownloadFile(true);
-					await downloadFile(EXPORT_CSV_PDF_EXCEL_CONSTANTS.user, EXPORT_CSV_PDF_EXCEL_CONSTANTS.csv, EXPORT_CSV_PDF_EXCEL_CONSTANTS.all, { ...updateFilterData });
-					setIsLoadingDownloadFile(false);
-					break;
-				case 'pdf':
-					setIsLoadingDownloadFile(true);
-					await downloadFile(EXPORT_CSV_PDF_EXCEL_CONSTANTS.user, EXPORT_CSV_PDF_EXCEL_CONSTANTS.pdf, EXPORT_CSV_PDF_EXCEL_CONSTANTS.all, { ...updateFilterData });
-					setIsLoadingDownloadFile(false);
-					break;
-				case 'excel':
-					setIsLoadingDownloadFile(true);
-					await downloadFile(EXPORT_CSV_PDF_EXCEL_CONSTANTS.user, EXPORT_CSV_PDF_EXCEL_CONSTANTS.excel, EXPORT_CSV_PDF_EXCEL_CONSTANTS.all, { ...updateFilterData });
-					setIsLoadingDownloadFile(false);
-					break;
-				default:
-					break;
-			}
-		},
-		[isLoadingDownloadFile, filterData]
-	);
+	// const onDownload = useCallback(
+	// 	async (e: React.MouseEvent<HTMLButtonElement>) => {
+	// 		e.stopPropagation();
+	// 		const target = e.currentTarget as HTMLButtonElement;
+	// 		const updateFilterData: { [key: string]: string | number | null | Date } = {
+	// 			search: filterData.search,
+	// 			page: filterData.page,
+	// 			sortBy: filterData.sortBy,
+	// 			sortOrder: filterData.sortOrder,
+	// 			// status: filterData.status,
+	// 			// email: filterData.email,
+	// 			// gender: filterData.gender,
+	// 		};
+	// 		switch (target.id) {
+	// 			case 'csv':
+	// 				setIsLoadingDownloadFile(true);
+	// 				await downloadFile(EXPORT_CSV_PDF_EXCEL_CONSTANTS.user, EXPORT_CSV_PDF_EXCEL_CONSTANTS.csv, EXPORT_CSV_PDF_EXCEL_CONSTANTS.all, { ...updateFilterData });
+	// 				setIsLoadingDownloadFile(false);
+	// 				break;
+	// 			case 'pdf':
+	// 				setIsLoadingDownloadFile(true);
+	// 				await downloadFile(EXPORT_CSV_PDF_EXCEL_CONSTANTS.user, EXPORT_CSV_PDF_EXCEL_CONSTANTS.pdf, EXPORT_CSV_PDF_EXCEL_CONSTANTS.all, { ...updateFilterData });
+	// 				setIsLoadingDownloadFile(false);
+	// 				break;
+	// 			case 'excel':
+	// 				setIsLoadingDownloadFile(true);
+	// 				await downloadFile(EXPORT_CSV_PDF_EXCEL_CONSTANTS.user, EXPORT_CSV_PDF_EXCEL_CONSTANTS.excel, EXPORT_CSV_PDF_EXCEL_CONSTANTS.all, { ...updateFilterData });
+	// 				setIsLoadingDownloadFile(false);
+	// 				break;
+	// 			default:
+	// 				break;
+	// 		}
+	// 	},
+	// 	[isLoadingDownloadFile, filterData]
+	// );
 	return (
 		<div>
 			<FilterUserManagement onSearchUser={onSearchUser} clearSelectionUserMng={clearSelectionUserMng} filterData={filterData} />
@@ -141,7 +145,7 @@ const UserManagement = (): ReactElement => {
 					</div>
 
 					<div className='flex  flex-wrap gap-2'>
-						<div className='flex flex-wrap gap-2'>
+						{/* <div className='flex flex-wrap gap-2'>
 							<button title={AccesibilityNames.Excel} id={'excel'} className='btn btn-success' onClick={onDownload}>
 								<span className='w-4 h-5 svg-icon fill-white '>
 									<ExcelFile />
@@ -157,7 +161,7 @@ const UserManagement = (): ReactElement => {
 									<CsvFile />
 								</span>
 							</button>
-						</div>
+						</div> */}
 
 						<Button className='btn-primary ' onClick={handleAddusermangment} type='button' label={t('Add New')}>
 							<span className='inline-block w-4 h-4 mr-1 svg-icon'>
@@ -191,7 +195,7 @@ const UserManagement = (): ReactElement => {
 								route: ROUTES.user,
 							},
 						}}
-						statusKey={'status'}
+						statusKey={'is_active'}
 						idKey={'uuid'}
 						multipleDeleteApiId={'groupDeleteUsersId'}
 						singleDeleteApiId={'deleteUserId'}
