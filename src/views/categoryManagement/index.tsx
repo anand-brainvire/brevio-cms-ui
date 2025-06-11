@@ -30,9 +30,9 @@ const categoryManagement = (): ReactElement => {
 		}
 	);
 	const COL_ARR_CATEGORY = [
-		{ name: t('Category Name'), sortable: true, fieldName: 'question_english', type: 'text' },
-		{ name: t('Slug'), sortable: false, fieldName: 'faq_topic.name', type: 'text' },
-		{ name: t('Description'), sortable: true, fieldName: 'createdAt', type: 'date' },
+		{ name: t('Name'), sortable: true, fieldName: 'category_translations', type: 'multilang', translationKey: 'name' },
+		{ name: t('Description'), sortable: false, fieldName: 'category_translations', type: 'multilang', translationKey: 'description' },
+		{ name: t('Slug'), sortable: false, fieldName: 'slug', type: 'text' },
 		{ name: t('Status'), sortable: true, fieldName: 'status', type: 'status', headerCenter: 'true' },
 	] as ColArrType[];
 

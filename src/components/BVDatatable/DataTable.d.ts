@@ -4,11 +4,12 @@ export interface IColumnsProps {
 	fieldName: string;
 	name: string;
 	sortable: boolean;
-	type: 'image' | 'text' | 'date' | 'status' | 'action' | 'badge' | 'ratings' | 'number';
+	type: 'image' | 'text' | 'date' | 'status' | 'action' | 'badge' | 'ratings' | 'number' | 'multilang';
 	headerCenter?: boolean;
 	conversationValue?: IListData;
 	isBase64ImageUrl?: boolean;
 	isShowMore?: boolean;
+	translationKey?: string;
 }
 
 export interface IListData {
