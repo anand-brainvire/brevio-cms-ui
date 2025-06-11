@@ -132,7 +132,7 @@ const UpdateProfileForm = (): ReactElement => {
 									<CheckCircle />
 								</span>
 							</Button>
-							<Button className='btn-warning   ' label={t('Cancel')} onClick={cancelUpdateHandler}>
+							<Button className='btn-secondary' label={t('Cancel')} onClick={cancelUpdateHandler}>
 								<span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
 									<Cross />
 								</span>

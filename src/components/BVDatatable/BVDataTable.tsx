@@ -107,12 +107,12 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 		const firstLevelKey = Object.keys(data)?.[0]; // "getAllSubAdmins"
 		const topLevel = data?.[firstLevelKey];
 
-		if (Array.isArray(topLevel?.data)) {
-			setListData(topLevel.data);
-			setTotalRecords(topLevel.data.length); // If meta.count isn't present
-			setTotalPages(Math.ceil(topLevel.data.length / filterData.limit));
+		// New logic for nested data
+		if (topLevel?.data?.subAdmins && Array.isArray(topLevel.data.subAdmins)) {
+			setListData(topLevel.data.subAdmins);
+			setTotalRecords(topLevel.data.count ?? topLevel.data.subAdmins.length);
+			setTotalPages(Math.ceil((topLevel.data.count ?? topLevel.data.subAdmins.length) / filterData.limit));
 		} else {
-			// In case data is not directly an array (for future-proofing)
 			setListData([]);
 			setTotalRecords(0);
 			setTotalPages(0);

@@ -42,8 +42,8 @@ const AddEditSubdmin = (): ReactElement => {
 	useEffect(() => {
 		roles().then((res) => {
 			const data = res.data;
-			if (data?.roles?.data) {
-				const tempDataArr = data.roles.data.map((role: RoleDataArr) => ({
+			if (data?.roles?.data?.rolesData) {
+				const tempDataArr = data.roles.data.rolesData.map((role: RoleDataArr) => ({
 					name: role.role_name,
 					key: role.uuid,
 				}));
@@ -66,7 +66,7 @@ const AddEditSubdmin = (): ReactElement => {
 					email: data.email || '',
 					password: '',
 					confirmPassword: '',
-					roleId: data.role_id ? data.role_id.toString() : '',
+					roleId: data.role_uuid || '', // <-- Use role_uuid here
 				});
 			}
 		}
@@ -197,7 +197,7 @@ const AddEditSubdmin = (): ReactElement => {
 							<CheckCircle />
 						</span>
 					</Button>
-					<Button className='btn-warning ' label={t('Cancel')} onClick={onCancelSubAdmin}>
+					<Button className='btn-secondary' label={t('Cancel')} onClick={onCancelSubAdmin}>
 						<span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
 							<Cross />
 						</span>
