@@ -66,14 +66,14 @@ const RolePermissions = () => {
 
 	/** once the roles data is availabe it provides the data to dropdown  */
 	useEffect(() => {
-		if (roleData?.fetchRoles?.data?.Roledata) {
+		if (roleData?.roles?.data) {
 			const tempDataArr: DropdownOptionType[] = [];
-			roleData?.fetchRoles?.data?.Roledata?.map((data: RoleDataArr) => {
+			roleData.roles.data.forEach((data: RoleDataArr) => {
 				tempDataArr.push({ name: data.role_name, key: data.uuid });
 			});
 			setRoleDrpData(tempDataArr);
 		}
-	}, [roleData?.fetchRoles]);
+	}, [roleData?.roles]);
 
 	/** function used to check and uncheck all nodes in treeview  */
 	const AllCheckBoxHandler = () => {

@@ -31,21 +31,24 @@ export const GET_SUBADMIN = gql`
 ${META_FRAGMENT}
 	query GetAllSubAdmins($search: String, $isActive: Boolean, $sortBy: String, $sortOrder: String, $limit: Int, $offset: Int) {
 		getAllSubAdmins(search: $search, is_active: $isActive, sortBy: $sortBy, sortOrder: $sortOrder, limit: $limit, offset: $offset) {
-			data {
-				uuid
-    			email
-    			first_name
-    			last_name
-    			middle_name
-    			role_id
-    			role_name
-    			role_uuid
-    			is_active
-    			created_at
-    			updated_at
-    			updated_by
-    			created_by
-		}
+    		data {
+    		  	subAdmins {
+    		    	uuid
+    		    	email
+    		    	first_name
+    		    	last_name
+    		    	middle_name
+    		    	role_id
+    		    	role_name
+    		    	role_uuid
+    		    	is_active
+    		    	created_at
+    		    	updated_at
+    		    	updated_by
+    		    	created_by
+    		}	
+    		  	count
+    		}
 			meta {
 			...MetaFragment
 		  }

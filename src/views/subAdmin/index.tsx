@@ -4,11 +4,11 @@ import { ColArrType, FilterSubadminProps, PaginationParams } from '@type/subAdmi
 import { useTranslation } from 'react-i18next';
 import { GET_SUBADMIN } from '@framework/graphql/queries/subAdmin';
 import { SubAdminDataArr } from '@framework/graphql/graphql';
-import { ROUTES, sortOrder, sortBy, DEFAULT_LIMIT, DEFAULT_PAGE, AccesibilityNames } from '@config/constant';
+import { ROUTES, sortOrder, sortBy, DEFAULT_LIMIT, DEFAULT_PAGE} from '@config/constant';
 import { CHANGE_SUBADMIN_STATUS, DELETE_SUBADMIN, GROUP_DELETE_SUBADMIN } from '@framework/graphql/mutations/subAdmin';
 import { useNavigate } from 'react-router-dom';
 import Button from '@components/button/button';
-import { PlusCircle, ProfileIcon, Key } from '@components/icons/icons';
+import { PlusCircle, ProfileIcon} from '@components/icons/icons';
 import PassWordChange from '@views/subAdmin/changePassword';
 import filterServiceProps from '@components/filter/filter';
 import RoleBaseGuard from '@components/roleGuard';
@@ -29,16 +29,12 @@ const SubAdmin = (): ReactElement => {
 			page: DEFAULT_PAGE,
 			sortBy: sortBy,
 			sortOrder: sortOrder,
-			firstName: '',
-			lastName: '',
-			email: '',
-			status: null,
-			role: null,
+			search: '',
 		}
 	);
 	const COL_ARR_SUB_ADMIN = [
 		{ name: t('First Name'), sortable: true, fieldName: 'first_name', type: 'text' },
-		{ name: t('Middle Name'), sortable: true, fieldName: 'middle_name', type: 'text' },
+		// { name: t('Middle Name'), sortable: true, fieldName: 'middle_name', type: 'text' },
 		{ name: t('Last Name'), sortable: true, fieldName: 'last_name', type: 'text' },
 		{ name: t('Email'), sortable: true, fieldName: 'email', type: 'text' },
 		{ name: t('Role'), sortable: false, fieldName: 'role_name', type: 'text' },
@@ -54,16 +50,12 @@ const SubAdmin = (): ReactElement => {
 	const onSearchSubAdmin = useCallback((values: FilterSubadminProps) => {
 		const updatedFilterData = {
 			...filterData,
-			firstName: values?.firstName,
-			lastName: values?.lastName,
-			email: values?.email,
-			status: parseInt(values?.status),
-			role: parseInt(values?.role),
+        	search: values.search,
 			page: DEFAULT_PAGE,
 		};
 		setFilterData(updatedFilterData);
 		filterServiceProps.saveState('filtersubadmin', JSON.stringify(updatedFilterData));
-	}, []);
+	}, [filterData]);
 
 	/**
 	 * Method used for close model
@@ -82,9 +74,9 @@ const SubAdmin = (): ReactElement => {
 	/**
 	 * Method that enables passowrd popup
 	 */
-	const changePasswordSubAdminFun = useCallback(() => {
-		setIsChangePasswordModel(true);
-	}, [subAdminObj, isChangePasswordModel]);
+	// const changePasswordSubAdminFun = useCallback(() => {
+	// 	setIsChangePasswordModel(true);
+	// }, [subAdminObj, isChangePasswordModel]);
 
 	/**
 	 * Get data from ref
@@ -132,24 +124,24 @@ const SubAdmin = (): ReactElement => {
 							changeStatus: PERMISSION_LIST.SubAdmin.ChangeStatusAccess,
 							multipleDelete: PERMISSION_LIST.SubAdmin.GroupDeleteAcsess,
 						}}
-						updatedFilterData={filterData}
+						updatedFilterData={filterData} // Pass the full filterData object
 						actionData={{
 							edit: {
 								route: ROUTES.subAdmin,
 							},
 						}}
-						statusKey={'status'}
+						statusKey={'is_active'}
 						idKey={'uuid'}
 						multipleDeleteApiId={'groupDeleteSubAdminsId'}
 						singleDeleteApiId={'deleteSubAdminId'}
 						statusChangeApiId={'toggleSubAdminStatus'}
 						statusChangeApiKeyTitle={'status'}
 						rowRefData={handleRowRef}
-						extraActions={
-							<RoleBaseGuard permissions={[PERMISSION_LIST.SubAdmin.ChangePasswordAccess]}>
-								<Button title={AccesibilityNames.ChangePassword} route={''} onClick={changePasswordSubAdminFun} icon={<Key />} spanClassName='svg-icon inline-block h-3.5 w-3.5' label={''} className='btn-default' />
-							</RoleBaseGuard>
-						}
+						// extraActions={
+						// 	<RoleBaseGuard permissions={[PERMISSION_LIST.SubAdmin.ChangePasswordAccess]}>
+						// 		<Button title={AccesibilityNames.ChangePassword} route={''} onClick={changePasswordSubAdminFun} icon={<Key />} spanClassName='svg-icon inline-block h-3.5 w-3.5' label={''} className='btn-default' />
+						// 	</RoleBaseGuard>
+						// }
 					/>
 				</div>
 			</div>

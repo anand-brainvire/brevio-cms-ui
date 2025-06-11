@@ -32,22 +32,14 @@ const UserManagement = (): ReactElement => {
 			page: DEFAULT_PAGE,
 			sortBy: sortBy,
 			sortOrder: sortOrder,
-			fullName: '',
-			email: '',
-			status: null,
-			gender: null,
-			phoneNo: '',
+			search: '',
 		}
 	);
 	const [isLoadingDownloadFile, setIsLoadingDownloadFile] = useState<boolean>(false);
 
 	const COL_ARR_USER_MNGT = [
-		{ name: t('Full Name'), sortable: true, type: 'text', fieldName: 'first_name' },
-		{ name: t('User Name'), sortable: true, type: 'text', fieldName: 'user_name' },
+		{ name: t('First Name'), sortable: true, type: 'text', fieldName: 'first_name' },
 		{ name: t('Email'), sortable: true, type: 'text', fieldName: 'email' },
-		{ name: t('Gender'), sortable: true, type: 'badge', fieldName: 'gender', conversationValue: UserGenderEnum },
-		{ name: t('Date of Birth'), sortable: true, type: 'date', fieldName: 'date_of_birth' },
-		{ name: t('Phone Number'), sortable: true, type: 'text', fieldName: 'phone_no' },
 		{ name: t('Registration At'), sortable: true, type: 'date', fieldName: 'created_at' },
 		{ name: t('Last Updated At'), sortable: true, type: 'date', fieldName: 'updated_at' },
 		{ name: t('Status'), sortable: true, type: 'status', fieldName: 'status' },
@@ -62,11 +54,11 @@ const UserManagement = (): ReactElement => {
 		setSelectedUsers([]);
 		const updatedFilterData = {
 			...filterData,
-			fullName: values.fullName,
-			email: values.email,
-			status: parseInt(values.status),
-			gender: parseInt(values.gender),
-			phoneNo: values.phoneNo,
+			search: values.search,
+			// email: values.email,
+			// status: parseInt(values.status),
+			// gender: parseInt(values.gender),
+			// phoneNo: values.phoneNo,
 			page: DEFAULT_PAGE,
 		};
 		setFilterData(updatedFilterData);
@@ -106,13 +98,13 @@ const UserManagement = (): ReactElement => {
 			e.stopPropagation();
 			const target = e.currentTarget as HTMLButtonElement;
 			const updateFilterData: { [key: string]: string | number | null | Date } = {
-				'full_name': filterData.fullName,
+				search: filterData.search,
 				page: filterData.page,
 				sortBy: filterData.sortBy,
 				sortOrder: filterData.sortOrder,
-				status: filterData.status,
-				email: filterData.email,
-				gender: filterData.gender,
+				// status: filterData.status,
+				// email: filterData.email,
+				// gender: filterData.gender,
 			};
 			switch (target.id) {
 				case 'csv':

@@ -1,4 +1,4 @@
-import { AccesibilityNames, BadgesCodeEnum, BadgesColor, CHANGESTATUS_WARING_TEXT, DATE_FORMAT, DEFAULT_LIMIT, DEFAULT_PAGE, DELETE_WARING_TEXT, GROUP_DELETE_WARING_TEXT, ROUTES, SHOW_PAGE_COUNT_ARR, STATUS } from '@config/constant';
+import { AccesibilityNames, BadgesCodeEnum, BadgesColor,DATE_FORMAT, DEFAULT_LIMIT, DEFAULT_PAGE, DELETE_WARING_TEXT, GROUP_DELETE_WARING_TEXT, ROUTES, SHOW_PAGE_COUNT_ARR, STATUS } from '@config/constant';
 import useSaveFilterData from '@src/hooks/useSaveFilterData';
 import { IBVDataTablesProps, IFilterTypes, IListData } from '@components/BVDatatable/DataTable';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
@@ -33,6 +33,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 	const [isDeletePopup, setIsDeletePopup] = useState<boolean>(false);
 	const [statusChangeId, setStatusChangeId] = useState<string>('');
 	const [currentStatus, setCurrentStatus] = useState<string | number>('');
+	const [nextStatus, setNextStatus] = useState<'active' | 'inactive'>('active');
 	const [isStatusPopup, setIsStatusPopup] = useState<boolean>(false);
 	const [isImageModelShow, setIsImageModelShow] = useState<boolean>(false);
 	const [imageURL, setImageURL] = useState<string | number>('');
@@ -63,8 +64,10 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 	/**
 	 * Data Fetching Query
 	 */
-	const { data, refetch, loading } = useQuery(queryName, {
-		variables: { ...filterData },
+	const { data, refetch } = useQuery(queryName, {
+		variables: {
+			...filterData, // Use the merged filterData state
+		},
 		fetchPolicy: 'network-only',
 	});
 
@@ -104,12 +107,12 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 		const firstLevelKey = Object.keys(data)?.[0]; // "getAllSubAdmins"
 		const topLevel = data?.[firstLevelKey];
 
-		if (Array.isArray(topLevel?.data)) {
-			setListData(topLevel.data);
-			setTotalRecords(topLevel.data.length); // If meta.count isn't present
-			setTotalPages(Math.ceil(topLevel.data.length / filterData.limit));
+		// New logic for nested data
+		if (topLevel?.data?.subAdmins && Array.isArray(topLevel.data.subAdmins)) {
+			setListData(topLevel.data.subAdmins);
+			setTotalRecords(topLevel.data.count ?? topLevel.data.subAdmins.length);
+			setTotalPages(Math.ceil((topLevel.data.count ?? topLevel.data.subAdmins.length) / filterData.limit));
 		} else {
-			// In case data is not directly an array (for future-proofing)
 			setListData([]);
 			setTotalRecords(0);
 			setTotalPages(0);
@@ -171,31 +174,31 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 	 * Handle Select All
 	 * @param event
 	 */
-	const handleOnSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
-		let updateSelected = [...selectedList];
-		if (!event.target.checked) {
-			updateSelected = [];
-			setSelectedList(updateSelected);
-		} else {
-			updateSelected = listData?.map((data) => data?.[`${idKey}`]);
-			setSelectedList(updateSelected);
-		}
-	};
+	// const handleOnSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+	// 	let updateSelected = [...selectedList];
+	// 	if (!event.target.checked) {
+	// 		updateSelected = [];
+	// 		setSelectedList(updateSelected);
+	// 	} else {
+	// 		updateSelected = listData?.map((data) => data?.[`${idKey}`]);
+	// 		setSelectedList(updateSelected);
+	// 	}
+	// };
 
 	/**
 	 * Handle Single Selection
 	 * @param id
 	 */
-	const handleSingleSelect = (id: string) => {
-		let updateSelected = [...selectedList];
-		const isSelected = updateSelected?.includes(id);
-		if (isSelected) {
-			updateSelected = updateSelected.filter((filterId: string) => filterId !== id);
-		} else {
-			updateSelected = [...updateSelected, id];
-		}
-		setSelectedList(updateSelected);
-	};
+	// const handleSingleSelect = (id: string) => {
+	// 	let updateSelected = [...selectedList];
+	// 	const isSelected = updateSelected?.includes(id);
+	// 	if (isSelected) {
+	// 		updateSelected = updateSelected.filter((filterId: string) => filterId !== id);
+	// 	} else {
+	// 		updateSelected = [...updateSelected, id];
+	// 	}
+	// 	setSelectedList(updateSelected);
+	// };
 
 	const openImageModel = useCallback((url: string) => {
 		setImageURL(url);
@@ -287,6 +290,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 		(id: string, status: string | number) => {
 			setStatusChangeId(id);
 			setCurrentStatus(status);
+			setNextStatus(+status === STATUS.active ? 'inactive' : 'active');
 			setIsStatusPopup(true);
 		},
 		[statusChangeId, isStatusPopup, currentStatus]
@@ -371,32 +375,12 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 						</select>
 						<span className='table-select-dropdown-label'>{t('entries')}</span>
 					</div>
-					{defaultActions?.includes('multiple_delete') && (
-						<RoleBaseGuard permissions={[actionWisePermissions?.multipleDelete ?? '']}>
-							<div>
-								<Button className='btn-primary' onClick={() => deletePopup([], 'multiple')} type='button' disabled={selectedList.length <= 0} label={t('Delete Selected')}>
-									<span className='svg-icon inline-block h-3.5 w-3.5 mr-1'>
-										<Trash />
-									</span>
-								</Button>
-							</div>
-						</RoleBaseGuard>
-					)}
 				</div>
 			</div>
 			<div className='overflow-auto custom-datatable relative'>
 				<table>
 					<thead>
 						<tr>
-							{defaultActions?.includes('multiple_delete') && (
-								<RoleBaseGuard permissions={[actionWisePermissions?.multipleDelete ?? '']}>
-									<th scope='col'>
-										<div className='flex justify-center items-center'>
-											<input type='checkbox' className='checkbox' disabled={listData?.length <= 0} checked={listData?.length > 0 && selectedList.length === listData?.length} onChange={handleOnSelectAll} aria-label="Select to delete all records." />
-										</div>
-									</th>
-								</RoleBaseGuard>
-							)}
 							{columns?.map((column, index: number) => {
 								return (
 									<th scope='col' key={`${index + 1}`}>
@@ -430,15 +414,6 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 						{listData?.map((row) => {
 							return (
 								<tr className='text-left' key={row?.[`${idKey}`] ?? row.uuid}>
-									{defaultActions?.includes('multiple_delete') && actionWisePermissions?.multipleDelete && (
-										<RoleBaseGuard permissions={[actionWisePermissions?.multipleDelete]}>
-											<td>
-												<div className='flex justify-center items-center'>
-													<input type='checkbox' className='checkbox' id={`${row?.[idKey]}`} checked={selectedList?.includes(row?.[`${idKey}`])} onChange={() => handleSingleSelect(row?.[`${idKey}`])} aria-label="Select to delete record." />
-												</div>
-											</td>
-										</RoleBaseGuard>
-									)}
 									{columns?.map((column) => (
 										<td key={column.name}>
 											{column?.type === 'image' && <ImageCell
@@ -503,7 +478,13 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 															<div title={t('Change Status') ?? ''} className='flex justify-center'>
 																<span aria-label={row?.[`${statusKey}`]} aria-hidden='true' onClick={() => statusPopup(row?.[`${idKey}`], row?.[`${statusKey}`])} className='font-medium text-blue-600 mt-2 hover:underline'>
 																	<label aria-label={row?.[`${statusKey}`]} aria-hidden='true' title={t(AccesibilityNames.ChangeStatus).toString()} className='relative inline-flex items-center cursor-pointer'>
-																		<input type='checkbox' className='sr-only peer' value={row?.[`${statusKey}`]} checked={row?.[`${statusKey}`] === STATUS.active} readOnly />
+																		<input
+																			type='checkbox'
+																			className='sr-only peer'
+																			value={+row?.[`${statusKey}`]} // Converts true → 1, false → 0
+																			checked={+row?.[`${statusKey}`] === STATUS.active}
+																			readOnly
+																		/>
 																		<div className={'w-7 h-4 bg-gray-400 rounded-full peer peer-focus:ring-3 peer-focus:ring-red-200   peer-checked:after:translate-x-full peer-checked:after:border-white after:content- after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all  peer-checked:bg-primary'}></div>
 																	</label>
 																</span>
@@ -526,7 +507,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 					</tbody>
 				</table>
 
-				{loading && (
+				{loadingState && (
 					<div className='w-full px-2.5 py-2 bg-white bg-opacity-75 flex justify-center transition-all duration-200 ease-in-out absolute top-10 '>
 						<div className='text-xl'>{t('Processing...')}</div>
 					</div>
@@ -542,7 +523,14 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 				{totalPages > 0 && <Pagination currentPage={filterData?.page} totalPages={totalPages} onPageChange={handlePageChange} recordsPerPage={recordsPerPage} />}
 			</div>
 			{isDeletePopup && (singleDeleteId ? <CommonModel warningText={DELETE_WARING_TEXT} onClose={onClose} action={singleDeleteAction} show={isDeletePopup} /> : <CommonModel warningText={GROUP_DELETE_WARING_TEXT} onClose={onClose} action={multipleDeleteAction} show={isDeletePopup} />)}
-			{isStatusPopup && <CommonModel warningText={CHANGESTATUS_WARING_TEXT} onClose={onClose} action={changeStatusAction} show={isStatusPopup} />}
+			{isStatusPopup && (
+				<CommonModel
+					warningText={`Are you sure want to change user status to ${nextStatus}?`}
+					onClose={onClose}
+					action={changeStatusAction}
+					show={isStatusPopup}
+				/>
+			)}
 			{isImageModelShow && <ImageModel onClose={onClose} data={`${imageURL}`} show={isImageModelShow} />}
 			{showDescriptionModelShow && <DescriptionModel onClose={onClose} data={description} show={showDescriptionModelShow} />}
 		</>

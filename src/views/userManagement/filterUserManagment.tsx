@@ -2,8 +2,6 @@ import React, { ReactElement, useCallback, useEffect } from 'react';
 import { useFormik } from 'formik';
 import Button from '@components/button/button';
 import { useTranslation } from 'react-i18next';
-import Dropdown from '@components/dropdown/dropDown';
-import { AccesibilityNames, GENDER_DRP, STATUS_DRP } from '@config/constant';
 import { FilterUserProps, UserProps } from '@type/user';
 import { Refresh, Search } from '@components/icons/icons';
 import TextInput from '@components/textinput/TextInput';
@@ -13,11 +11,7 @@ const FilterUserManagement = ({ onSearchUser, clearSelectionUserMng, filterData 
 	const { t } = useTranslation();
 
 	const initialValues: FilterUserProps = {
-		fullName: '',
-		email: '',
-		phoneNo: '',
-		status: '',
-		gender: '',
+		search: '',
 	};
 
 	/**
@@ -54,15 +48,7 @@ const FilterUserManagement = ({ onSearchUser, clearSelectionUserMng, filterData 
 			<form onSubmit={formik.handleSubmit}>
 				<div className='card-body'>
 					<div className='card-grid-filter'>
-						<TextInput id={'fullName'} placeholder={t('Full Name')} name='fullName' type='text' onChange={formik.handleChange} value={formik.values.fullName} />
-
-						<TextInput id={'email'} placeholder={t('Email')} name='email' onChange={formik.handleChange} value={formik.values.email} />
-
-						<Dropdown ariaLabel={AccesibilityNames.Status} placeholder={''} name='status' onChange={formik.handleChange} value={formik.values.status ?? ''} options={STATUS_DRP} id='status' />
-
-						<Dropdown ariaLabel={AccesibilityNames.gender} placeholder={t('Select Gender')} name='gender' onChange={formik.handleChange} value={formik.values.gender ?? ''} options={GENDER_DRP} id='gender' />
-
-						<TextInput id={'phoneNo'} placeholder={t('Phone Number')} name='phoneNo' onChange={formik.handleChange} value={formik.values.phoneNo} />
+						<TextInput id={'search'} placeholder={t('Search')} name='search' type='text' onChange={formik.handleChange} value={formik.values.search} />
 
 						<div>
 							<div className='flex items-start justify-end col-span-3 btn-group '>
