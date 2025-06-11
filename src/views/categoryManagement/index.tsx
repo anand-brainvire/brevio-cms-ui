@@ -12,8 +12,9 @@ import useSaveFilterData from '@src/hooks/useSaveFilterData';
 import BVDataTable from '@components/BVDatatable/BVDataTable';
 import { Question, PlusCircle } from '@components/icons/icons';
 import { DEFAULT_LIMIT, DEFAULT_PAGE, sortOrder, ROUTES } from '@config/constant';
-import { GET_FAQS_DATA } from '@framework/graphql/queries/faq';
-const FaqManagement = (): ReactElement => {
+// import { GET_FAQS_DATA } from '@framework/graphql/queries/faq';
+import {FETCH_CATEGORY} from '@framework/graphql/queries/category';
+const categoryManagement = (): ReactElement => {
 	const [selectedFaq, setSelectedFaq] = useState<string[][]>([]);
 
 	const { t } = useTranslation();
@@ -22,16 +23,16 @@ const FaqManagement = (): ReactElement => {
 	const [filterData, setFilterData] = useState<PaginationParams>(
 		localFilterData('filterFaqmangment') ?? {
 			limit: DEFAULT_LIMIT,
-			page: DEFAULT_PAGE,
-			sortBy: 'createdAt',
+			offset: DEFAULT_PAGE,
+			sortBy: 'created_at',
 			sortOrder: sortOrder,
 			search: '',
 		}
 	);
-	const COL_ARR_FAQ = [
-		{ name: t('Question'), sortable: true, fieldName: 'question_english', type: 'text' },
-		{ name: t('FAQ Topic'), sortable: false, fieldName: 'faq_topic.name', type: 'text' },
-		{ name: t('Created At'), sortable: true, fieldName: 'createdAt', type: 'date' },
+	const COL_ARR_CATEGORY = [
+		{ name: t('Category Name'), sortable: true, fieldName: 'question_english', type: 'text' },
+		{ name: t('Slug'), sortable: false, fieldName: 'faq_topic.name', type: 'text' },
+		{ name: t('Description'), sortable: true, fieldName: 'createdAt', type: 'date' },
 		{ name: t('Status'), sortable: true, fieldName: 'status', type: 'status', headerCenter: 'true' },
 	] as ColArrType[];
 
@@ -43,7 +44,6 @@ const FaqManagement = (): ReactElement => {
 	const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const updatedFilterData = {
 			...filterData,
-			...localFilterData('filterFaqmangment'),
 			search: e.target.value,
 			page: DEFAULT_PAGE,
 		};
@@ -92,8 +92,8 @@ const FaqManagement = (): ReactElement => {
 				<div className='card-body'>
 					<BVDataTable
 						defaultActions={['edit', 'delete', 'change_status', 'multiple_delete']}
-						columns={COL_ARR_FAQ}
-						queryName={GET_FAQS_DATA}
+						columns={COL_ARR_CATEGORY}
+						queryName={FETCH_CATEGORY}
 						sessionFilterName='filterFaqmangment'
 						singleDeleteMutation={DELETE_FAQ}
 						multipleDeleteMutation={GRP_DEL_FAQ}
@@ -122,4 +122,4 @@ const FaqManagement = (): ReactElement => {
 		</div>
 	);
 };
-export default FaqManagement;
+export default categoryManagement;
