@@ -68,7 +68,7 @@ const RolePermissions = () => {
 	useEffect(() => {
 		if (roleData?.roles?.data) {
 			const tempDataArr: DropdownOptionType[] = [];
-			roleData.roles.data.forEach((data: RoleDataArr) => {
+			roleData.roles.data.rolesData.forEach((data: RoleDataArr) => {
 				tempDataArr.push({ name: data.role_name, key: data.uuid });
 			});
 			setRoleDrpData(tempDataArr);

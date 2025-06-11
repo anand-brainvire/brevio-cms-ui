@@ -65,8 +65,8 @@ const ForgetModel = ({ onClose, action, show }: ForgetModelProps): ReactElement 
 								<TextInput label={t('Enter your e-mail address below to reset your password.')} placeholder={t('Email')} name='email' onChange={formik.handleChange} value={formik.values.email} error={formik.errors.email} />
 							</div>
 							<div className='model-footer'>
-								<Button type='submit' className='btn-primary  ' disabled={!!(formik.values.email === '' || formik.errors.email)} label={t('Submit')} />
-								<Button className='  hover:bg-gray-400 btn-gray' onClick={onClose} label={t('Close')} />
+								<Button type='submit' className='btn-primary ' disabled={!!(formik.values.email === '' || formik.errors.email)} label={t('Submit')} />
+								<Button className='btn-secondary' onClick={onClose} label={t('Close')} />
 							</div>
 						</form>
 					</div>

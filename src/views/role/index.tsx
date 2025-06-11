@@ -29,7 +29,7 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 	const [filterData, setFilterData] = useState<PaginationParams>(
 		localFilterData('filterRuleSets') ?? {
 			limit: DEFAULT_LIMIT,
-			offset: DEFAULT_PAGE,
+			offset: ((DEFAULT_PAGE ?? DEFAULT_PAGE) - 1) * DEFAULT_LIMIT,
 			sortBy: sortBy,
 			sortOrder: sortOrder,
 			search: '',
@@ -88,7 +88,7 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 		const updatedFilterData = {
 			...filterData,
 			search: e.target.value,
-			offset: DEFAULT_PAGE,
+			offset: ((DEFAULT_PAGE ?? filterData.page) - 1) * filterData.limit,
 		};
 		setFilterData(updatedFilterData);
 		filterServiceProps.saveState('filterRuleSets', JSON.stringify(updatedFilterData));
@@ -143,7 +143,7 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 						</RoleBaseGuard>
 					}
 					updatedFilterData={filterData}
-					statusKey={'status'}
+					statusKey={'is_active'}
 					idKey={'uuid'}
 					singleDeleteApiId={'uuid'}
 					statusChangeApiId={'uuid'}

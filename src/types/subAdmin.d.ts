@@ -17,6 +17,7 @@ export type ColArrType = {
 export type PaginationParams = {
 	limit: number;
 	page: number;
+	offset: number;
 	sortBy: string;
 	sortOrder: string;
 	firstName: string;
@@ -48,7 +49,7 @@ export type CreateSubAdmin = {
 	lastName: string;
 	email: string;
 	password: string;
-	confirmPassword: string;
+	// confirmPassword: string;
 	roleId: string;
 };
 

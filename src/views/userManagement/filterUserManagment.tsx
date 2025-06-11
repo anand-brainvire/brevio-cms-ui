@@ -57,7 +57,7 @@ const FilterUserManagement = ({ onSearchUser, clearSelectionUserMng, filterData 
 										<Search />
 									</span>
 								</Button>
-								<Button className='btn-warning ' onClick={onReset} label={t('Reset')}>
+								<Button className='btn-secondary' onClick={onReset} label={t('Reset')}>
 									<span className='svg-icon inline-block h-3.5 w-3.5 mr-1'>
 										<Refresh />
 									</span>

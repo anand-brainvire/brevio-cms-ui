@@ -3,18 +3,8 @@ import { META_FRAGMENT } from '@framework/graphql/fragments';
 
 export const UPDATE_ROLE = gql`
 	${META_FRAGMENT}
-	mutation UpdateRole($uuid: UUID!, $roleName: String!) {
-		updateRole(uuid: $uuid, role_name: $roleName) {
-			data {
-				id
-				uuid
-				role_name
-				key
-				status
-				created_at
-				updated_at
-				serialNo
-			}
+	mutation UpdateRole($uuid: ID!, $roleName: String, $isActive: Boolean) {
+		updateRole(uuid: $uuid, role_name: $roleName, is_active: $isActive) {
 			meta {
 				...MetaFragment
 			}
@@ -76,7 +66,7 @@ export const UPDATE_ROLE_STATUS = gql`
 
 export const DELETE_ROLE = gql`
 	${META_FRAGMENT}
-	mutation DeleteRole($uuid: UUID) {
+	mutation DeleteRole($uuid: ID!) {
 		deleteRole(uuid: $uuid) {
 			meta {
 				...MetaFragment
