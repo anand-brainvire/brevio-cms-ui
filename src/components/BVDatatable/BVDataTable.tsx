@@ -104,14 +104,20 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 	 * Particular Format Filter Data Settings
 	 */
 	const handleToSetDataListing = () => {
-		const firstLevelKey = Object.keys(data)?.[0]; // "getAllSubAdmins"
+		const firstLevelKey = Object.keys(data)?.[0];
 		const topLevel = data?.[firstLevelKey];
 
-		// New logic for nested data
-		if (topLevel?.data?.subAdmins && Array.isArray(topLevel.data.subAdmins)) {
-			setListData(topLevel.data.subAdmins);
-			setTotalRecords(topLevel.data.count ?? topLevel.data.subAdmins.length);
-			setTotalPages(Math.ceil((topLevel.data.count ?? topLevel.data.subAdmins.length) / filterData.limit));
+		if (topLevel?.data && typeof topLevel.data === 'object') {
+			const arrayKey = Object.keys(topLevel.data).find(
+				(key) => Array.isArray(topLevel.data[key])
+			);
+
+			const list = arrayKey ? topLevel.data[arrayKey] : [];
+			const count = typeof topLevel.data.count === 'number' ? topLevel.data.count : list.length;
+
+			setListData(list);
+			setTotalRecords(count);
+			setTotalPages(Math.ceil(count / filterData.limit));
 		} else {
 			setListData([]);
 			setTotalRecords(0);
@@ -146,6 +152,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 			const updatedFilterData = {
 				...filterData,
 				page: newPage,
+				offset: (newPage - 1) * filterData.limit, // <-- Add this line
 			};
 			setSelectedList([]);
 			setFilterData(updatedFilterData);
@@ -416,7 +423,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 								<tr className='text-left' key={row?.[`${idKey}`] ?? row.uuid}>
 									{columns?.map((column) => (
 										<td key={column.name}>
-											{column?.type === 'image' && <ImageCell
+											{column.type === 'image' && <ImageCell
 												column={column}
 												row={row}
 												openImageModel={openImageModel}
@@ -433,6 +440,22 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 													text={getApiColumnName(column.fieldName, row)}
 													descriptionHandler={descriptionHandler}
 												/>)}
+											{column.type === 'multilang' && (
+												<span>
+													{
+														// Always show 'en' for now
+														column.translationKey
+															? (
+																	row[column.fieldName]?.find?.(
+																		(tr: any) => tr.lang_code === 'en'
+																	)?.[column.translationKey] ||
+																	row[column.fieldName]?.[0]?.[column.translationKey] ||
+																	''
+																)
+															: ''
+													}
+												</span>
+											)}
 											{column.type === 'status' && (
 												<div className=' flex justify-center'>
 													{row?.[column.fieldName] === true || row?.[column.fieldName] === 1 ? (
@@ -519,7 +542,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 				)}
 			</div>
 			<div className='datatable-footer'>
-				<div className='datatable-total-records'>{`${totalRecords ?? 0}` + t(' Total Records')}</div>
+				<div className='datatable-total-records'>{`${t(' Total Records :')} ${totalRecords ?? 0}`}</div>
 				{totalPages > 0 && <Pagination currentPage={filterData?.page} totalPages={totalPages} onPageChange={handlePageChange} recordsPerPage={recordsPerPage} />}
 			</div>
 			{isDeletePopup && (singleDeleteId ? <CommonModel warningText={DELETE_WARING_TEXT} onClose={onClose} action={singleDeleteAction} show={isDeletePopup} /> : <CommonModel warningText={GROUP_DELETE_WARING_TEXT} onClose={onClose} action={multipleDeleteAction} show={isDeletePopup} />)}

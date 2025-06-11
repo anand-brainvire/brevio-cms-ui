@@ -3,33 +3,24 @@ import { META_FRAGMENT } from '@framework/graphql/fragments';
 
 export const FETCH_CATEGORY = gql`
 	${META_FRAGMENT}
-	query FetchCategory($page: Int, $limit: Int, $search: String, $sortBy: String, $sortOrder: String) {
-		fetchCategory(page: $page, limit: $limit, search: $search, sortBy: $sortBy, sortOrder: $sortOrder) {
-			data {
-				Categorydata {
-					id
-					uuid
-					category_name
-					parent_category
-					description
-					status
-					created_by
-					created_at
-					updated_at
-					parentData {
-						id
-						uuid
-						category_name
-						parent_category
-						description
-						status
-						created_by
-						created_at
-						updated_at
-					}
-				}
-				count
-			}
+	query GetAllCategories($search: String, $isActive: Boolean, $sortBy: String, $sortOrder: String, $limit: Int, $offset: Int) {
+		getAllCategories(search: $search, is_active: $isActive, sortBy: $sortBy, sortOrder: $sortOrder, limit: $limit, offset: $offset) {
+    		data {
+    		  	categories {
+    		    	uuid
+    		    	slug
+    		    	category_translations {
+    		    	  lang_code
+    		    	  name
+    		    	  description
+    		    	}
+    		    	created_at
+    		    	updated_at
+    		    	updated_by
+    		    	created_by
+    		  	}
+    		 	count
+    		}
 			meta {
 				...MetaFragment
 			}
