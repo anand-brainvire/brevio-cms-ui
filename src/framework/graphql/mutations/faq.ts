@@ -3,21 +3,8 @@ import { META_FRAGMENT } from '@framework/graphql/fragments';
 
 export const UPDATE_FAQ_STATUS = gql`
 	${META_FRAGMENT}
-	mutation ChangeFaqStatus($changeFaqStatusId: UUID, $status: Int) {
-		changeFaqStatus(uuid: $changeFaqStatusId, status: $status) {
-			data {
-				id
-				topic_id
-				question_english
-				question_arabic
-				question_hindi
-				answer_english
-				answer_arabic
-				answer_hindi
-				status
-				createdAt
-				updatedAt
-			}
+	mutation ToggleCategoryStatus($uuid: ID!) {
+		toggleCategoryStatus(uuid: $uuid) {
 			meta {
 				...MetaFragment
 			}

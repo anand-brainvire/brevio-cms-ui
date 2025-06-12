@@ -1,4 +1,3 @@
-
 export type PaginationParams = {
     limit : number
     page : number
@@ -40,3 +39,31 @@ export type DropdownOptionCategoryTree = {
     data?:string
     children?: TreeNodeProps[];
   }
+
+  export type GoalData = {
+  getAllGoals: {
+    data: GoalDataArr[];
+    meta: {
+      message: string;
+      messageCode: string | null;
+      statusCode: number;
+      status: string;
+      type: string;
+      errors: any[];
+      errorType: string | null;
+      __typename: string;
+    };
+    __typename: string;
+  };
+};
+
+export type GoalDataArr = {
+  uuid: string;
+  key?: string;
+  emoji?: string | null;
+  is_active?: boolean;
+  translations?: Array<{ lang_code: string; title: string; __typename?: string }>;
+  created_at?: string;
+  updated_at?: string;
+  __typename?: string;
+};

@@ -54,6 +54,7 @@ const useValidationFields = () => {
 	const announcementType = Yup.string().required(translationFun('Please select type'));
 	const description = Yup.string().required(translationFun('Please enter description'));
 	const categoryName = Yup.string().required(translationFun('Please enter category name'));
+	const categorySlug = Yup.string().required(translationFun('Please enter category slug')).min(3, translationFun('Category slug should not be less than 3 characters Please enter valid category slug')).max(50, translationFun('Category slug should not be greater than 50 characters'));
 	const template = Yup.string().required(translationFun('Please enter template'));
 	const BannerTitleArabic = Yup.string().required(translationFun('Please enter banner title')).min(3, 'Banner title should not be less than 3 characters Please enter valid Banner Title').max(50, translationFun('Enter less than or equal to 50 characters'));
 	const BannerTitle = Yup.string().required(translationFun('Please enter banner title')).min(3, 'Banner title should not be less than 3 characters Please enter valid Banner Title').max(50, translationFun('Enter less than or equal to 50 characters'));
@@ -155,6 +156,7 @@ const useValidationFields = () => {
 		eventName,
 		description,
 		categoryName,
+		categorySlug,
 		template,
 		BannerTitle,
 		ruleName,

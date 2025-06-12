@@ -14,6 +14,7 @@ export const FETCH_CATEGORY = gql`
     		    	  name
     		    	  description
     		    	}
+					is_active
     		    	created_at
     		    	updated_at
     		    	updated_by
@@ -83,3 +84,26 @@ export const FETCH_CATEGORY_LIST = gql`
 		}
 	}
 `;
+
+export const FETCH_GOALS = gql`
+	${META_FRAGMENT}
+		query GetAllGoals($search: String, $isActive: Boolean, $sortBy: String, $sortOrder: String, $limit: Int, $offset: Int) {
+			getAllGoals(search: $search, is_active: $isActive, sortBy: $sortBy, sortOrder: $sortOrder, limit: $limit, offset: $offset) {
+				data {
+					uuid
+					key
+					emoji
+					is_active
+					translations {
+					  lang_code
+					  title
+					}
+					created_at
+					updated_at
+				}
+			meta {
+				...MetaFragment
+			}
+		}
+}`;
+
