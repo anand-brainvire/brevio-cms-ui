@@ -15,6 +15,7 @@ const useValidation = () => {
 		descriptionEnglish,
 		metaDescriptionEnglish,
 		categoryId,
+		categoryName,
 		suggestion,
 		rating,
 		review,
@@ -25,9 +26,10 @@ const useValidation = () => {
 		cityName,
 		cityCountryId,
 		stateId,
-		topicId,
-		questionEnglish,
-		answerEnglish,
+		// topicId,
+		categorySlug,
+		// questionEnglish,
+		// answerEnglish,
 		enquirename,
 		message,
 		subject,
@@ -144,14 +146,11 @@ const useValidation = () => {
 		stateId: stateId,
 	});
 
-	const addFaqValidationSchema = Yup.object({
-		topicId: topicId,
-		questionArabic: questionEnglish,
-		questionEnglish: questionEnglish,
-		questionHindi: questionEnglish,
-		answerEnglish: answerEnglish,
-		answerArabic: answerEnglish,
-		answerHindi: answerEnglish,
+	const addCategoryValidationSchema = Yup.object({
+		// goalId: topicId,
+		categoryName: categoryName,
+		categorySlug: categorySlug,
+		description: description,
 		status: status,
 	});
 	const addEnquireValidationSchema = Yup.object({
@@ -302,7 +301,7 @@ const useValidation = () => {
 		addstateValidationSchema,
 		geoLocationValidationSchema,
 		addcityValidationSchema,
-		addFaqValidationSchema,
+		addCategoryValidationSchema,
 		addEnquireValidationSchema,
 		addSettingValidationSchema,
 		addEventValidationSchema,

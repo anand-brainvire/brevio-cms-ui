@@ -33,7 +33,7 @@ const categoryManagement = (): ReactElement => {
 		{ name: t('Name'), sortable: true, fieldName: 'category_translations', type: 'multilang', translationKey: 'name' },
 		{ name: t('Description'), sortable: false, fieldName: 'category_translations', type: 'multilang', translationKey: 'description' },
 		{ name: t('Slug'), sortable: false, fieldName: 'slug', type: 'text' },
-		{ name: t('Status'), sortable: true, fieldName: 'status', type: 'status', headerCenter: 'true' },
+		{ name: t('Status'), sortable: true, fieldName: 'is_active', type: 'status', headerCenter: 'true' },
 	] as ColArrType[];
 
 	const navigate = useNavigate();
@@ -110,7 +110,7 @@ const categoryManagement = (): ReactElement => {
 								route: ROUTES.faq,
 							},
 						}}
-						statusKey={'status'}
+						statusKey={'is_active'}
 						idKey={'uuid'}
 						multipleDeleteApiId={'groupDeleteFaqsId'}
 						singleDeleteApiId={'deleteFaqId'}

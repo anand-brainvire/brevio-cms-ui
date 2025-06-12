@@ -30,12 +30,9 @@ export type FaqTopicDataArr = {
 };
 
 export type CreateFaq = {
-	topicId: string;
-	questionEnglish: string;
-	questionArabic: string;
-	questionHindi: string;
-	answerEnglish: string;
-	answerArabic: string;
-	answerHindi: string;
+	goalId: string[];
+	categoryName: string;
+	categorySlug: string;
+	description: string;
 	status: number;
 };

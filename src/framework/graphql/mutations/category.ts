@@ -33,25 +33,13 @@ export const DELETE_CATEGORY = gql`
 `;
 export const CREATE_CATEGORY = gql`
 	${META_FRAGMENT}
-	mutation CreateCategory($categoryName: String, $description: String, $parentCategory: Int, $status: Int) {
-		createCategory(category_name: $categoryName, description: $description, parent_category: $parentCategory, status: $status) {
-			data {
-				id
-				uuid
-				category_name
-				parent_category
-				description
-				status
-				created_by
-				created_at
-				updated_at
-			}
+	mutation CreateCategory($categoryData: [CategoryTranslationInput!]!, $goalUuids: [UUID!]) {
+		createCategory(category_data: $categoryData, goal_uuids: $goalUuids) {
 			meta {
 				...MetaFragment
 			}
 		}
-	}
-`;
+	}`;
 
 export const GROUP_DELETE_CATEGORY = gql`
 	${META_FRAGMENT}
