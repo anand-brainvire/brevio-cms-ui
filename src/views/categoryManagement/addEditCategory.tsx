@@ -93,7 +93,7 @@ const AddEditFaq = (): ReactElement => {
 				const variables = {
 					categoryData: [
 						{
-							lang_code: 'en',
+							langCode: 'en',
 							name: values.categoryName,
 							description: values.description,
 						}
