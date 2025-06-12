@@ -46,8 +46,8 @@ const AddEditCategory = (): ReactElement => {
 					let translation;
 					if (Array.isArray(goal.translations)) {
 						translation =
-							goal.translations.find((tr: any) => tr.lang_code === i18n.language) ||
-							goal.translations.find((tr: any) => tr.lang_code === 'en') ||
+							goal.translations.find((tr) => tr.lang_code === i18n.language) ||
+							goal.translations.find((tr) => tr.lang_code === 'en') ||
 							goal.translations[0];
 					} else {
 						translation = undefined;
@@ -67,12 +67,12 @@ const AddEditCategory = (): ReactElement => {
 			if (faqByIdData && params.id) {
 				const data = faqByIdData?.getCategoryById?.data;
 				const translation = Array.isArray(data?.category_translations)
-					? data.category_translations.find((tr: any) => tr.lang_code === 'en') || data.category_translations[0]
+					? data.category_translations.find((tr: { lang_code: string }) => tr.lang_code === 'en') || data.category_translations[0]
 					: {};
 
 				formik
 					.setValues({
-						goalId: Array.isArray(data?.goals) ? data.goals.map((g: any) => g.uuid) : [],
+						goalId: Array.isArray(data?.goals) ? data.goals.map((g: { uuid: string }) => g.uuid) : [],
 						categoryName: translation?.name || '',
 						categorySlug: data?.slug || '',
 						description: translation?.description || '',

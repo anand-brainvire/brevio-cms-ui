@@ -62,7 +62,7 @@ export type GoalDataArr = {
   key?: string;
   emoji?: string | null;
   is_active?: boolean;
-  translations?: Array<{ lang_code: string; title: string; __typename?: string }>;
+  translations?: Array<{ tr: string; lang_code: string; title: string; __typename?: string }>;
   created_at?: string;
   updated_at?: string;
   __typename?: string;
