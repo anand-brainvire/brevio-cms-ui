@@ -8,6 +8,6 @@ export type ForgotPasswordInput = {
 }
 
 export type ResetPasswordInput = {
-    password: string
+    newPassword: string
     confirmPassword: string
 }

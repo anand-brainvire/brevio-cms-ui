@@ -71,8 +71,8 @@ const UpdateProfileForm = (): ReactElement => {
 				})
 					.then((res) => {
 						const data = res.data as updateUserProfile;
-						if (data?.updateUserProfile.meta?.statusCode === 200) {
-							toast.success(data?.updateUserProfile.meta.message);
+						if (data?.updateProfile.meta?.statusCode === 200) {
+							toast.success(data?.updateProfile.meta.message);
 						}
 					})
 					.catch(() => {

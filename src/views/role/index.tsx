@@ -33,7 +33,6 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 			sortBy: sortBy,
 			sortOrder: sortOrder,
 			search: '',
-			isActive: true 
 		}
 	);
 	const { data, refetch } = useQuery(GET_ROLES_DATA, { variables: { ...filterData }, fetchPolicy: 'network-only' });

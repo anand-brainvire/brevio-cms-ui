@@ -4,24 +4,24 @@ import FilterUserManagement from '@views/userManagement/filterUserManagment';
 import { FilterUserProps, PaginationParams } from '@type/user';
 import { GET_USER } from '@framework/graphql/queries/user';
 import PassWordChange from '@views/userManagement/changeUserPassword';
-import Button from '@components/button/button';
+// import Button from '@components/button/button';
 import filterServiceProps from '@components/filter/filter';
-import { OptionsPropsForButton } from '@type/component';
-import RoleBaseGuard from '@components/roleGuard';
+// import { OptionsPropsForButton } from '@type/component';
+// import RoleBaseGuard from '@components/roleGuard';
 import { PERMISSION_LIST } from '@config/permission';
 import useSaveFilterData from '@src/hooks/useSaveFilterData';
 import BVDataTable from '@components/BVDatatable/BVDataTable';
 import { IColumnsProps, IListData } from '@components/BVDatatable/DataTable';
-import { ProfileIcon, PlusCircle, Key } from '@components/icons/icons';
-import { DEFAULT_LIMIT, DEFAULT_PAGE, sortBy, sortOrder, ROUTES, AccesibilityNames } from '@config/constant';
+import { ProfileIcon } from '@components/icons/icons';
+import { DEFAULT_LIMIT, DEFAULT_PAGE, sortBy, sortOrder, ROUTES } from '@config/constant';
 import { UserData } from '@framework/graphql/graphql';
-import { DELETE_USER, CHANGE_USER_STATUS, GRP_DEL_USER } from '@framework/graphql/mutations/user';
+import { DELETE_USER, CHANGE_USER_STATUS} from '@framework/graphql/mutations/user';
 // import { downloadFile } from '@utils/helpers';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 const UserManagement = (): ReactElement => {
 	const { t } = useTranslation();
-	const navigate = useNavigate();
+	// const navigate = useNavigate();
 	const [isChangeUserPassword, setIsChangeUserPassword] = useState<boolean>(false);
 
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -41,7 +41,7 @@ const UserManagement = (): ReactElement => {
 		{ name: t('First Name'), sortable: true, type: 'text', fieldName: 'first_name' },
 		{ name: t('Email'), sortable: true, type: 'text', fieldName: 'email' },
 		{ name: t('Registration At'), sortable: true, type: 'date', fieldName: 'created_at' },
-		{ name: t('Last Updated At'), sortable: true, type: 'date', fieldName: 'updated_at' },
+		// { name: t('Last Updated At'), sortable: true, type: 'date', fieldName: 'updated_at' },
 		{ name: t('Status'), sortable: true, type: 'status', fieldName: 'is_active' },
 		// { name: t('Gender'), sortable: true, type: 'badge', fieldName: 'gender', conversationValue: UserGenderEnum },
 		// { name: t('Date of Birth'), sortable: true, type: 'date', fieldName: 'date_of_birth' },
@@ -68,13 +68,13 @@ const UserManagement = (): ReactElement => {
 		setFilterData(updatedFilterData);
 		filterServiceProps.saveState('filterusermangment', JSON.stringify(updatedFilterData));
 	}, []);
-	const changeUserPasswordFun = useCallback(
-		(options: OptionsPropsForButton) => {
-			setUserObj(options?.data as unknown as UserData);
-			setIsChangeUserPassword(true);
-		},
-		[userObj, isChangeUserPassword]
-	);
+	// const changeUserPasswordFun = useCallback(
+	// 	(options: OptionsPropsForButton) => {
+	// 		setUserObj(options?.data as unknown as UserData);
+	// 		setIsChangeUserPassword(true);
+	// 	},
+	// 	[userObj, isChangeUserPassword]
+	// );
 	const handleRowRef = useCallback(
 		(data: IListData) => {
 			setUserObj(data as UserData);
@@ -87,9 +87,9 @@ const UserManagement = (): ReactElement => {
 	/**
 	 * Method redirects to add page
 	 */
-	const handleAddusermangment = useCallback(() => {
-		navigate(`/${ROUTES.app}/${ROUTES.user}/${ROUTES.add}`);
-	}, []);
+	// const handleAddusermangment = useCallback(() => {
+	// 	navigate(`/${ROUTES.app}/${ROUTES.user}/${ROUTES.add}`);
+	// }, []);
 	/**
 	 * Method that clears the selcted data
 	 */
@@ -163,22 +163,22 @@ const UserManagement = (): ReactElement => {
 							</button>
 						</div> */}
 
-						<Button className='btn-primary ' onClick={handleAddusermangment} type='button' label={t('Add New')}>
+						{/* <Button className='btn-primary ' onClick={handleAddusermangment} type='button' label={t('Add New')}>
 							<span className='inline-block w-4 h-4 mr-1 svg-icon'>
 								<PlusCircle />
 							</span>
-						</Button>
+						</Button> */}
 					</div>
 				</div>
 				<div className='card-body'>
 					<div className='flex justify-between mb-3'></div>
 					<BVDataTable
-						defaultActions={['edit', 'delete', 'change_status', 'view', 'multiple_delete']}
+						defaultActions={['delete', 'change_status', 'view', 'multiple_delete']}
 						columns={COL_ARR_USER_MNGT}
 						queryName={GET_USER}
 						sessionFilterName='filterusermangment'
 						singleDeleteMutation={DELETE_USER}
-						multipleDeleteMutation={GRP_DEL_USER}
+						// multipleDeleteMutation={GRP_DEL_USER}
 						updateStatusMutation={CHANGE_USER_STATUS}
 						actionWisePermissions={{
 							edit: PERMISSION_LIST.UserManagement.EditAccess,
@@ -202,11 +202,11 @@ const UserManagement = (): ReactElement => {
 						statusChangeApiId={'changeUserStatusId'}
 						statusChangeApiKeyTitle={'status'}
 						rowRefData={handleRowRef}
-						extraActions={
-							<RoleBaseGuard permissions={[PERMISSION_LIST.UserManagement.ChangePasswordAccess]}>
-								<Button title={AccesibilityNames.ChangePassword} data={{}} onClick={changeUserPasswordFun} icon={<Key />} spanClassName='svg-icon inline-block h-3.5 w-3.5' label={''} className='btn-default' />
-							</RoleBaseGuard>
-						}
+						// extraActions={
+							// <RoleBaseGuard permissions={[PERMISSION_LIST.UserManagement.ChangePasswordAccess]}>
+							// 	{/* <Button title={AccesibilityNames.ChangePassword} data={{}} onClick={changeUserPasswordFun} icon={<Key />} spanClassName='svg-icon inline-block h-3.5 w-3.5' label={''} className='btn-default' /> */}
+							// </RoleBaseGuard>
+						// }
 					/>
 				</div>
 			</div>

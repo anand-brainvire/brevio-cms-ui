@@ -33,8 +33,8 @@ export const DELETE_CATEGORY = gql`
 `;
 export const CREATE_CATEGORY = gql`
 	${META_FRAGMENT}
-	mutation CreateCategory($categoryData: [CategoryTranslationInput!]!, $goalUuids: [UUID!]) {
-		createCategory(category_data: $categoryData, goal_uuids: $goalUuids) {
+	mutation CreateCategory($categoryData: [CategoryTranslationInput!]!, $goalUuids: [UUID!],$slug: String!) {
+		createCategory(category_data: $categoryData, goal_uuids: $goalUuids, slug: $slug) {
 			meta {
 				...MetaFragment
 			}

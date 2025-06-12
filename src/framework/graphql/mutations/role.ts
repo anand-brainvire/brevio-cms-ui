@@ -45,18 +45,8 @@ export const CREATE_ROLE = gql`
 
 export const UPDATE_ROLE_STATUS = gql`
 	${META_FRAGMENT}
-	mutation UpdateRoleStatus($uuid: UUID!, $status: Int!) {
-		updateRoleStatus(uuid: $uuid, status: $status) {
-			data {
-				id
-				uuid
-				role_name
-				key
-				status
-				created_at
-				updated_at
-				serialNo
-			}
+	mutation ToggleRoleStatus($uuid: String) {
+		toggleRoleStatus(uuid: $uuid) {
 			meta {
 				...MetaFragment
 			}

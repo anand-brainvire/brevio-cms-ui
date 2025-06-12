@@ -1,12 +1,12 @@
 import React from 'react';
 import { BottomCardProps } from '@type/dashboard';
 import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '@config/constant';
+// import { ROUTES } from '@config/constant';
 
-const BottomCard = ({ title, value, redirectPage }: BottomCardProps) => {
+const BottomCard = ({ title, value}: BottomCardProps) => {
 	const navigate = useNavigate();
 	const redirectFunction = () => {
-		return navigate(`/${ROUTES.app}/${redirectPage}/${ROUTES.list}`);
+		return navigate('#');
 	};
 	return (
 		<div aria-label='card' aria-hidden='true' className='realtive rounded-md  mb-6 text-white bg-primary hover:cursor-pointer' onClick={redirectFunction ?? ''}>

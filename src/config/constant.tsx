@@ -16,9 +16,9 @@ const AddEditState = React.lazy(() => import('@views/state/addEditState'));
 const CMS = React.lazy(() => import('@views/CMS'));
 const AddEditCms = React.lazy(() => import('@views/CMS/addEditCms'));
 const AddSuggestion = React.lazy(() => import('@views/suggestion/addSuggestion'));
-const FaqManagement = React.lazy(() => import('@views/categoryManagement'));
+const categoryManagement = React.lazy(() => import('@views/categoryManagement'));
+const AddEditCategory = React.lazy(() => import('@views/categoryManagement/addEditCategory'));
 const Enquiry = React.lazy(() => import('@views/enquiry'));
-const AddEditFaq = React.lazy(() => import('@views/categoryManagement/addEditCategory'));
 const AddEnquiry = React.lazy(() => import('@views/enquiry/addEnquiry'));
 const ManageCategory = React.lazy(() => import('@views/manageCategory'));
 const Settings = React.lazy(() => import('@views/settingsPage'));
@@ -35,7 +35,7 @@ const AddEditEvents = React.lazy(() => import('@views/eventsManagement/addEditEv
 const ViewEvent = React.lazy(() => import('@views/viewEvent'));
 const NotificationsTemplate = React.lazy(() => import('@views/notifications'));
 const AddEditNotification = React.lazy(() => import('@views/notifications/addEditNotification'));
-const AddEditCategory = React.lazy(() => import('@views/manageCategory/addEditCategory'));
+// const AddEditCategory = React.lazy(() => import('@views/manageCategory/addEditCategory'));
 const ViewNotification = React.lazy(() => import('@views/viewNotification'));
 const Suggestion = React.lazy(() => import('@views/suggestion'));
 const ManageRulesSets = React.lazy(() => import('@views/rulesSestsManagement'));
@@ -291,9 +291,9 @@ export const privateRoutes: { path: string; element: React.LazyExoticComponent<(
 	{ path: `${ROUTES.country}/list`, element: Country, permission: [PERMISSION_LIST.Country.ListAccess] },
 	{ path: `${ROUTES.country}/add`, element: AddEditCountry, permission: [PERMISSION_LIST.Country.AddAccess] },
 	{ path: `${ROUTES.country}/edit/:id`, element: AddEditCountry, permission: [PERMISSION_LIST.Country.EditAccess] },
-	{ path: `${ROUTES.faq}/list`, element: FaqManagement, permission: [PERMISSION_LIST.FAQ.ListAccess] },
-	{ path: `${ROUTES.faq}/add`, element: AddEditFaq, permission: [PERMISSION_LIST.FAQ.AddAccess] },
-	{ path: `${ROUTES.faq}/edit/:id`, element: AddEditFaq, permission: [PERMISSION_LIST.FAQ.EditAccess] },
+	{ path: `${ROUTES.category}/list`, element: categoryManagement, permission: [PERMISSION_LIST.FAQ.ListAccess] },
+	{ path: `${ROUTES.category}/add`, element: AddEditCategory, permission: [PERMISSION_LIST.FAQ.AddAccess] },
+	{ path: `${ROUTES.category}/edit/:id`, element: AddEditCategory, permission: [PERMISSION_LIST.FAQ.EditAccess] },
 	{ path: `${ROUTES.settings}`, element: Settings, permission: [] },
 	{ path: `${ROUTES.enquiry}/list`, element: Enquiry, permission: [PERMISSION_LIST.Enquiry.ListAccess] },
 	{ path: `${ROUTES.enquiry}/add`, element: AddEnquiry, permission: [PERMISSION_LIST.Enquiry.AddAccess] },
@@ -455,10 +455,10 @@ export const EVENTS_RADIO_IS_RECURRING_OPTIONS = [
 
 export const SIDEBAR_NAVLINKS: sidebarNavlinksArray[] = [
 	{
-		to: `/${ROUTES.app}/${ROUTES.faq}/${ROUTES.list}`,
+		to: `/${ROUTES.app}/${ROUTES.category}/${ROUTES.list}`,
 		text: 'Category Listing',
 		icon: <Question />,
-		redirectPage: RedirectPages.faq,
+		redirectPage: RedirectPages.category,
 		childRoutes: [],
 		permissions: [PERMISSION_LIST.FAQ.ListAccess],
 	},
