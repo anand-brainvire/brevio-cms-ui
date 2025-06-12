@@ -30,21 +30,33 @@ export const FETCH_CATEGORY = gql`
 `;
 export const GET_CATEGORY_BY_ID = gql`
 	${META_FRAGMENT}
-	query GetSingleCategory($getSingleCategoryId: UUID) {
-		getSingleCategory(uuid: $getSingleCategoryId) {
-			data {
-				id
-				uuid
-				category_name
-				parent_category
-				description
-				status
-				created_by
-				created_at
-				updated_at
-			}
-			meta {
-				...MetaFragment
+	query GetCategoryById($uuid: ID!) {
+		getCategoryById(uuid: $uuid) {
+		data {
+		    	uuid
+		    	slug
+		    	is_active
+		    		category_translations {
+		    			lang_code
+		    			name
+		    			description
+		    		}
+		    	goals {
+		    		uuid
+		    		emoji
+		    		key
+		    		translations {
+		    			lang_code
+		    			title
+		    		}
+		    	}
+		    	created_at
+		    	updated_at
+		    	updated_by
+		    	created_by
+		    }
+		meta {
+			...MetaFragment
 			}
 		}
 	}
