@@ -43,12 +43,16 @@ const UserProfilePasswordChange = (): ReactElement => {
 				},
 			})
 				.then((response) => {
-					if (response.data?.changePassword?.meta.statusCode === 200) {
-						toast.success(response.data?.changePassword?.meta.message);
+					const meta = response.data?.changePassword?.meta;
+					if (meta?.statusCode === 200) {
+						toast.success(meta.message);
 						cancelPassWordHandler();
+					} else {
+						toast.error(meta?.message || t('Password change failed'));
 					}
 				})
 				.catch(() => {
+					toast.error(t('Something went wrong'));
 					return;
 				});
 		},

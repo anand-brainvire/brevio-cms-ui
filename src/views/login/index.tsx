@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, ReactElement } from 'react';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { LoginResponse, SettingsDataArr } from '@framework/graphql/graphql';
+import { useMutation } from '@apollo/client';
+import { LoginResponse } from '@framework/graphql/graphql';
 import { LOGIN_USER } from '@framework/graphql/mutations/user';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +10,7 @@ import { LoginInput } from '@type/views';
 import Button from '@components/button/button';
 import { Email, Lock } from '@components/icons/icons';
 import TextInput from '@components/textinput/TextInput';
-import { GET_SETTINGS_BY_ID } from '@framework/graphql/mutations/settings';
+// import { GET_SETTINGS_BY_ID } from '@framework/graphql/mutations/settings';
 import useValidation from '@src/hooks/validations';
 import ForgetModel from './forgetModel';
 import EncryptionFunction from 'src/services/encryption';
@@ -18,13 +18,14 @@ import { getCookie, setCookie } from '@utils/helpers';
 import DecryptionFunction from 'src/services/decryption';
 import { Loader } from '@components/index';
 import brevioLogo from '@assets/images/brevio-logo.png';
+import { toast } from 'react-toastify';
 
 const Login = (): ReactElement => {
 	const { t } = useTranslation();
 	const [login, { loading }] = useMutation(LOGIN_USER);
 	const navigate = useNavigate();
 	const [showPassword, setShowPassword] = useState<boolean>(false);
-	const [getSettings] = useLazyQuery(GET_SETTINGS_BY_ID);
+	// const [getSettings] = useLazyQuery(GET_SETTINGS_BY_ID);
 	const { loginValidationSchema } = useValidation();
 	const [isShowForgetModel, setIsShowForgetModel] = useState<boolean>(false);
 	const [rememberMe, setRememberMe] = useState<boolean>(false);
@@ -67,22 +68,25 @@ const Login = (): ReactElement => {
 						localStorage.setItem('refreshToken', EncryptionFunction(data.login.data.refreshToken));
 						localStorage.setItem('expiresIn', EncryptionFunction(data.login.data.expiresIn));
 
-						getSettings().then((res) => {
-							const data = res?.data?.getSettingDetails?.data as SettingsDataArr[];
-							data?.forEach((mappedSettingsData: SettingsDataArr) => {
-								if (mappedSettingsData.key === 'favicon') {
-									localStorage.setItem('favicon', mappedSettingsData?.value);
-								}
-								if (mappedSettingsData.key === 'logo') {
-									localStorage.setItem('profileImage', mappedSettingsData?.value);
-								}
-							});
-						});
-
+						// getSettings().then((res) => {
+						// 	const data = res?.data?.getSettingDetails?.data as SettingsDataArr[];
+						// 	data?.forEach((mappedSettingsData: SettingsDataArr) => {
+						// 		if (mappedSettingsData.key === 'favicon') {
+						// 			localStorage.setItem('favicon', mappedSettingsData?.value);
+						// 		}
+						// 		if (mappedSettingsData.key === 'logo') {
+						// 			localStorage.setItem('profileImage', mappedSettingsData?.value);
+						// 		}
+						// 	});
+						// });
 						navigate(`/${ROUTES.app}/${ROUTES.dashboard}`);
+					} else {
+						// Show toast for error
+						toast.error(data?.login?.meta?.message || t('Login failed'));
 					}
 				})
 				.catch(() => {
+					toast.error(t('Something went wrong'));
 					return;
 				});
 		},

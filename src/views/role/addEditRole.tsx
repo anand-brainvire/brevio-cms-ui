@@ -47,7 +47,7 @@ const AddEditRole = ({ isRoleModelShow, onSubmitRole, roleVal, onClose, isRoleEd
 			.then((res) => {
 				const data = res?.data as RoleCreateRes;
 
-				if (data?.createRole?.meta?.statusCode === 200) {
+				if (data?.createRole?.meta?.statusCode === 200 || data?.createRole?.meta?.statusCode === 201) {
 					onSubmitRole();
 					toast.success(data?.createRole?.meta?.message);
 				}
@@ -119,7 +119,7 @@ const AddEditRole = ({ isRoleModelShow, onSubmitRole, roleVal, onClose, isRoleEd
 							</div>
 							<div className='model-footer'>
 								<Button className='btn-primary  ' type='submit' label={t('Submit')}></Button>
-								<Button className='  hover:bg-gray-400 btn-gray ' onClick={onClose} label={t('Close')}></Button>
+								<Button className='btn-secondary ' onClick={onClose} label={t('Close')}></Button>
 							</div>
 						</form>
 					</WithTranslateFormErrors>

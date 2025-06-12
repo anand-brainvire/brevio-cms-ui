@@ -445,7 +445,7 @@ export type UpdateUser = {
 	};
 };
 export type updateUserProfile = {
-	updateUserProfile: {
+	updateProfile: {
 		data: UserData;
 		meta: MetaRes;
 	};

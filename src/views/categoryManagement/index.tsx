@@ -55,7 +55,7 @@ const categoryManagement = (): ReactElement => {
 	 * Handle's page chnage
 	 */
 	const Navigation = useCallback(() => {
-		navigate(`/${ROUTES.app}/${ROUTES.faq}/${ROUTES.add}`);
+		navigate(`/${ROUTES.app}/${ROUTES.category}/${ROUTES.add}`);
 	}, []);
 
 	const clearSelectionFaq = useCallback(() => {
@@ -75,7 +75,7 @@ const categoryManagement = (): ReactElement => {
 						<span className='mr-2 w-3.5 h-3.5 inline-block svg-icon text-md'>
 							<Question />
 						</span>
-						{t('FAQ List')}
+						{t('Category List')}
 					</div>
 
 					<div className='flex flex-wrap gap-2'>

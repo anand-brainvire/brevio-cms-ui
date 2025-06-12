@@ -23,7 +23,7 @@ import i18n from '@src/i18n';
 import { MultiSelect } from 'primereact/multiselect';
 import {CREATE_CATEGORY} from '@framework/graphql/mutations/category';
 
-const AddEditFaq = (): ReactElement => {
+const AddEditCategory = (): ReactElement => {
 	const { t } = useTranslation();
 	const { data, refetch: fetchAllGoals } = useQuery(FETCH_GOALS, { variables: { isAll: IS_ALL } });
 	const [goalDroData, setGoalDroData] = useState<DropdownOptionType[]>([]);
@@ -98,27 +98,29 @@ const AddEditFaq = (): ReactElement => {
 							description: values.description,
 						}
 					],
+					slug: slugify(values.categorySlug),
 					goalUuids: values.goalId,
+					status: values.status,
 				};
 				createFaq({ variables })
-				.then((res) => {
-					const data = res.data;
-					if (data.createCategory.meta.statusCode === 200) {
-						toast.success(data.createCategory.meta.message);
-						formik.resetForm();
-						onCancelFaq();
-					}
-				})
-				.catch(() => {
-					return;
-				});
+					.then((res) => {
+						const data = res.data;
+						if (data.createCategory.meta.statusCode === 200) {
+							toast.success(data.createCategory.meta.message);
+							formik.resetForm();
+							onCancelFaq();
+						}
+					})
+					.catch(() => {
+						return;
+					});
 			},
 		});
 		/**
 		 * On cancle redirect to list view
 		 */
 		const onCancelFaq = useCallback(() => {
-			navigate(`/${ROUTES.app}/${ROUTES.faq}/${ROUTES.list}`);
+			navigate(`/${ROUTES.app}/${ROUTES.category}/${ROUTES.list}`);
 		}, []);
 		/**
 		 * Handle blur that removes white space's
@@ -215,4 +217,4 @@ const AddEditFaq = (): ReactElement => {
 		);
 	};
 
-	export default AddEditFaq;
+	export default AddEditCategory;

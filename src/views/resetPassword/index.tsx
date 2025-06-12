@@ -34,7 +34,7 @@ const ResetPassword = (): ReactElement => {
 	const navigate = useNavigate();
 
 	const initialValues: ResetPasswordInput = {
-		password: '',
+		newPassword: '',
 		confirmPassword: '',
 	};
 
@@ -46,7 +46,7 @@ const ResetPassword = (): ReactElement => {
 				variables: {
 					input: {
 						token: token,
-						password: values.password,
+						password: values.newPassword,
 						confirmPassword: values.confirmPassword,
 					},
 				},
@@ -70,30 +70,54 @@ const ResetPassword = (): ReactElement => {
 
 	const handleToggleShowPassword = useCallback(() => {
 		setShowPassword((prevState) => !prevState);
-	}, [showPassword]);
+	}, []);
+
 	const handleToggleConfirmShowPassword = useCallback(() => {
 		setConfirmShowPassword((prevState) => !prevState);
-	}, [confirmShowPassword]);
+	}, []);
+
 	const onCancelClick = useCallback(() => {
 		navigate(`/${ROUTES.login}`);
 	}, []);
 
 	return (
 		<div className='flex w-full h-full mx-auto items-center justify-center'>
-			{(verifyPassword) && <Loader />}
-			<div className='w-full sm:max-w-wide-2 lg:max-w-wide-3 bg-white  rounded py-0 px-1 md:p-6 border border-default'>
+			{verifyPassword && <Loader />}
+			<div className='w-full sm:max-w-wide-2 lg:max-w-wide-3 bg-white rounded py-0 px-1 md:p-6 border border-default'>
 				<form onSubmit={formik.handleSubmit}>
 					<div className='card-body'>
-						<h1 className='text-primary mb-2 font-medium leading-md text-h2'> {t('Reset Password')}</h1>
-						<div className='mb-4 '>
-							<TextInput btnShowHide={showPassword} btnShowHideFun={handleToggleShowPassword} password={true} label={t('New Password')} placeholder='New Password' name='password' type={showPassword ? 'text' : 'password'} onChange={formik.handleChange} value={formik.values.password} error={formik.errors.password && formik.touched.password ? formik.errors.password : ''} />
+						<h1 className='text-primary mb-2 font-medium leading-md text-h2'>{t('Reset Password')}</h1>
+						<div className='mb-4'>
+							<TextInput
+								btnShowHide={showPassword}
+								btnShowHideFun={handleToggleShowPassword}
+								password={true}
+								label={t('New Password')}
+								placeholder='New Password'
+								name='newPassword'
+								type={showPassword ? 'text' : 'password'}
+								onChange={formik.handleChange}
+								value={formik.values.newPassword}
+								error={formik.errors.newPassword && formik.touched.newPassword ? formik.errors.newPassword : ''}
+							/>
 						</div>
-						<div className='mb-4 '>
-							<TextInput btnShowHide={confirmShowPassword} btnShowHideFun={handleToggleConfirmShowPassword} password={true} label={t('Confirm Password')} placeholder='Confirm Password' name='confirmPassword' type={confirmShowPassword ? 'text' : 'password'} onChange={formik.handleChange} value={formik.values.confirmPassword} error={formik.errors.confirmPassword && formik.touched.confirmPassword ? formik.errors.confirmPassword : ''} />
+						<div className='mb-4'>
+							<TextInput
+								btnShowHide={confirmShowPassword}
+								btnShowHideFun={handleToggleConfirmShowPassword}
+								password={true}
+								label={t('Confirm Password')}
+								placeholder='Confirm Password'
+								name='confirmPassword'
+								type={confirmShowPassword ? 'text' : 'password'}
+								onChange={formik.handleChange}
+								value={formik.values.confirmPassword}
+								error={formik.errors.confirmPassword && formik.touched.confirmPassword ? formik.errors.confirmPassword : ''}
+							/>
 						</div>
 						<div className='flex items-center space-x-2'>
-							<Button className='btn-primary   ' type='submit' label={t('Reset')} />
-							<Button className='btn-secondary  ' label={t('Cancel')} onClick={onCancelClick} />
+							<Button className='btn-primary' type='submit' label={t('Reset')} />
+							<Button className='btn-secondary' label={t('Cancel')} onClick={onCancelClick} />
 						</div>
 					</div>
 				</form>
@@ -101,4 +125,5 @@ const ResetPassword = (): ReactElement => {
 		</div>
 	);
 };
+
 export default ResetPassword;

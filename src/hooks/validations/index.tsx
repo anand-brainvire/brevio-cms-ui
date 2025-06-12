@@ -220,7 +220,7 @@ const useValidation = () => {
 	});
 
 	const resetPasswordValidationSchema = Yup.object({
-		password: newPassword,
+		newPassword: newPassword,
 		confirmPassword: confirmPassword,
 	});
 
