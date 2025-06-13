@@ -1,7 +1,7 @@
 import React, { ReactElement, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { DELETE_FAQ, GRP_DEL_FAQ, UPDATE_FAQ_STATUS } from '@framework/graphql/mutations/faq';
+import { GRP_DEL_FAQ } from '@framework/graphql/mutations/faq';
 import { ColArrType, PaginationParams } from '@type/role';
 import Button from '@components/button/button';
 import TextInput from '@components/textinput/TextInput';
@@ -12,7 +12,7 @@ import useSaveFilterData from '@src/hooks/useSaveFilterData';
 import BVDataTable from '@components/BVDatatable/BVDataTable';
 import { Question, PlusCircle } from '@components/icons/icons';
 import { DEFAULT_LIMIT, DEFAULT_PAGE, sortOrder, ROUTES } from '@config/constant';
-// import { GET_FAQS_DATA } from '@framework/graphql/queries/faq';
+import { DELETE_CATEGORY,UPDATE_CATEGORY_STATUS } from '@framework/graphql/mutations/category';
 import {FETCH_CATEGORY} from '@framework/graphql/queries/category';
 const categoryManagement = (): ReactElement => {
 	const [selectedFaq, setSelectedFaq] = useState<string[][]>([]);
@@ -79,7 +79,7 @@ const categoryManagement = (): ReactElement => {
 					</div>
 
 					<div className='flex flex-wrap gap-2'>
-						<TextInput value={filterData.search} id={'faqSearch'} placeholder={t('Search Question...')} name='search' type='text' onChange={searchChangeHandler} />
+						<TextInput value={filterData.search} id={'faqSearch'} placeholder={t('Search Category...')} name='search' type='text' onChange={searchChangeHandler} />
 						<RoleBaseGuard permissions={[PERMISSION_LIST.FAQ.AddAccess]}>
 							<Button className=' btn-primary   ' onClick={Navigation} type='button' label={t('Add New')}>
 								<span className='inline-block w-4 h-4 mr-1 svg-icon'>
@@ -95,9 +95,9 @@ const categoryManagement = (): ReactElement => {
 						columns={COL_ARR_CATEGORY}
 						queryName={FETCH_CATEGORY}
 						sessionFilterName='filterFaqmangment'
-						singleDeleteMutation={DELETE_FAQ}
+						singleDeleteMutation={DELETE_CATEGORY}
 						multipleDeleteMutation={GRP_DEL_FAQ}
-						updateStatusMutation={UPDATE_FAQ_STATUS}
+						updateStatusMutation={UPDATE_CATEGORY_STATUS}
 						actionWisePermissions={{
 							edit: PERMISSION_LIST.FAQ.EditAccess,
 							delete: PERMISSION_LIST.FAQ.DeleteAccess,
@@ -107,7 +107,7 @@ const categoryManagement = (): ReactElement => {
 						updatedFilterData={filterData}
 						actionData={{
 							edit: {
-								route: ROUTES.faq,
+								route: ROUTES.category,
 							},
 						}}
 						statusKey={'is_active'}

@@ -3,8 +3,8 @@ import { META_FRAGMENT } from '@framework/graphql/fragments';
 
 export const UPDATE_CATEGORY = gql`
 	${META_FRAGMENT}
-	mutation UpdateCategory($updateCategoryId: UUID, $categoryName: String, $description: String, $parentCategory: Int, $status: Int) {
-		updateCategory(uuid: $updateCategoryId, category_name: $categoryName, description: $description, parent_category: $parentCategory, status: $status) {
+	mutation UpdateCategory($uuid: ID!, $categoryData: [CategoryTranslationInput!]!, $slug: String!, $goalUuids: [UUID]) {
+		updateCategory(uuid: $uuid, category_data: $categoryData, slug: $slug, goal_uuids: $goalUuids) {
 			meta {
 				...MetaFragment
 			}
@@ -13,8 +13,8 @@ export const UPDATE_CATEGORY = gql`
 `;
 export const UPDATE_CATEGORY_STATUS = gql`
 	${META_FRAGMENT}
-	mutation CategoryStatusUpdate($categoryStatusUpdateId: UUID, $status: Int) {
-		categoryStatusUpdate(uuid: $categoryStatusUpdateId, status: $status) {
+	mutation ToggleCategoryStatus($uuid: ID!) {
+		toggleCategoryStatus(uuid: $uuid) {
 			meta {
 				...MetaFragment
 			}
@@ -23,8 +23,8 @@ export const UPDATE_CATEGORY_STATUS = gql`
 `;
 export const DELETE_CATEGORY = gql`
 	${META_FRAGMENT}
-	mutation Mutation($deleteCategoryId: UUID) {
-		deleteCategory(uuid: $deleteCategoryId) {
+	mutation DeleteCategory($uuid: ID!) {
+		deleteCategory(uuid: $uuid) {
 			meta {
 				...MetaFragment
 			}

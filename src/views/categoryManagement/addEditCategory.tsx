@@ -1,8 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { IS_ALL, ROUTES, STATUS, STATUS_RADIO } from '@config/constant';
-// import { UPDATE_FAQ_DATA } from '@framework/graphql/mutations/faq';
-import { GET_FAQBYID_DATA} from '@framework/graphql/queries/faq';
-import { FETCH_GOALS } from '@framework/graphql/queries/category';
+import { FETCH_GOALS,GET_CATEGORY_BY_ID } from '@framework/graphql/queries/category';
 import { useFormik } from 'formik';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { DropdownOptionType } from '@type/component';
 import { CreateFaq} from '@type/faq';
-import {GoalDataArr} from '@type/category'; // Adjust the import path as necessary
+import {GoalDataArr} from '@type/category';
 import { CheckCircle, Cross } from '@components/icons/icons';
 import useValidation from '@src/hooks/validations';
 import TextInput from '@components/textinput/TextInput';
@@ -21,18 +19,18 @@ import TextArea from '@components/textarea/TextArea';
 import { Loader } from '@components/index';
 import i18n from '@src/i18n';
 import { MultiSelect } from 'primereact/multiselect';
-import {CREATE_CATEGORY} from '@framework/graphql/mutations/category';
+import {CREATE_CATEGORY, UPDATE_CATEGORY} from '@framework/graphql/mutations/category';
 
 const AddEditCategory = (): ReactElement => {
 	const { t } = useTranslation();
 	const { data, refetch: fetchAllGoals } = useQuery(FETCH_GOALS, { variables: { isAll: IS_ALL } });
 	const [goalDroData, setGoalDroData] = useState<DropdownOptionType[]>([]);
 	const [createFaq, { loading: createLoader }] = useMutation(CREATE_CATEGORY);
-	// const [updateFaq, { load	ing: updateLoader }] = useMutation(UPDATE_FAQ_DATA);
+	const [updateFaq, { loading: updateLoader }] = useMutation(UPDATE_CATEGORY);
 	const navigate = useNavigate();
 		const params = useParams();
-		const { data: faqByIdData } = useQuery(GET_FAQBYID_DATA, {
-			variables: { faqId: params.id },
+		const { data: faqByIdData } = useQuery(GET_CATEGORY_BY_ID, {
+			variables: { uuid: params.id },
 			skip: !params.id,
 			fetchPolicy: 'network-only',
 		});
@@ -48,14 +46,14 @@ const AddEditCategory = (): ReactElement => {
 					let translation;
 					if (Array.isArray(goal.translations)) {
 						translation =
-							goal.translations.find((tr: any) => tr.lang_code === i18n.language) ||
-							goal.translations.find((tr: any) => tr.lang_code === 'en') ||
+							goal.translations.find((tr) => tr.lang_code === i18n.language) ||
+							goal.translations.find((tr) => tr.lang_code === 'en') ||
 							goal.translations[0];
 					} else {
 						translation = undefined;
 					}
 					return {
-						name: translation?.title || goal.key || '', // fallback to goal.key if translation missing
+						name: translation?.title || goal.key || '',
 						key: goal.uuid,
 					};
 				});
@@ -67,18 +65,22 @@ const AddEditCategory = (): ReactElement => {
 		 */
 		useEffect(() => {
 			if (faqByIdData && params.id) {
-				const data = faqByIdData?.getFaq?.data;
+				const data = faqByIdData?.getCategoryById?.data;
+				const translation = Array.isArray(data?.category_translations)
+					? data.category_translations.find((tr: { lang_code: string }) => tr.lang_code === 'en') || data.category_translations[0]
+					: {};
+
 				formik
 					.setValues({
-						goalId: data?.goal_id, // <-- changed from topicId
-						categoryName: data?.question_english,
-						categorySlug: data?.question_arabic,
-						description: data?.answer_english,
-						status: data?.status,
+						goalId: Array.isArray(data?.goals) ? data.goals.map((g: { uuid: string }) => g.uuid) : [],
+						categoryName: translation?.name || '',
+						categorySlug: data?.slug || '',
+						description: translation?.description || '',
+						status: data?.is_active ? STATUS.active : STATUS.inactive,
 					})
 					.catch((e) => toast.error(e));
 			}
-		}, [faqByIdData]);
+		}, [faqByIdData, params.id]);
 		const initialValues = {
 			goalId: [],
 			categoryName: '',
@@ -102,6 +104,27 @@ const AddEditCategory = (): ReactElement => {
 					goalUuids: values.goalId,
 					status: values.status,
 				};
+			if (params.id) {
+				updateFaq({
+					variables: {
+						uuid: params?.id,
+						...variables,
+					},
+				})
+        		.then((res) => {
+        		    const data = res.data;
+        		    if (data?.updateCategory?.meta?.statusCode === 200) {
+        		        toast.success(data.updateCategory.meta.message);
+        		        formik.resetForm();
+        		        onCancelFaq();
+        		    } else {
+        		        toast.error(data?.updateCategory?.meta?.message || t('Update failed'));
+        		    }
+        		})
+        		.catch(() => {
+        		    toast.error(t('Something went wrong'));
+        		});
+			}else{
 				createFaq({ variables })
 					.then((res) => {
 						const data = res.data;
@@ -114,6 +137,7 @@ const AddEditCategory = (): ReactElement => {
 					.catch(() => {
 						return;
 					});
+			}	
 			},
 		});
 		/**
@@ -148,7 +172,7 @@ const AddEditCategory = (): ReactElement => {
 		}		
 		return (
 			<div className='card'>
-				{(createLoader) && <Loader />}
+				{(createLoader || updateLoader) && <Loader />}
 				<form onSubmit={formik.handleSubmit}>
 					<div className='card-body'>
 						<div className='card-title-container'>
@@ -209,6 +233,13 @@ const AddEditCategory = (): ReactElement => {
 						<Button className='btn-secondary' label={t('Cancel')} onClick={onCancelFaq}>
 							<span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
 								<Cross />
+							</span>
+						</Button>
+					</div>
+					<div className='card-footer-secondary btn-group'>
+						<Button className='btn-secondary ' onClick={''} label={t('View All Books')}>
+							<span className='text-white mr-1 w-3.5 h-3.5 inline-block svg-icon'>
+								<CheckCircle />
 							</span>
 						</Button>
 					</div>
