@@ -1,9 +1,9 @@
-import { useMutation, useQuery } from '@apollo/client';
+import {  useQuery } from '@apollo/client';
 import Button from '@components/button/button';
 import Dropdown from '@components/dropdown/dropDown';
 import { Compress, Expand, CheckCircle, Folder } from '@components/icons/icons';
-import { CreateAndRolePermissionsData, RoleDataArr, RolePermissionsDataArr } from '@framework/graphql/graphql';
-import { CREARTE_ROLE_PERMISSIONS } from '@framework/graphql/mutations/rolePermission';
+import {  RoleDataArr, RolePermissionsDataArr } from '@framework/graphql/graphql';
+// import { CREARTE_ROLE_PERMISSIONS } from '@framework/graphql/mutations/rolePermission';
 import { GET_ROLES_DATALIST } from '@framework/graphql/queries/role';
 import { FETCH_ROLE_PERMISSIONS_BY_ID } from '@framework/graphql/queries/rolePermissions';
 import RolePermission from '@views/role';
@@ -18,7 +18,7 @@ import { TreeNode } from 'primereact/treenode';
 import { translationFun } from '@utils/helpers';
 import RoleBaseGuard from '@components/roleGuard';
 import { PERMISSION_LIST } from '@config/permission';
-import { Loader } from '@components/index';
+// import { Loader } from '@components/index';
 import { IS_ALL } from '@config/constant';
 
 const iconFun = (node: TreeNode): React.ReactNode => (
@@ -35,7 +35,7 @@ const RolePermissions = () => {
 	// const { data } = useQuery(GET_PERMISSIONS);
 	const { data: roleData, refetch: refetchRoleData } = useQuery(GET_ROLES_DATALIST, { variables: { isAll: IS_ALL }, fetchPolicy: 'network-only' });
 	const { refetch: getRolePermissionListById } = useQuery(FETCH_ROLE_PERMISSIONS_BY_ID, { skip: true, fetchPolicy: 'network-only' });
-	const [createRolePermissions, { loading: createLoader }] = useMutation(CREARTE_ROLE_PERMISSIONS);
+	// const [createRolePermissions, { loading: createLoader }] = useMutation(CREARTE_ROLE_PERMISSIONS);
 	const [roleDrpData, setRoleDrpData] = useState<DropdownOptionType[]>([]);
 	const [filterRoleData, setFilterRoleData] = useState<RolePermissionsProps>({
 		roleId: null,
@@ -219,23 +219,23 @@ const RolePermissions = () => {
 	 * Method used create the role premissions
 	 */
 	const saveRolePermissionsHandler = useCallback(() => {
-		if (filterRoleData.roleId !== null) {
-			createRolePermissions({
-				variables: {
-					roleId: filterRoleData?.roleId,
-					permissionIds: checkedInt,
-				},
-			})
-				.then((res) => {
-					const data = res?.data?.createRolePermisssion as CreateAndRolePermissionsData;
-					if (data.meta.statusCode === 201) {
-						toast.success(data.meta.message);
-					}
-				})
-				.catch(() => {
-					return;
-				});
-		}
+		// if (filterRoleData.roleId !== null) {
+		// 	createRolePermissions({
+		// 		variables: {
+		// 			roleId: filterRoleData?.roleId,
+		// 			permissionIds: checkedInt,
+		// 		},
+		// 	})
+		// 		.then((res) => {
+		// 			const data = res?.data?.createRolePermisssion as CreateAndRolePermissionsData;
+		// 			if (data.meta.statusCode === 201) {
+		// 				toast.success(data.meta.message);
+		// 			}
+		// 		})
+		// 		.catch(() => {
+		// 			return;
+		// 		});
+		// }
 	}, [filterRoleData.roleId, checkedInt]);
 
 	/** function that handles single node to expand and compress */
@@ -248,7 +248,7 @@ const RolePermissions = () => {
 	}, []);
 	return (
 		<div className='grid grid-cols-1 lg:grid-cols-2 gap-x-8 '>
-			{createLoader && <Loader />}
+			{/* {createLoader && <Loader />} */}
 			<RoleBaseGuard permissions={[PERMISSION_LIST.Permission.ListAccess]}>
 				<div className='w-full h-full '>
 					<div className='card'>
