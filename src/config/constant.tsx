@@ -1,7 +1,7 @@
 import React from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 // import { BannerIcon, ClipBoardIcon, Document, Email, Gift, Lock, PhoneCall, ProfileIcon, Question, SettingsSliders, User, ArrowRight, Marker, TimerIcon, SuggestionIcon, UserReportIcon, Star, Megaphone, QrCodeIcon, GeoLocationIcon, PlanManagementIcon, SubscriptionIcon } from '@components/icons/icons';
-import { BannerIcon, Gift, Lock, ProfileIcon, Question, User } from '@components/icons/icons';
+import { Listing,Lock, ProfileIcon, User } from '@components/icons/icons';
 
 import { uuid } from '@utils/helpers';
 import { PERMISSION_LIST } from '@config/permission';
@@ -457,19 +457,19 @@ export const SIDEBAR_NAVLINKS: sidebarNavlinksArray[] = [
 	{
 		to: `/${ROUTES.app}/${ROUTES.category}/${ROUTES.list}`,
 		text: 'Category Listing',
-		icon: <Question />,
+		icon: <Listing />,
 		redirectPage: RedirectPages.category,
 		childRoutes: [],
 		permissions: [PERMISSION_LIST.FAQ.ListAccess],
 	},
-	{
-		to: `/${ROUTES.app}/${ROUTES.manageOffer}/${ROUTES.list}`,
-		text: 'Book Management',
-		icon: <Gift />,
-		redirectPage: RedirectPages.manageOffer,
-		childRoutes: [],
-		permissions: [PERMISSION_LIST.Coupon.ListAccess],
-	},
+	// {
+	// 	to: `/${ROUTES.app}/${ROUTES.manageOffer}/${ROUTES.list}`,
+	// 	text: 'Book Management',
+	// 	icon: <Gift />,
+	// 	redirectPage: RedirectPages.manageOffer,
+	// 	childRoutes: [],
+	// 	permissions: [PERMISSION_LIST.Coupon.ListAccess],
+	// },
 	{
 		to: `/${ROUTES.app}/${ROUTES.user}/${ROUTES.list}`,
 		text: 'User Management',
@@ -494,14 +494,14 @@ export const SIDEBAR_NAVLINKS: sidebarNavlinksArray[] = [
 		childRoutes: [],
 		permissions: [PERMISSION_LIST.Role.ListAccess, PERMISSION_LIST.Permission.ListAccess],
 	},
-	{
-		to: `/${ROUTES.app}/${ROUTES.banner}/${ROUTES.list}`,
-		text: 'Author Management',
-		icon: <BannerIcon />,
-		redirectPage: RedirectPages.banner,
-		childRoutes: [],
-		permissions: [PERMISSION_LIST.Banner.ListAccess],
-	},
+	// {
+	// 	to: `/${ROUTES.app}/${ROUTES.banner}/${ROUTES.list}`,
+	// 	text: 'Author Management',
+	// 	icon: <BannerIcon />,
+	// 	redirectPage: RedirectPages.banner,
+	// 	childRoutes: [],
+	// 	permissions: [PERMISSION_LIST.Banner.ListAccess],
+	// },
 
 	// {
 	// 	to: `/${ROUTES.app}/${ROUTES.settings}`,
