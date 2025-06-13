@@ -38,7 +38,7 @@ const UserManagement = (): ReactElement => {
 	// const [isLoadingDownloadFile, setIsLoadingDownloadFile] = useState<boolean>(false);
 
 	const COL_ARR_USER_MNGT = [
-		{ name: t('First Name'), sortable: true, type: 'text', fieldName: 'first_name' },
+		// { name: t('First Name'), sortable: true, type: 'text', fieldName: 'first_name' },
 		{ name: t('Email'), sortable: true, type: 'text', fieldName: 'email' },
 		{ name: t('Registration At'), sortable: true, type: 'date', fieldName: 'created_at' },
 		// { name: t('Last Updated At'), sortable: true, type: 'date', fieldName: 'updated_at' },
