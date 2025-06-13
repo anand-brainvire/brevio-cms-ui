@@ -46,3 +46,6 @@
 .card-footer {
 	@apply flex items-start justify-start px-5 py-3 border-t border-default bg-bg-1;
 }
+.card-footer-secondary{
+	@apply flex items-start justify-start px-5 py-3 bg-bg-1;
+}

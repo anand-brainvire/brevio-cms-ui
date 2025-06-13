@@ -79,7 +79,7 @@ const categoryManagement = (): ReactElement => {
 					</div>
 
 					<div className='flex flex-wrap gap-2'>
-						<TextInput value={filterData.search} id={'faqSearch'} placeholder={t('Search Question...')} name='search' type='text' onChange={searchChangeHandler} />
+						<TextInput value={filterData.search} id={'faqSearch'} placeholder={t('Search Category...')} name='search' type='text' onChange={searchChangeHandler} />
 						<RoleBaseGuard permissions={[PERMISSION_LIST.FAQ.AddAccess]}>
 							<Button className=' btn-primary   ' onClick={Navigation} type='button' label={t('Add New')}>
 								<span className='inline-block w-4 h-4 mr-1 svg-icon'>

@@ -236,6 +236,13 @@ const AddEditCategory = (): ReactElement => {
 							</span>
 						</Button>
 					</div>
+					<div className='card-footer-secondary btn-group'>
+						<Button className='btn-secondary ' onClick={''} label={t('View All Books')}>
+							<span className='text-white mr-1 w-3.5 h-3.5 inline-block svg-icon'>
+								<CheckCircle />
+							</span>
+						</Button>
+					</div>
 				</form>
 			</div>
 		);
