@@ -74,8 +74,8 @@ const AddEditAuthor = () => {
 			} else {
 				toast.error(data?.createAuthor?.meta?.message || t('Failed to create author'));
 			}
-		} catch (error) {
-			toast.error(t('Failed to create author'));
+		} catch {
+			return;
 		}
 	};
 
@@ -97,9 +97,11 @@ const AddEditAuthor = () => {
 				toast.success(data.updateAuthor.meta.message);
 				formik.resetForm();
 				onCancel();
+			} else {
+				toast.error(data?.updateAuthor?.meta?.message || t('Failed to update author'));
 			}
-		} catch (error) {
-			toast.error(t('Failed to update'));
+		} catch  {
+			return;
 		}
 	};
 
