@@ -51,6 +51,7 @@ export type CreateSubAdmin = {
 	password: string;
 	// confirmPassword: string;
 	roleId: string;
+	status: string | number;
 };
 
 export type latlongProps = {

@@ -2,8 +2,8 @@ import { gql } from '@apollo/client';
 import { META_FRAGMENT } from '@framework/graphql/fragments';
 export const ADD_AUTHOR = gql`
 	${META_FRAGMENT}
-	mutation CreateAuthor($authorData: [AuthorInputType]) {
-		createAuthor(author_data: $authorData) {
+	mutation CreateAuthor($authorData: [AuthorInputType], $isActive: Boolean) {
+		createAuthor(author_data: $authorData, is_active: $isActive) {
 			meta {
 				...MetaFragment
 			}
@@ -13,8 +13,8 @@ export const ADD_AUTHOR = gql`
 
 export const UPDATE_AUTHOR = gql`
 	${META_FRAGMENT}
-	mutation UpdateAuthor($uuid: ID!, $authorData: [AuthorInputType]) {
-		updateAuthor(uuid: $uuid, author_data: $authorData) {
+	mutation UpdateAuthor($uuid: ID!, $authorData: [AuthorInputType],$isActive: Boolean) {
+		updateAuthor(uuid: $uuid, author_data: $authorData, is_active: $isActive) {
 			meta {
 				...MetaFragment
 			}

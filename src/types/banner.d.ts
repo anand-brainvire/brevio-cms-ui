@@ -43,5 +43,5 @@ export type BannerChangeProps = {
 
 export type BannerUpdateProps = {
 	authorName: string;
-	status: string;
+	status: number | string | boolean;
 };

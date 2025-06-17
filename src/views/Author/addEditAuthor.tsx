@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { useMutation, useQuery } from '@apollo/client';
 import { toast } from 'react-toastify';
-import { DEFAULT_STATUS, ROUTES, STATUS_RADIO } from '@config/constant';
+import { DEFAULT_STATUS, ROUTES, STATUS_RADIO, STATUS} from '@config/constant';
 import TextInput from '@components/textinput/TextInput';
 import Button from '@components/button/button';
 import { GET_AUTHOR_BY_ID } from '@framework/graphql/queries/author';
@@ -60,9 +60,10 @@ const AddEditAuthor = () => {
 					authorData: [
 						{
 							name: values.authorName,
-							lang_code: 'en',
+							langCode: 'en',
 						},
 					],
+					isActive: values.status === STATUS.active,
 				},
 			});
 
@@ -86,9 +87,10 @@ const AddEditAuthor = () => {
 					authorData: [
 						{
 							name: values.authorName,
-							lang_code: 'en',
+							langCode: 'en',
 						},
 					],
+					isActive: Number(values.status) === STATUS.active,
 				},
 			});
 			if (data?.updateAuthor?.meta?.statusCode === 200) {

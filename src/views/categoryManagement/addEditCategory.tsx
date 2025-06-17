@@ -102,42 +102,42 @@ const AddEditCategory = (): ReactElement => {
 					],
 					slug: slugify(values.categorySlug),
 					goalUuids: values.goalId,
-					status: values.status,
+					isActive: Number(values.status) === STATUS.active,
 				};
-			if (params.id) {
-				updateFaq({
-					variables: {
-						uuid: params?.id,
-						...variables,
-					},
-				})
-        		.then((res) => {
-        		    const data = res.data;
-        		    if (data?.updateCategory?.meta?.statusCode === 200) {
-        		        toast.success(data.updateCategory.meta.message);
-        		        formik.resetForm();
-        		        onCancelFaq();
-        		    } else {
-        		        toast.error(data?.updateCategory?.meta?.message || t('Update failed'));
-        		    }
-        		})
-        		.catch(() => {
-        		    toast.error(t('Something went wrong'));
-        		});
-			}else{
-				createFaq({ variables })
+				if (params.id) {
+					updateFaq({
+						variables: {
+							uuid: params?.id,
+							...variables,
+						},
+					})
 					.then((res) => {
 						const data = res.data;
-						if (data.createCategory.meta.statusCode === 200) {
-							toast.success(data.createCategory.meta.message);
+						if (data?.updateCategory?.meta?.statusCode === 200) {
+							toast.success(data.updateCategory.meta.message);
 							formik.resetForm();
 							onCancelFaq();
+						} else {
+							toast.error(data?.updateCategory?.meta?.message || t('Update failed'));
 						}
 					})
 					.catch(() => {
 						return;
 					});
-			}	
+				} else {
+					createFaq({ variables })
+						.then((res) => {
+							const data = res.data;
+							if (data.createCategory.meta.statusCode === 200) {
+								toast.success(data.createCategory.meta.message);
+								formik.resetForm();
+								onCancelFaq();
+							}
+						})
+						.catch(() => {
+							return;
+						});
+				}
 			},
 		});
 		/**
@@ -214,13 +214,13 @@ const AddEditCategory = (): ReactElement => {
 									placeholder={t('Select Goal') ?? 'Select Goal'}
 									display="chip"
 									className="w-full"
-									maxSelectedLabels={3}
+									maxSelectedLabels={6}
 								/>
 							</div>
 							<div>
 								<TextArea required={true} id='description' onChange={formik.handleChange} value={formik.values.description} onBlur={OnBlurFaq} label={t('Description')} error={getErrorFaq('description')} placeholder={''} />
 							</div>
-							<RadioButton id={'statusFaq'} required={true} checked={formik.values.status} onChange={formik.handleChange} name={'status'} radioOptions={STATUS_RADIO} label={t('Status')} />
+							<RadioButton id={'status'} required={true} checked={formik.values.status} onChange={formik.handleChange} name={'status'} radioOptions={STATUS_RADIO} label={t('Status')} />
 						</div>
 					</div>
 					<hr />

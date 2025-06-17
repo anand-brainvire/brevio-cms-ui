@@ -171,6 +171,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 			...filterData,
 			limit: parseInt(e),
 			page: DEFAULT_PAGE,
+			offset: 0,
 		};
 		setSelectedList([]);
 		setFilterData(updatedFilterData);

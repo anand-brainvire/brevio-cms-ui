@@ -46,7 +46,7 @@ const categoryManagement = (): ReactElement => {
     const onSearchButtonClick = useCallback(() => {
         const updatedFilterData = {
             ...filterData,
-            search: searchInput,
+            search: searchInput.trim(),
             page: DEFAULT_PAGE,
         };
         setFilterData(updatedFilterData);

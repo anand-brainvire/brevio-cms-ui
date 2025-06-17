@@ -71,9 +71,7 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 
 	const roleEditFun = useCallback(
 		({ data }: OptionsPropsForButton) => {
-			setRoleObj(data);
 			setIsRoleModelShow(true);
-			setRoleVal(roleObj.role_name);
 			setIsRoleEditable(true);
 		},
 		[roleObj, isRoleModelShow, isRoleEditable, roleVal]

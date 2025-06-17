@@ -51,7 +51,7 @@ const SubAdmin = (): ReactElement => {
 	const onSearchSubAdmin = useCallback((values: FilterSubadminProps) => {
 		const updatedFilterData = {
 			...filterData,
-        	search: values.search,
+        	search: values.search.trim(),
 			page: DEFAULT_PAGE,
 			offset: ((DEFAULT_PAGE ?? filterData.page) - 1) * filterData.limit,
 		};

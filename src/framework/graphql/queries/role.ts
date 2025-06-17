@@ -36,8 +36,8 @@ export const GET_ROLES_DATA = gql`
 `;
 export const GET_ROLES_DATALIST = gql`
 	${META_FRAGMENT}
-	query Roles($search: String, $limit: Int, $offset: Int, $sortBy: String, $sortOrder: String, $isActive: Boolean) {
-		roles(search: $search, limit: $limit, offset: $offset, sortBy: $sortBy, sortOrder: $sortOrder, is_active: $isActive	) {
+	query Roles($search: String, $limit: Int, $offset: Int, $sortBy: String, $sortOrder: String, $isActive: Boolean, $isAll: Boolean) {
+		roles(search: $search, limit: $limit, offset: $offset, sortBy: $sortBy, sortOrder: $sortOrder, is_active: $isActive, isAll: $isAll) {
     		data {
     		  rolesData {
     		    id
