@@ -36,8 +36,8 @@ export const CHANGE_SUBADMIN_PASSWORD = gql`
 
 export const CREATE_SUBADMIN = gql`
 	${META_FRAGMENT}
-	mutation CreateSubAdmin($email: String!, $password: String!, $firstName: String!, $lastName: String!, $middleName: String, $roleId: String) {
-		createSubAdmin(email: $email, password: $password, first_name: $firstName, last_name: $lastName, middle_name: $middleName, role_id: $roleId) {
+	mutation CreateSubAdmin($email: String!, $password: String!, $firstName: String!, $lastName: String!, $middleName: String, $roleId: String, $isActive: Boolean) {
+		createSubAdmin(email: $email, password: $password, first_name: $firstName, last_name: $lastName, middle_name: $middleName, role_id: $roleId, is_active: $isActive) {
     			data {
     				uuid
     				email
@@ -62,8 +62,8 @@ export const CREATE_SUBADMIN = gql`
 
 export const UPDATE_SUBADMIN = gql`
 	${META_FRAGMENT}
-	mutation UpdateSubAdmin($uuid: ID!, $firstName: String, $lastName: String, $middleName: String, $roleId: String) {
-		updateSubAdmin(uuid: $uuid, first_name: $firstName, last_name: $lastName, middle_name: $middleName, role_id: $roleId) {
+	mutation UpdateSubAdmin($uuid: ID!, $firstName: String, $lastName: String, $middleName: String, $roleId: String, $isActive: Boolean) {
+		updateSubAdmin(uuid: $uuid, first_name: $firstName, last_name: $lastName, middle_name: $middleName, role_id: $roleId, is_active: $isActive) {
 				meta {
 				...MetaFragment
 			}

@@ -102,7 +102,7 @@ const AddEditRole = ({ isRoleModelShow, onSubmitRole, roleVal, onClose, isRoleEd
 			<div id='addedit-role-model-child' tabIndex={-1} data-modal-show={true} aria-hidden='false' className={'model animate-fade-in '}>
 				<div className=' model-content'>
 					<div className='model-header'>
-						<p className='text-lg font-medium text-white  '>{isRoleEditable ? `${t('Update Role')} [${roleVal}]` : t('Add New Role')}</p>
+						<p className='text-lg font-medium text-white  '>{isRoleEditable ? `${t('Update Role')} [${roleObj?.role_name}]` : t('Add New Role')}</p>
 						<Button onClick={onClose} title={t('Close') ?? ''}>
 							<span className='mr-1 text-white w-2.5 h-2.5 inline-block svg-icon'>
 								<Cross />

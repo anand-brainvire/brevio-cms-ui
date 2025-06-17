@@ -1,7 +1,7 @@
 import React from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 // import { BannerIcon, ClipBoardIcon, Document, Email, Gift, Lock, PhoneCall, ProfileIcon, Question, SettingsSliders, User, ArrowRight, Marker, TimerIcon, SuggestionIcon, UserReportIcon, Star, Megaphone, QrCodeIcon, GeoLocationIcon, PlanManagementIcon, SubscriptionIcon } from '@components/icons/icons';
-import { Listing,Lock, ProfileIcon, User } from '@components/icons/icons';
+import { BannerIcon, Listing,Lock, ProfileIcon, User } from '@components/icons/icons';
 
 import { uuid } from '@utils/helpers';
 import { PERMISSION_LIST } from '@config/permission';
@@ -53,8 +53,8 @@ const UserReport = React.lazy(() => import('@views/userReport/index'));
 const AddEditUser = React.lazy(() => import('@views/userManagement/addEditUser'));
 const ViewUser = React.lazy(() => import('@views/userManagement/viewUser'));
 const ViewGeoLocation = React.lazy(() => import('@views/geoLocation/viewGeoLocation'));
-const Banner = React.lazy(() => import('@views/banner/index'));
-const AddEditBanner = React.lazy(() => import('@views/banner/addEditBanner'));
+const Author = React.lazy(() => import('@views/Author/index'));
+const AddEditAuthor = React.lazy(() => import('@views/Author/addEditAuthor'));
 const UpdateProfileForm = React.lazy(() => import('@views/adminProfile/updateAdmin'));
 const QrCode = React.lazy(() => import('@views/qrCode/index'));
 const AddEditQrCode = React.lazy(() => import('@views/qrCode/addEditQrCode'));
@@ -242,12 +242,14 @@ export const ROUTES: { [key: string]: string } = {
 	planManagement: 'plan-management',
 	subscriptionManagement: 'subscribe-plan',
 	subscribers: 'subcribers',
+	author: 'author',
 };
 export const RedirectPages = {
 	dashBoard: '/app/dashboard',
 	user: `/${ROUTES.app}/${ROUTES.user}`,
 	role: `/${ROUTES.app}/${ROUTES.role}`,
 	subAdmin: `/${ROUTES.app}/${ROUTES.subAdmin}`,
+	author: `/${ROUTES.app}/${ROUTES.author}`,
 	cms: `/${ROUTES.app}/${ROUTES.CMS}`,
 	suggestion: `/${ROUTES.app}/${ROUTES.suggestion}`,
 	review: `/${ROUTES.app}/${ROUTES.review}`,
@@ -311,9 +313,9 @@ export const privateRoutes: { path: string; element: React.LazyExoticComponent<(
 	{ path: `${ROUTES.city}/list`, element: City, permission: [PERMISSION_LIST.City.ListAccess] },
 	{ path: `${ROUTES.city}/add`, element: AddEditCity, permission: [PERMISSION_LIST.City.AddAccess] },
 	{ path: `${ROUTES.city}/edit/:id`, element: AddEditCity, permission: [PERMISSION_LIST.City.EditAccess] },
-	{ path: `${ROUTES.banner}/list`, element: Banner, permission: [PERMISSION_LIST.Banner.ListAccess] },
-	{ path: `${ROUTES.banner}/add`, element: AddEditBanner, permission: [PERMISSION_LIST.Banner.AddAccess] },
-	{ path: `${ROUTES.banner}/edit/:id`, element: AddEditBanner, permission: [PERMISSION_LIST.Banner.EditAccess] },
+	{ path: `${ROUTES.author}/list`, element: Author, permission: [PERMISSION_LIST.Banner.ListAccess] },
+	{ path: `${ROUTES.author}/add`, element: AddEditAuthor, permission: [PERMISSION_LIST.Banner.AddAccess] },
+	{ path: `${ROUTES.author}/edit/:id`, element: AddEditAuthor, permission: [PERMISSION_LIST.Banner.EditAccess] },
 	{ path: `${ROUTES.event}/list`, element: EventManagement, permission: [] },
 	{ path: `${ROUTES.event}/edit/:id`, element: AddEditEvents, permission: [] },
 	{ path: `${ROUTES.event}/view/:id`, element: ViewEvent, permission: [] },
@@ -494,14 +496,14 @@ export const SIDEBAR_NAVLINKS: sidebarNavlinksArray[] = [
 		childRoutes: [],
 		permissions: [PERMISSION_LIST.Role.ListAccess, PERMISSION_LIST.Permission.ListAccess],
 	},
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.banner}/${ROUTES.list}`,
-	// 	text: 'Author Management',
-	// 	icon: <BannerIcon />,
-	// 	redirectPage: RedirectPages.banner,
-	// 	childRoutes: [],
-	// 	permissions: [PERMISSION_LIST.Banner.ListAccess],
-	// },
+	{
+		to: `/${ROUTES.app}/${ROUTES.author}/${ROUTES.list}`,
+		text: 'Author Management',
+		icon: <BannerIcon />,
+		redirectPage: RedirectPages.author,
+		childRoutes: [],
+		permissions: [PERMISSION_LIST.Banner.ListAccess],
+	},
 
 	// {
 	// 	to: `/${ROUTES.app}/${ROUTES.settings}`,

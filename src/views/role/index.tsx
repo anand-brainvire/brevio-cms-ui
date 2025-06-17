@@ -12,7 +12,6 @@ import Button from '@components/button/button';
 import { Edit, MenuBurger, PlusCircle } from '@components/icons/icons';
 import TextInput from '@components/textinput/TextInput';
 import filterServiceProps from '@components/filter/filter';
-import { OptionsPropsForButton } from '@type/component';
 import RoleBaseGuard from '@components/roleGuard';
 import { PERMISSION_LIST } from '@config/permission';
 import useSaveFilterData from '@src/hooks/useSaveFilterData';
@@ -69,11 +68,8 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 		setRoleVal('');
 	}, []);
 
-	const roleEditFun = useCallback(
-		({ data }: OptionsPropsForButton) => {
-			setRoleObj(data);
+	const roleEditFun = useCallback(() => {
 			setIsRoleModelShow(true);
-			setRoleVal(roleObj.role_name);
 			setIsRoleEditable(true);
 		},
 		[roleObj, isRoleModelShow, isRoleEditable, roleVal]

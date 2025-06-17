@@ -31,7 +31,10 @@ const FilterUserManagement = ({ onSearchUser, clearSelectionUserMng, filterData 
 		initialValues,
 		onSubmit: (values) => {
 			clearSelectionUserMng();
-			onSearchUser(values);
+			onSearchUser({
+				...values,
+				search: values.search.trim(),
+			});
 		},
 	});
 

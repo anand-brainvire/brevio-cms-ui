@@ -12,19 +12,17 @@ export type UpdateBanner = {
 		meta: MetaRes;
 	};
 };
-export type bannerPagination = {
+export type authorPagination = {
 	page: number;
 	limit: number;
-	bannerTitle: string;
+	search: string;
 	createdBy: string;
 	status: number | null;
 	sortBy: string;
 	sortOrder: string;
 };
-export type FilterBannerProps = {
-	bannerTitle: string;
-	createdBy: string;
-	status: string;
+export type FilterAuthorProps = {
+	search: string;
 };
 
 export type ColArrType = {
@@ -35,8 +33,8 @@ export type ColArrType = {
 };
 
 export type BannerProps = {
-	onSearchBanner: (value: FilterBannerProps) => void;
-	filterData: bannerPagination;
+	onSearchAuthor: (value: FilterAuthorProps) => void;
+	filterData: authorPagination;
 };
 export type BannerChangeProps = {
 	onClose: () => void;
@@ -44,8 +42,6 @@ export type BannerChangeProps = {
 };
 
 export type BannerUpdateProps = {
-	BannerTitle: string;
-	bannerImage: string;
-	status: string;
-	bannerTitleArabic: string;
+	authorName: string;
+	status: number | string | boolean;
 };

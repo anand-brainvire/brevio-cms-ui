@@ -8,7 +8,6 @@ const useValidation = () => {
 	const {
 		abuseThreshold,
 		categorSuggestion,
-		BannerImage,
 		newPassword,
 		confirmPassword,
 		metaTitleEnglish,
@@ -40,7 +39,8 @@ const useValidation = () => {
 		description,
 		eventName,
 		template,
-		BannerTitle,
+		authorName,
+		// langCode,
 		ruleName,
 		descriptionenter,
 		geoLocationName,
@@ -71,7 +71,6 @@ const useValidation = () => {
 		templateType,
 		roleDropDown,
 		folderName,
-		BannerTitleArabic,
 		currencyCode,
 		phoneCode,
 		countryName,
@@ -243,12 +242,11 @@ const useValidation = () => {
 		});
 	};
 
-	const BannerValidationSchema = () => {
+	const AuthorValidationSchema = () => {
 		return Yup.object({
-			BannerTitle: BannerTitle,
+			authorName: authorName,
 			status: status,
-			bannerImage: BannerImage,
-			bannerTitleArabic: BannerTitleArabic,
+			// langCode: langCode,
 		});
 	};
 	const subAdminValidationSchema = ({ params }: validationProps) => {
@@ -314,7 +312,7 @@ const useValidation = () => {
 		forgotPasswordValidationSchema,
 		resetPasswordValidationSchema,
 		usermValidationSchema,
-		BannerValidationSchema,
+		AuthorValidationSchema,
 		subAdminValidationSchema,
 		suadminpasswordValidationSchema,
 		addEditEmailTemplateSchema,

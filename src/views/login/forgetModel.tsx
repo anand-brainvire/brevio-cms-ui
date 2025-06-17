@@ -32,9 +32,12 @@ const ForgetModel = ({ onClose, action, show }: ForgetModelProps): ReactElement 
 			})
 				.then((res) => {
 					const data = res?.data as ForgotPasswordResponse;
-					if (data?.forgotPassword?.meta?.statusCode === 200) {
-						toast.success(t(data?.forgotPassword?.meta?.message));
+					const meta = data?.forgotPassword?.meta;
+					if (meta?.statusCode === 200) {
+						toast.success(t(meta.message));
 						action();
+					} else {
+						toast.error(t(meta?.message || 'Something went wrong'));
 					}
 					formik.resetForm();
 				})

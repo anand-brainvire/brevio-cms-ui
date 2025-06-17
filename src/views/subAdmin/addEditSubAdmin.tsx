@@ -12,12 +12,13 @@ import { DropdownOptionType } from '@type/component';
 import { CreateSubAdminRes, RoleDataArr, UpdateSubAdmin } from '@framework/graphql/graphql';
 import { CREATE_SUBADMIN, UPDATE_SUBADMIN } from '@framework/graphql/mutations/subAdmin';
 import { useNavigate, useParams } from 'react-router-dom';
-import { IS_ALL, ROUTES } from '@config/constant';
+import { DEFAULT_STATUS, IS_ALL, ROUTES, STATUS, STATUS_RADIO } from '@config/constant';
 import { GET_SUBADMIN_BY_ID } from '@framework/graphql/queries/subAdmin';
 import { CheckCircle, Cross } from '@components/icons/icons';
 import useValidation from '@src/hooks/validations';
 import { whiteSpaceRemover } from '@utils/helpers';
 import { Loader } from '@components/index';
+import RadioButton from '@components/radiobutton/radioButton';
 
 const AddEditSubdmin = (): ReactElement => {
 	const { t } = useTranslation();
@@ -61,12 +62,11 @@ const AddEditSubdmin = (): ReactElement => {
 			if (data) {
 				formik.setValues({
 					firstName: data.first_name || '',
-					// middleName: data.middle_name || '',
 					lastName: data.last_name || '',
 					email: data.email || '',
 					password: '',
-					// confirmPassword: '',
-					roleId: data.role_uuid || '', // <-- Use role_uuid here
+					roleId: data.role_uuid || '',
+					status: data?.is_active ? STATUS.active : STATUS.inactive,
 				});
 			}
 		}
@@ -74,21 +74,20 @@ const AddEditSubdmin = (): ReactElement => {
 
 	const initialValues: CreateSubAdmin = {
 		firstName: '',
-		// middleName: '',
 		lastName: '',
 		email: '',
 		password: '',
-		// confirmPassword: '',
 		roleId: '',
+		status: DEFAULT_STATUS
 	};
 	const UpdateSubAdminFunction = (values: CreateSubAdmin) => {
 		updateSubAdmin({
 			variables: {
 				uuid: params?.id,
 				firstName: values?.firstName,
-				// middleName: values?.middleName,
 				lastName: values?.lastName,
 				roleId: values?.roleId,
+				isActive: Number(values.status) === STATUS.active,
 			},
 		})
 			.then((res) => {
@@ -104,8 +103,14 @@ const AddEditSubdmin = (): ReactElement => {
 			});
 	}
 	const createSubadminFunction = (values: CreateSubAdmin) => {
+		const { status, ...rest } = values;
+		const payload = {
+			...rest,
+			email: values?.email.toLowerCase(),
+			isActive: Number(values.status) === STATUS.active,
+		};
 		createSubAdmin({
-			variables: { ...values, email: values?.email.toLowerCase() },
+			variables: payload,
 		})
 			.then((res) => {
 				const data = res.data as CreateSubAdminRes;
@@ -118,7 +123,7 @@ const AddEditSubdmin = (): ReactElement => {
 			.catch(() => {
 				return;
 			});
-	}
+	};
 	const formik = useFormik({
 		initialValues,
 		validationSchema: subAdminValidationSchema({ params: params.id }),
@@ -184,6 +189,9 @@ const AddEditSubdmin = (): ReactElement => {
 						</div>
 						<div>
 							<TextInput id={'email'} onBlur={OnBlur} required={true} disabled={params.id !== undefined} placeholder={t('Email')} name='email' onChange={formik.handleChange} label={t('Email')} value={formik.values.email} error={getErrorSubAdmin('email')} />
+						</div>
+						<div>
+							<RadioButton id={'status'} required={true} checked={formik.values.status} onChange={formik.handleChange} name={'status'} radioOptions={STATUS_RADIO} label={t('Status')} />
 						</div>
 						{!params.id && <TextInput btnShowHide={showPassword} btnShowHideFun={handleToggleShowPassword} id={'password'} password={true} onBlur={OnBlur} required={true} placeholder={t('Password')} name='password' type={showPassword ? 'text' : 'password'} onChange={formik.handleChange} label={t('Password')} value={formik.values.password} error={formik.errors.password && formik.touched.password ? formik.errors.password : ''} />}
 						{/* {!params.id && <TextInput btnShowHide={showConfirmPassword} btnShowHideFun={handleToggleConfirmPassword} password={true} id={'confirmPassword'} onBlur={OnBlur} required={true} placeholder={t('Confirm Password')} type={showConfirmPassword ? 'text' : 'password'} name='confirmPassword' onChange={formik.handleChange} label={t('Confirm Password')} value={formik.values.confirmPassword} error={formik.errors.confirmPassword && formik.touched.confirmPassword ? formik.errors.confirmPassword : ''} />} */}
