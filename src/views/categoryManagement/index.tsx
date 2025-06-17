@@ -107,7 +107,7 @@ const categoryManagement = (): ReactElement => {
                         {t('Category List')}
                     </div>
                     <div className='flex flex-wrap gap-2'>
-                        <RoleBaseGuard permissions={[PERMISSION_LIST.FAQ.AddAccess]}>
+                        <RoleBaseGuard permissions={[PERMISSION_LIST.Category.AddAccess]}>
                             <Button className=' btn-primary' onClick={Navigation} type='button' label={t('Add New')}>
                                 <span className='inline-block w-4 h-4 mr-1 svg-icon'>
                                     <PlusCircle />
@@ -126,10 +126,9 @@ const categoryManagement = (): ReactElement => {
                         multipleDeleteMutation={GRP_DEL_FAQ}
                         updateStatusMutation={UPDATE_CATEGORY_STATUS}
                         actionWisePermissions={{
-                            edit: PERMISSION_LIST.FAQ.EditAccess,
-                            delete: PERMISSION_LIST.FAQ.DeleteAccess,
-                            changeStatus: PERMISSION_LIST.FAQ.ChangeStatusAccess,
-                            multipleDelete: PERMISSION_LIST.FAQ.GroupDeleteAcsess,
+                            edit: PERMISSION_LIST.Category.EditAccess,
+                            delete: PERMISSION_LIST.Category.DeleteAccess,
+                            changeStatus: PERMISSION_LIST.Category.ChangeStatusAccess,
                         }}
                         updatedFilterData={filterData}
                         actionData={{

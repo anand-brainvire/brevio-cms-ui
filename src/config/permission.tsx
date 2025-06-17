@@ -174,6 +174,20 @@ export const PERMISSION_LIST = {
 		DeleteAccess: 'DELETE_PLAN_MANAGEMENT',
 		GroupDeleteAcsess: 'GROUP_DELETE_PLAN_MANAGEMENT',
 	},
+	Category: {
+		ListAccess: 'CATEGORY_LIST',
+		AddAccess: 'CREATE_CATEGORY',
+		EditAccess: 'UPDATE_CATEGORY',
+		ChangeStatusAccess: 'CHANGE_STATUS_CATEGORY',
+		DeleteAccess: 'DELETE_CATEGORY',
+	},
+	Author: {
+		ListAccess: 'AUTHOR_LIST',
+		AddAccess: 'CREATE_AUTHOR',
+		EditAccess: 'UPDATE_AUTHOR',
+		ChangeStatusAccess: 'CHANGE_STATUS_AUTHOR',
+		DeleteAccess: 'DELETE_AUTHOR',
+	}
 };
 
 export const COMMAND_LIST: { [key: string]: string } = {
