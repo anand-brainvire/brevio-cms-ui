@@ -21,10 +21,10 @@ const CouponManagaement = () => {
 	const { localFilterData } = useSaveFilterData();
 	const [filterData, setFilterData] = useState<PaginationParamsCoupon>(
 		localFilterData('filterCoupon') ?? {
-			// limit: DEFAULT_LIMIT,
-			// page: DEFAULT_PAGE,
-			// sortBy: sortBy,
-			// sortOrder: sortOrder,
+			limit: DEFAULT_LIMIT,
+			page: DEFAULT_PAGE,
+			sortBy: sortBy,
+			sortOrder: sortOrder,
 			offerName: '',
 			startDate: '',
 			endDate: '',
