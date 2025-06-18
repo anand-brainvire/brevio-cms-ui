@@ -83,7 +83,7 @@ function Author() {
 						{t('Banner List')}
 					</div>
 					<div>
-						<RoleBaseGuard permissions={[PERMISSION_LIST.Banner.AddAccess]}>
+						<RoleBaseGuard permissions={[PERMISSION_LIST.Author.AddAccess]}>
 							<Button className='btn-primary  ' onClick={Navigation} type='button' label={t('Add New')}>
 								<span className='inline-block w-4 h-4 mr-1 svg-icon'>
 									<PlusCircle />
@@ -102,10 +102,9 @@ function Author() {
 						multipleDeleteMutation={GROUP_DELETE_BANNER}
 						updateStatusMutation={STATUS_CHANGE}
 						actionWisePermissions={{
-							edit: PERMISSION_LIST.Banner.EditAccess,
-							delete: PERMISSION_LIST.Banner.DeleteAccess,
-							changeStatus: PERMISSION_LIST.Banner.ChangeStatusAccess,
-							multipleDelete: PERMISSION_LIST.Banner.GroupDeleteAcsess,
+							edit: PERMISSION_LIST.Author.EditAccess,
+							delete: PERMISSION_LIST.Author.DeleteAccess,
+							changeStatus: PERMISSION_LIST.Author.ChangeStatusAccess,
 						}}
 						updatedFilterData={filterData}
 						actionData={{

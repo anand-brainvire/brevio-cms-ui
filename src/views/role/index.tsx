@@ -20,8 +20,7 @@ import { IColumnsProps, IListData } from '@components/BVDatatable/DataTable';
 
 const RolePermission = ({ refetchRoleData }: RoleProps) => {
 	const [isRoleModelShow, setIsRoleModelShow] = useState<boolean>(false);
-	const [roleObj, setRoleObj] = useState<RoleDataArr>({} as RoleDataArr);
-	const [roleVal, setRoleVal] = useState<string>('');
+	const [roleObj, setRoleObj] = useState<RoleDataArr | null>({} as RoleDataArr);
 	const { t } = useTranslation();
 	const [isRoleEditable, setIsRoleEditable] = useState<boolean>(false);
 	const { localFilterData } = useSaveFilterData();
@@ -46,6 +45,7 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 	 */
 	const onClose = useCallback(() => {
 		setIsRoleModelShow(false);
+		setRoleObj(null);
 	}, []);
 
 	/**
@@ -65,14 +65,13 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 	const createNewRole = useCallback(() => {
 		setIsRoleModelShow(true);
 		setIsRoleEditable(false);
-		setRoleVal('');
 	}, []);
 
 	const roleEditFun = useCallback(() => {
 			setIsRoleModelShow(true);
 			setIsRoleEditable(true);
 		},
-		[roleObj, isRoleModelShow, isRoleEditable, roleVal]
+		[roleObj, isRoleModelShow, isRoleEditable]
 	);
 
 	/**
@@ -146,7 +145,7 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 				/>
 			</div>
 
-			{isRoleModelShow && <AddEditRole roleVal={roleVal} isRoleModelShow={isRoleModelShow} isRoleEditable={isRoleEditable} onSubmitRole={onSubmitRole} onClose={onClose} roleObj={roleObj} />}
+			{isRoleModelShow && <AddEditRole isRoleModelShow={isRoleModelShow} isRoleEditable={isRoleEditable} onSubmitRole={onSubmitRole} onClose={onClose} roleObj={roleObj} />}
 		</div>
 	);
 };

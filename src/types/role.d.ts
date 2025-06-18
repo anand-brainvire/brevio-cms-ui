@@ -4,7 +4,7 @@ export type RoleEditProps = {
 	onSubmitRole: () => void;
 	onClose: () => void;
 	isRoleEditable: boolean;
-	roleObj: roleData;
+	roleObj: roleData | null;
 	roleVal?: string;
 };
 
