@@ -23,6 +23,7 @@ export type FilterCouponsProps = {
 	startDate?: string | Date;
 	endDate?: string | Date;
 	status: string;
+	categoryId: [];
 };
 export type CreateUpdateCouponProps = {
 	offerName: string;

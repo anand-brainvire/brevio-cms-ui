@@ -457,12 +457,33 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 													}
 												</span>
 											)}
+											{column.type === 'multipleText' && (
+												<span>
+													{Array.isArray(row[column.fieldName])
+														? row[column.fieldName]
+																.map((item: any) => item.name)
+																.filter(Boolean)
+																.join(', ')
+														: ''}
+												</span>
+											)}
 											{column.type === 'status' && (
 												<div className=' flex justify-center'>
 													{row?.[column.fieldName] === true || row?.[column.fieldName] === 1 ? (
 														<span className='badge badge-success rounded'>{t('Active')}</span>
 													) : (
 														<span className='badge badge-danger rounded'>{t('InActive')}</span>
+													)}
+												</div>
+											)}
+											{column.type === 'bookStatus' && (
+												<div className='flex justify-center'>
+													{row?.[column.fieldName] === 'published' ? (
+														<span className='badge badge-success rounded'>{t('Published')}</span>
+													) : row?.[column.fieldName] === 'unpublished' ? (
+														<span className='badge badge-danger rounded'>{t('Unpublished')}</span>
+													) : (
+														<span className='badge badge-warning rounded'>{t('Draft')}</span>
 													)}
 												</div>
 											)}

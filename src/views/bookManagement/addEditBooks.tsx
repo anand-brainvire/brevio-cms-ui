@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import { APPLICABLE, COUPON_RADIO_APPLICABLE_OPTIONS, COUPON_RADIO_IS_REUSABLE_OPTIONS, COUPON_RADIO_OPTION_COUPON_TYPE, DATE_FORMAT, DEFAULT_OFFERTYPE, IS_ALL, OFFER_TYPE, OFFER_USAGE, ROUTES } from '@config/constant';
 import { CreateCoupon, UpdateCoupon, UserData } from '@framework/graphql/graphql';
 import { CREATE_COUPON, UPDATE_COUPON } from '@framework/graphql/mutations/couponManagement';
-import { GET_COUPON_BY_ID } from '@framework/graphql/queries/couponManagement';
+import { GET_COUPON_BY_ID } from '@framework/graphql/queries/bookManagement';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -22,7 +22,7 @@ import 'primereact/resources/primereact.css';
 import WithTranslateFormErrors from '@components/customHooks/useTranslationFormErrors';
 import DatePicker from '@components/datapicker/datePicker';
 import { Loader } from '@components/index';
-const AddEditCoupons = () => {
+const AddEditBooks = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const CouponId = useParams();
@@ -120,7 +120,7 @@ const AddEditCoupons = () => {
 					if (data?.updateOffer?.meta?.statusCode === 200) {
 						toast.success(data?.updateOffer?.meta?.message);
 
-						navigate(`/${ROUTES.app}/${ROUTES.manageOffer}/${ROUTES.list}`);
+						navigate(`/${ROUTES.app}/${ROUTES.manageBooks}/${ROUTES.list}`);
 						formik.resetForm();
 						onCancel();
 					}
@@ -143,7 +143,7 @@ const AddEditCoupons = () => {
 					const data = res?.data as CreateCoupon;
 					if (data?.createOffer?.meta?.statusCode === 200) {
 						toast.success(data?.createOffer?.meta?.message);
-						navigate(`/${ROUTES.app}/${ROUTES.manageOffer}/list`);
+						navigate(`/${ROUTES.app}/${ROUTES.manageBooks}/list`);
 						formik.resetForm();
 					}
 				})
@@ -176,7 +176,7 @@ const AddEditCoupons = () => {
 	 * on clicking cancel it will redirect to main events page
 	 */
 	const onCancel = useCallback(() => {
-		navigate(`/${ROUTES.app}/${ROUTES.manageOffer}/${ROUTES.list}`);
+		navigate(`/${ROUTES.app}/${ROUTES.manageBooks}/${ROUTES.list}`);
 	}, []);
 	/**
 	 * Method that selects all the users if its value is '0'
@@ -268,4 +268,4 @@ const AddEditCoupons = () => {
 		</div>
 	);
 };
-export default AddEditCoupons;
+export default AddEditBooks;
