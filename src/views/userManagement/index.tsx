@@ -173,7 +173,8 @@ const UserManagement = (): ReactElement => {
 				<div className='card-body'>
 					<div className='flex justify-between mb-3'></div>
 					<BVDataTable
-						defaultActions={['delete', 'change_status', 'view', 'multiple_delete']}
+						// defaultActions={['delete', 'change_status', 'view']}
+						defaultActions={['view']}
 						columns={COL_ARR_USER_MNGT}
 						queryName={GET_USER}
 						sessionFilterName='filterusermangment'
