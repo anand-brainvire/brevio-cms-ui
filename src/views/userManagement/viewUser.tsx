@@ -52,11 +52,17 @@ const ViewUser = () => {
 			</div>
 			<div className='card-body'>
 				<div className='grid grid-cols-1 md:grid-cols-2'>
-					<div className='flex pb-2 flex-col sm:flex-row'>
+					{/* <div className='flex pb-2 flex-col sm:flex-row'>
 						<p className='mr-3 font-bold flex-1'>{t('Full Name')}</p>
 						<p className='px-0 sm:px-3 flex-1'>
 							{user?.first_name || ''} {user?.last_name || ''}
 						</p>
+					</div> */}
+					<div className='flex pb-2 flex-col sm:flex-row'>
+						<p className='mr-3 font-bold flex-1'>{t('Email')}</p>
+						<a href={`mailto:${user?.email}`} className='px-0 sm:px-3 flex-1 font-medium text-primary hover:underline cursor-pointer break-all'>
+							{user?.email}
+						</a>
 					</div>
 					<div className='flex pb-2 flex-col sm:flex-row'>
 						<p className='mr-3 font-bold flex-1'>{t('Registration Date')}</p>
@@ -70,12 +76,6 @@ const ViewUser = () => {
 								  )
 								: ''}
 						</p>
-					</div>
-					<div className='flex pb-2 flex-col sm:flex-row'>
-						<p className='mr-3 font-bold flex-1'>{t('Email')}</p>
-						<a href={`mailto:${user?.email}`} className='px-0 sm:px-3 flex-1 font-medium text-primary hover:underline cursor-pointer break-all'>
-							{user?.email}
-						</a>
 					</div>
 				</div>
 			</div>

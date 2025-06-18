@@ -10,8 +10,13 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
 	};
 	const renderPageNumbers = () => {
 		const PAGE_NUMBER_CMN: number[] = [];
-		const leftPageBoundary = Math.max(1, currentPage - Math.floor(MAX_DISPLAY_PAGE_COUNT / 2));
-		const rightPageBoundary = Math.min(totalPages, leftPageBoundary + MAX_DISPLAY_PAGE_COUNT - 1);
+		let leftPageBoundary = Math.max(1, currentPage - Math.floor(MAX_DISPLAY_PAGE_COUNT / 2));
+		let rightPageBoundary = leftPageBoundary + MAX_DISPLAY_PAGE_COUNT - 1;
+			
+		if (rightPageBoundary > totalPages) {
+			rightPageBoundary = totalPages;
+			leftPageBoundary = Math.max(1, rightPageBoundary - MAX_DISPLAY_PAGE_COUNT + 1);
+		}
 
 		for (let i = leftPageBoundary; i <= rightPageBoundary; i++) {
 			PAGE_NUMBER_CMN.push(i);

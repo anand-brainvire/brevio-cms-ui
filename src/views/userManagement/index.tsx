@@ -42,7 +42,7 @@ const UserManagement = (): ReactElement => {
 		{ name: t('Email'), sortable: true, type: 'text', fieldName: 'email' },
 		{ name: t('Registration At'), sortable: true, type: 'date', fieldName: 'created_at' },
 		// { name: t('Last Updated At'), sortable: true, type: 'date', fieldName: 'updated_at' },
-		{ name: t('Status'), sortable: true, type: 'status', fieldName: 'is_active' },
+		{ name: t('Status'), sortable: true, type: 'status', fieldName: 'is_active', headerCenter: 'true' },
 		// { name: t('Gender'), sortable: true, type: 'badge', fieldName: 'gender', conversationValue: UserGenderEnum },
 		// { name: t('Date of Birth'), sortable: true, type: 'date', fieldName: 'date_of_birth' },
 		// { name: t('Phone Number'), sortable: true, type: 'text', fieldName: 'phone_no' },
