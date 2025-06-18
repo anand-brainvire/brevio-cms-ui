@@ -20,7 +20,7 @@ import { IColumnsProps, IListData } from '@components/BVDatatable/DataTable';
 
 const RolePermission = ({ refetchRoleData }: RoleProps) => {
 	const [isRoleModelShow, setIsRoleModelShow] = useState<boolean>(false);
-	const [roleObj, setRoleObj] = useState<RoleDataArr>({} as RoleDataArr);
+	const [roleObj, setRoleObj] = useState<RoleDataArr | null>({} as RoleDataArr);
 	const { t } = useTranslation();
 	const [isRoleEditable, setIsRoleEditable] = useState<boolean>(false);
 	const { localFilterData } = useSaveFilterData();
@@ -45,6 +45,7 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 	 */
 	const onClose = useCallback(() => {
 		setIsRoleModelShow(false);
+		setRoleObj(null);
 	}, []);
 
 	/**
