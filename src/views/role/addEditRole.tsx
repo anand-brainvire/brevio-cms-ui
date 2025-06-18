@@ -13,12 +13,12 @@ import useValidation from '@src/hooks/validations';
 import { whiteSpaceRemover } from '@utils/helpers';
 import WithTranslateFormErrors from '@components/customHooks/useTranslationFormErrors';
 import { Loader } from '@components/index';
-const AddEditRole = ({ isRoleModelShow, onSubmitRole, roleVal, onClose, isRoleEditable, roleObj }: RoleEditProps) => {
+const AddEditRole = ({ isRoleModelShow, onSubmitRole, onClose, isRoleEditable, roleObj }: RoleEditProps) => {
 	const { t } = useTranslation();
 	const [updateRoleData, { loading: updateLoader }] = useMutation(UPDATE_ROLE);
 	const [createRoleData, { loading: createLoader }] = useMutation(CREATE_ROLE);
 	const initialValues: RoleInput = {
-		role: roleVal ?? '',
+		role: roleObj?.role_name ?? '',
 	};
 	const { addRoleValidationSchema } = useValidation();
 	const formik = useFormik({
