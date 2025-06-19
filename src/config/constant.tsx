@@ -1,7 +1,7 @@
 import React from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 // import { BannerIcon, ClipBoardIcon, Document, Email, Gift, Lock, PhoneCall, ProfileIcon, Question, SettingsSliders, User, ArrowRight, Marker, TimerIcon, SuggestionIcon, UserReportIcon, Star, Megaphone, QrCodeIcon, GeoLocationIcon, PlanManagementIcon, SubscriptionIcon } from '@components/icons/icons';
-import { BannerIcon, Listing,Lock, ProfileIcon, User } from '@components/icons/icons';
+import { Listing,Lock, ProfileIcon, User } from '@components/icons/icons';
 
 import { uuid } from '@utils/helpers';
 import { PERMISSION_LIST } from '@config/permission';
