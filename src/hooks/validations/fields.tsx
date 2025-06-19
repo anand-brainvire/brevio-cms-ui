@@ -52,12 +52,12 @@ const useValidationFields = () => {
 	const logo = Yup.mixed().notRequired();
 	const eventName = Yup.string().required(translationFun('Please enter event name'));
 	const announcementType = Yup.string().required(translationFun('Please select type'));
-	const description = Yup.string().required(translationFun('Please enter description'));
-	const categoryName = Yup.string().required(translationFun('Please enter category name'));
-	const categorySlug = Yup.string().required(translationFun('Please enter category slug')).min(3, translationFun('Category slug should not be less than 3 characters Please enter valid category slug')).max(50, translationFun('Category slug should not be greater than 50 characters'));
+	const description = Yup.string().required(translationFun('Please enter description')).max(50, translationFun('Description should not be greater than 50 characters'));
+	const categoryName = Yup.string().required(translationFun('Please enter category name')).min(2, translationFun('Category name should not be less than 2 characters Please enter valid category name')).max(25, translationFun('Category name should not be greater than 25 characters'));
+	const categorySlug = Yup.string().required(translationFun('Please enter category slug')).min(2, translationFun('Category slug should not be less than 2 characters Please enter valid category slug')).max(30, translationFun('Category slug should not be greater than 30 characters'));
 	const template = Yup.string().required(translationFun('Please enter template'));
 	const BannerTitleArabic = Yup.string().required(translationFun('Please enter banner title')).min(3, 'Banner title should not be less than 3 characters Please enter valid Banner Title').max(50, translationFun('Enter less than or equal to 50 characters'));
-	const authorName = Yup.string().required(translationFun('Please enter author name')).min(3, 'Name should not be less than 3 characters Please enter valid Author Name').max(50, translationFun('Enter less than or equal to 50 characters'));
+	const authorName = Yup.string().required(translationFun('Please enter author name')).min(3, 'Name should not be less than 3 characters Please enter valid Author Name').max(25, translationFun('Author name should not be greater than 25 characters'));
 	// const langCode = Yup.string().required(translationFun('Please enter language code')).min(2, translationFun('Language code should not be less than 2 characters Please enter valid language code')).max(10, translationFun('Language code should not be greater than 10 characters'));
 	const BannerImage = Yup.string().required(translationFun('Please upload banner image'));
 	const ruleName = Yup.string().required(translationFun('Please enter rule name'));
