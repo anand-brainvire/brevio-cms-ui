@@ -50,7 +50,7 @@ const EmailNotificationTemplate = React.lazy(() => import('@views/emailNotificat
 const AddEditEmailTemplate = React.lazy(() => import('@views/emailNotificationTemplate/addEditEmailTemplate'));
 const BsMedia = React.lazy(() => import('@views/bs-media/index'));
 const UserReport = React.lazy(() => import('@views/userReport/index'));
-const AddEditUser = React.lazy(() => import('@views/userManagement/addEditUser'));
+// const AddEditUser = React.lazy(() => import('@views/userManagement/addEditUser'));
 const ViewUser = React.lazy(() => import('@views/userManagement/viewUser'));
 const ViewGeoLocation = React.lazy(() => import('@views/geoLocation/viewGeoLocation'));
 const Author = React.lazy(() => import('@views/Author/index'));
@@ -224,7 +224,7 @@ export const ROUTES: { [key: string]: string } = {
 	announcement: 'announcement',
 	rolePermissions: 'role-permissions',
 	profile: 'profile',
-	category: 'category',
+	category: 'manage-category',
 	manageOffer: 'manage-offer',
 	geg: 'geg',
 	reset: 'reset',
@@ -242,7 +242,7 @@ export const ROUTES: { [key: string]: string } = {
 	planManagement: 'plan-management',
 	subscriptionManagement: 'subscribe-plan',
 	subscribers: 'subcribers',
-	author: 'author',
+	author: 'manage-author',
 };
 export const RedirectPages = {
 	dashBoard: '/app/dashboard',
@@ -305,8 +305,8 @@ export const privateRoutes: { path: string; element: React.LazyExoticComponent<(
 	{ path: `${ROUTES.announcement}/list`, element: Announcement, permission: [PERMISSION_LIST.Announcement.AddAccess] },
 	{ path: `${ROUTES.announcement}/add`, element: AddAnnouncement, permission: [PERMISSION_LIST.Announcement.AddAccess] },
 	{ path: `${ROUTES.announcement}/view/:id`, element: ViewAnnouncement, permission: [PERMISSION_LIST.Announcement.ViewAccess] },
-	{ path: `${ROUTES.user}/add`, element: AddEditUser, permission: [PERMISSION_LIST.UserManagement.AddAccess] },
-	{ path: `${ROUTES.user}/edit/:id`, element: AddEditUser, permission: [PERMISSION_LIST.UserManagement.EditAccess] },
+	// { path: `${ROUTES.user}/add`, element: AddEditUser, permission: [PERMISSION_LIST.UserManagement.AddAccess] },
+	// { path: `${ROUTES.user}/edit/:id`, element: AddEditUser, permission: [PERMISSION_LIST.UserManagement.EditAccess] },
 	{ path: `${ROUTES.user}/view/:id`, element: ViewUser, permission: [PERMISSION_LIST.UserManagement.ViewAccess] },
 	{ path: `${ROUTES.geoLocation}/view/:id`, element: ViewGeoLocation, permission: [PERMISSION_LIST.GeoLocation.ViewAccess] },
 
@@ -502,7 +502,7 @@ export const SIDEBAR_NAVLINKS: sidebarNavlinksArray[] = [
 		icon: <BannerIcon />,
 		redirectPage: RedirectPages.author,
 		childRoutes: [],
-		permissions: [PERMISSION_LIST.Banner.ListAccess],
+		permissions: [PERMISSION_LIST.Author.ListAccess],
 	},
 
 	// {
