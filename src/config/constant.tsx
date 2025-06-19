@@ -499,7 +499,7 @@ export const SIDEBAR_NAVLINKS: sidebarNavlinksArray[] = [
 	{
 		to: `/${ROUTES.app}/${ROUTES.author}/${ROUTES.list}`,
 		text: 'Author Management',
-		icon: <BannerIcon />,
+		icon: <ProfileIcon />,
 		redirectPage: RedirectPages.author,
 		childRoutes: [],
 		permissions: [PERMISSION_LIST.Author.ListAccess],

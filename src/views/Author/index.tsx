@@ -6,7 +6,7 @@ import { DELETE_AUTHOR, GROUP_DELETE_BANNER, STATUS_CHANGE } from '@framework/gr
 import { authorPagination, FilterAuthorProps, ColArrType } from '@type/banner';
 import FilterBanner from '@views/Author/filteredData';
 import { useTranslation } from 'react-i18next';
-import { BannerIcon, PlusCircle } from '@components/icons/icons';
+import { PlusCircle, ProfileIcon } from '@components/icons/icons';
 import Button from '@components/button/button';
 import RoleBaseGuard from '@components/roleGuard';
 import { PERMISSION_LIST } from '@config/permission';
@@ -78,7 +78,7 @@ function Author() {
 				<div className='card-header '>
 					<div className='flex items-center'>
 						<span className='w-3.5 h-3.5 mr-2 inline-block svg-icon'>
-							<BannerIcon />
+							<ProfileIcon />
 						</span>
 						{t('Author List')}
 					</div>
