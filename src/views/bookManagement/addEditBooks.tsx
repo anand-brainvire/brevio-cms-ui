@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { APPLICABLE, COUPON_RADIO_APPLICABLE_OPTIONS, COUPON_RADIO_IS_REUSABLE_OPTIONS, COUPON_RADIO_OPTION_COUPON_TYPE, DATE_FORMAT, DEFAULT_OFFERTYPE, IS_ALL, OFFER_TYPE, OFFER_USAGE, ROUTES } from '@config/constant';
 import { CreateCoupon, UpdateCoupon, UserData } from '@framework/graphql/graphql';
-import { CREATE_COUPON, UPDATE_COUPON } from '@framework/graphql/mutations/couponManagement';
+import { CREATE_COUPON, UPDATE_COUPON } from '@framework/graphql/mutations/bookManagement';
 import { GET_COUPON_BY_ID } from '@framework/graphql/queries/bookManagement';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

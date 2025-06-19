@@ -1,7 +1,7 @@
 import { FETCH_BOOKS } from '@framework/graphql/queries/bookManagement';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { COUPON_STATUS_CHANGE_BY_ID, DELETE_COUPON_BY_ID, GROUP_DELETE_COUPON } from '@framework/graphql/mutations/couponManagement';
+import { BOOK_PUBLISH_STATUS, DELETE_BOOK_BY_ID, GROUP_DELETE_COUPON } from '@framework/graphql/mutations/bookManagement';
 import FilterBooks from '@views/bookManagement/filterBooks';
 import Button from '@components/button/button';
 import filterServiceProps from '@components/filter/filter';
@@ -97,13 +97,13 @@ const CouponManagaement = () => {
 				</div>
 				<div className='card-body'>
 					<BVDataTable
-						defaultActions={['edit', 'delete', 'change_status', 'multiple_delete']}
+						defaultActions={['edit', 'delete', 'change_book_status', 'multiple_delete']}
 						columns={COL_ARR_COUPONS}
 						queryName={FETCH_BOOKS}
 						sessionFilterName='filterCoupon'
-						singleDeleteMutation={DELETE_COUPON_BY_ID}
+						singleDeleteMutation={DELETE_BOOK_BY_ID}
 						multipleDeleteMutation={GROUP_DELETE_COUPON}
-						updateStatusMutation={COUPON_STATUS_CHANGE_BY_ID}
+						updateStatusMutation={BOOK_PUBLISH_STATUS}
 						actionWisePermissions={{
 							edit: PERMISSION_LIST.Coupon.EditAccess,
 							delete: PERMISSION_LIST.Coupon.DeleteAccess,

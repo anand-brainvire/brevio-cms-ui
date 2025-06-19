@@ -1,10 +1,10 @@
 import { gql } from '@apollo/client';
 import { META_FRAGMENT } from '@framework/graphql/fragments';
 
-export const DELETE_COUPON_BY_ID = gql`
+export const DELETE_BOOK_BY_ID = gql`
 	${META_FRAGMENT}
-	mutation DeleteOffer($uuid: UUID) {
-		deleteOffer(uuid: $uuid) {
+	mutation DeleteBook($uuid: ID!) {
+		deleteBook(uuid: $uuid) {
 			meta {
 				...MetaFragment
 			}
@@ -12,26 +12,10 @@ export const DELETE_COUPON_BY_ID = gql`
 	}
 `;
 
-export const COUPON_STATUS_CHANGE_BY_ID = gql`
+export const BOOK_PUBLISH_STATUS = gql`
 	${META_FRAGMENT}
-	mutation UpdateOfferStatus($uuid: UUID, $status: Int) {
-		updateOfferStatus(uuid: $uuid, status: $status) {
-			data {
-				id
-				uuid
-				offer_name
-				offer_code
-				offer_type
-				value
-				offer_usage
-				applicable
-				total_usage
-				status
-				start_date
-				end_date
-				created_at
-				updated_at
-			}
+	mutation TogglePublishBook($uuid: UUID) {
+		togglePublishBook(uuid: $uuid) {
 			meta {
 				...MetaFragment
 			}

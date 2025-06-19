@@ -477,13 +477,18 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 												</div>
 											)}
 											{column.type === 'bookStatus' && (
-												<div className='flex justify-center'>
+												<div className='flex flex-col items-center justify-center'>
 													{row?.[column.fieldName] === 'published' ? (
 														<span className='badge badge-success rounded'>{t('Published')}</span>
 													) : row?.[column.fieldName] === 'unpublished' ? (
 														<span className='badge badge-danger rounded'>{t('Unpublished')}</span>
 													) : (
 														<span className='badge badge-warning rounded'>{t('Draft')}</span>
+													)}
+											
+													{/* Show "Modified" label if is_content_modified is true */}
+													{row?.is_content_modified && (
+														<span className='text-xs text-gray-500 mt-1'>{t('Modified')}</span>
 													)}
 												</div>
 											)}
@@ -536,6 +541,34 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 															</div>
 														</RoleBaseGuard>
 													)}
+													{defaultActions?.includes('change_book_status') && actionWisePermissions?.changeStatus && (
+													<RoleBaseGuard permissions={[actionWisePermissions?.changeStatus]}>
+														<div title={t('Change Status') ?? ''} className='flex justify-center'>
+															<span
+																aria-label={row?.[`${statusKey}`]} aria-hidden='true' className='font-medium text-blue-600 mt-2'>
+																<label
+																	title={t(AccesibilityNames.ChangeStatus).toString()}
+																	className={`relative inline-flex items-center cursor-pointer ${row?.[`${statusKey}`] === 'draft' ? 'cursor-not-allowed opacity-50' : ''}`}>
+																	<input
+																		type='checkbox'
+																		className='sr-only peer'
+																		value={row?.[`${statusKey}`]}
+																		checked={row?.[`${statusKey}`] === 'published'}
+																		onChange={() => {
+																			// Only allow toggle if not in 'draft'
+																			if (row?.[`${statusKey}`] !== 'draft') {
+																				statusPopup(row?.[`${idKey}`], row?.[`${statusKey}`]);
+																			}
+																		}}
+																		disabled={row?.[`${statusKey}`] === 'draft'}
+																	/>
+																	<div className='w-7 h-4 bg-gray-400 rounded-full peer peer-focus:ring-3 peer-focus:ring-red-200 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[""] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-primary'></div>
+																</label>
+															</span>
+														</div>
+													</RoleBaseGuard>
+													)}
+
 													{defaultActions?.includes('delete') && actionWisePermissions?.delete && (
 														<RoleBaseGuard permissions={[actionWisePermissions?.delete]}>
 															<Button title={AccesibilityNames.Delete} route={''} onClick={() => deletePopup(row?.[`${idKey}`], 'single')} icon={<Trash />} spanClassName='svg-icon inline-block h-3.5 w-3.5' className='btn-default' />

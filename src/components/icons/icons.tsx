@@ -441,16 +441,21 @@ const BookIcon = () => (
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
 		viewBox="0 0 512 512"
-		shapeRendering="geometricPrecision"
-		textRendering="geometricPrecision"
-		imageRendering="optimizeQuality"
-		fillRule="evenodd"
-		clipRule="evenodd"
+		fill="none"
+		stroke="currentColor"
+		strokeWidth="32"
+		strokeLinecap="round"
+		strokeLinejoin="round"
 	>
-		<path
-			fillRule="nonzero"
-			d="M96 64c-17.67 0-32 14.33-32 32v320c0 17.67 14.33 32 32 32h320c17.67 0 32-14.33 32-32V96c0-17.67-14.33-32-32-32H96zm0-32h320c35.35 0 64 28.65 64 64v320c0 35.35-28.65 64-64 64H96c-35.35 0-64-28.65-64-64V96c0-35.35 28.65-64 64-64zM144 144h224v32H144v-32zm0 64h224v32H144v-32zm0 64h160v32H144v-32z"
-		/>
+		<rect x="64" y="64" width="384" height="384" rx="48" ry="48" />
+		<line x1="144" y1="176" x2="368" y2="176" />
+		<line x1="144" y1="240" x2="368" y2="240" />
+		<line x1="144" y1="304" x2="304" y2="304" />
+		{/* Inner lines (black lines like text) */}
+		<line x1="144" y1="176" x2="368" y2="176" stroke="black" strokeWidth="32" strokeLinecap="round" />
+		<line x1="144" y1="240" x2="368" y2="240" stroke="black" strokeWidth="32" strokeLinecap="round" />
+		<line x1="144" y1="304" x2="304" y2="304" stroke="black" strokeWidth="32" strokeLinecap="round" />
+
 	</svg>
 );
 

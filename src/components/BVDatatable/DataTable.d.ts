@@ -52,7 +52,7 @@ export interface IBVDataTablesProps {
 	sessionFilterName: string;
 	updatedFilterData: IFilterTypes;
 	actionWisePermissions?: IActionWisePermissions;
-	defaultActions: Array<'edit' | 'delete' | 'change_status' | 'view' | 'multiple_delete'> | null;
+	defaultActions: Array<'edit' | 'delete' | 'change_status'| 'change_book_status' | 'view' | 'multiple_delete'> | null;
 	actionData?: IActionData;
 	extraActions?: ReactNode;
 	statusKey?: string;
