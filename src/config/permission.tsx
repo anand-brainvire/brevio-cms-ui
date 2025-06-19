@@ -12,10 +12,8 @@ export const PERMISSION_LIST = {
 		ChangePasswordAccess: 'CHANGE_PASSWORD_SUB_ADMIN',
 	},
 	UserManagement: {
-		ListAccess: 'USERS_LIST_PAGINATION',
-		AddAccess: '',
-		EditAccess: 'USER_UPDATE',
-		ViewAccess: 'USER_VIEW',
+		ListAccess: 'LIST_USERS',
+		ViewAccess: 'VIEW_USER',
 		ChangeStatusAccess: 'USER_UPDATE_STATUS',
 		DeleteAccess: 'USER_DELETE',
 		GroupDeleteAcsess: 'GROUP_DELETE_USERS',
@@ -58,15 +56,15 @@ export const PERMISSION_LIST = {
 		ViewAccess: 'FETCH_SINGLE_ANNOUNCEMENT',
 	},
 	Role: {
-		ListAccess: 'ROLE_LIST',
-		AddAccess: 'ROLE_CREATE',
-		EditAccess: 'ROLE_UPDATE',
+		ListAccess: 'LIST_ROLE',
+		AddAccess: 'CREATE_ROLE',
+		EditAccess: 'UPDATE_ROLE',
 		ChangeStatusAccess: 'ROLE_CHANGE_STATUS',
-		DeleteAccess: 'ROLE_DELETE',
+		DeleteAccess: 'DELETE_ROLE',
 	},
 	Permission: {
-		ListAccess: 'FETCH_MODULE_WISE_PERMISSIONS',
-		createAccess: 'CREATE_PERMISSION',
+		ListAccess: 'FETCH_ROLE_PERMISSIONS',
+		createAccess: 'UPDATE_ROLE_PERMISSIONS',
 	},
 	Settings: {
 		ListAccess: 'SETTING_LIST',
@@ -175,18 +173,25 @@ export const PERMISSION_LIST = {
 		GroupDeleteAcsess: 'GROUP_DELETE_PLAN_MANAGEMENT',
 	},
 	Category: {
-		ListAccess: 'CATEGORY_LIST',
+		ListAccess: 'LIST_CATEGORY',
 		AddAccess: 'CREATE_CATEGORY',
 		EditAccess: 'UPDATE_CATEGORY',
-		ChangeStatusAccess: 'CHANGE_STATUS_CATEGORY',
+		ChangeStatusAccess: 'CATEGORY_CHANGE_STATUS',
 		DeleteAccess: 'DELETE_CATEGORY',
 	},
 	Author: {
-		ListAccess: 'AUTHOR_LIST',
+		ListAccess: 'LIST_AUTHOR',
 		AddAccess: 'CREATE_AUTHOR',
 		EditAccess: 'UPDATE_AUTHOR',
-		ChangeStatusAccess: 'CHANGE_STATUS_AUTHOR',
+		ChangeStatusAccess: 'AUTHOR_CHANGE_STATUS',
 		DeleteAccess: 'DELETE_AUTHOR',
+	},
+	BOOK: {
+		ListAccess: 'LIST_BOOK',
+		AddAccess: 'CREATE_BOOK',
+		EditAccess: 'UPDATE_BOOK',
+		ChangeStatusAccess: 'BOOK_CHANGE_STATUS',
+		DeleteAccess: 'DELETE_BOOK',
 	}
 };
 

@@ -33,6 +33,7 @@ const UserManagement = (): ReactElement => {
 			sortBy: sortBy,
 			sortOrder: sortOrder,
 			search: '',
+			offset: ((DEFAULT_PAGE ?? DEFAULT_PAGE) - 1) * DEFAULT_LIMIT,
 		}
 	);
 	// const [isLoadingDownloadFile, setIsLoadingDownloadFile] = useState<boolean>(false);
@@ -64,6 +65,7 @@ const UserManagement = (): ReactElement => {
 			// gender: parseInt(values.gender),
 			// phoneNo: values.phoneNo,
 			page: DEFAULT_PAGE,
+			offset: ((DEFAULT_PAGE ?? filterData.page) - 1) * filterData.limit,
 		};
 		setFilterData(updatedFilterData);
 		filterServiceProps.saveState('filterusermangment', JSON.stringify(updatedFilterData));
@@ -182,7 +184,6 @@ const UserManagement = (): ReactElement => {
 						// multipleDeleteMutation={GRP_DEL_USER}
 						updateStatusMutation={CHANGE_USER_STATUS}
 						actionWisePermissions={{
-							edit: PERMISSION_LIST.UserManagement.EditAccess,
 							delete: PERMISSION_LIST.UserManagement.DeleteAccess,
 							changeStatus: PERMISSION_LIST.UserManagement.ChangeStatusAccess,
 							multipleDelete: PERMISSION_LIST.UserManagement.GroupDeleteAcsess,

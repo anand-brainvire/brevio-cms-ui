@@ -52,7 +52,6 @@ const UserProfilePasswordChange = (): ReactElement => {
 					}
 				})
 				.catch(() => {
-					toast.error(t('Something went wrong'));
 					return;
 				});
 		},
