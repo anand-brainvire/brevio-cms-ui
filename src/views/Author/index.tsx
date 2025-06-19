@@ -80,7 +80,7 @@ function Author() {
 						<span className='w-3.5 h-3.5 mr-2 inline-block svg-icon'>
 							<BannerIcon />
 						</span>
-						{t('Banner List')}
+						{t('Author List')}
 					</div>
 					<div>
 						<RoleBaseGuard permissions={[PERMISSION_LIST.Author.AddAccess]}>
