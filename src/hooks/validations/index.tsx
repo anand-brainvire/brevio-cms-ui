@@ -9,6 +9,7 @@ const useValidation = () => {
 		abuseThreshold,
 		categorSuggestion,
 		newPassword,
+		currentPassword,
 		confirmPassword,
 		metaTitleEnglish,
 		descriptionEnglish,
@@ -99,6 +100,7 @@ const useValidation = () => {
 	const changeProfileValidationSchema = Yup.object({
 		newPassword: newPassword,
 		confirmPassword: confirmPassword,
+		oldPassword: currentPassword,
 	});
 
 	const updateAdminValidationSchema = Yup.object({
