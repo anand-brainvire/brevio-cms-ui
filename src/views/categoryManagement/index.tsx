@@ -35,7 +35,7 @@ const categoryManagement = (): ReactElement => {
         { name: t('Name'), sortable: false, fieldName: 'category_translations', type: 'multilang', translationKey: 'name' },
         { name: t('Slug'), sortable: false, fieldName: 'slug', type: 'text' },
         { name: t('Description'), sortable: false, fieldName: 'category_translations', type: 'multilang', translationKey: 'description' },
-        { name: t('Status'), sortable: true, fieldName: 'is_active', type: 'status', headerCenter: 'true' },
+        { name: t('Status'), sortable: false, fieldName: 'is_active', type: 'status', headerCenter: 'true' },
     ] as ColArrType[];
 
     const navigate = useNavigate();
