@@ -549,7 +549,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 			{isDeletePopup && (singleDeleteId ? <CommonModel warningText={DELETE_WARING_TEXT} onClose={onClose} action={singleDeleteAction} show={isDeletePopup} /> : <CommonModel warningText={GROUP_DELETE_WARING_TEXT} onClose={onClose} action={multipleDeleteAction} show={isDeletePopup} />)}
 			{isStatusPopup && (
 				<CommonModel
-					warningText={`Are you sure want to change user status to ${nextStatus}?`}
+					warningText={`Are you sure want to change status to ${nextStatus}?`}
 					onClose={onClose}
 					action={changeStatusAction}
 					show={isStatusPopup}
