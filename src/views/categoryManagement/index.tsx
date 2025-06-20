@@ -32,7 +32,7 @@ const categoryManagement = (): ReactElement => {
     const [searchInput, setSearchInput] = useState(filterData.search || '');
 
     const COL_ARR_CATEGORY = [
-        { name: t('Name'), sortable: true, fieldName: 'category_translations', type: 'multilang', translationKey: 'name' },
+        { name: t('Name'), sortable: false, fieldName: 'category_translations', type: 'multilang', translationKey: 'name' },
         { name: t('Slug'), sortable: true, fieldName: 'slug', type: 'text' },
         { name: t('Description'), sortable: false, fieldName: 'category_translations', type: 'multilang', translationKey: 'description' },
         { name: t('Status'), sortable: true, fieldName: 'is_active', type: 'status', headerCenter: 'true' },
