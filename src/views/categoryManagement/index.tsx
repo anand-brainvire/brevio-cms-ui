@@ -21,10 +21,11 @@ const categoryManagement = (): ReactElement => {
     const [filterData, setFilterData] = useState<PaginationParams>(
         localFilterData('filterFaqmangment') ?? {
             limit: DEFAULT_LIMIT,
-            offset: DEFAULT_PAGE,
+            offset: ((DEFAULT_PAGE ?? DEFAULT_PAGE) - 1) * DEFAULT_LIMIT,
             sortBy: 'created_at',
             sortOrder: sortOrder,
             search: '',
+            page: DEFAULT_PAGE,
         }
     );
 
@@ -48,6 +49,7 @@ const categoryManagement = (): ReactElement => {
             ...filterData,
             search: searchInput.trim(),
             page: DEFAULT_PAGE,
+            offset: ((DEFAULT_PAGE ?? filterData.page) - 1) * filterData.limit,
         };
         setFilterData(updatedFilterData);
         filterServiceProps.saveState('filterFaqmangment', JSON.stringify(updatedFilterData));
