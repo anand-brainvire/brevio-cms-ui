@@ -74,13 +74,10 @@ export const whiteSpaceRemover = (event: React.FocusEvent<HTMLInputElement> | Re
  */
 export const errorHandler = async (error: MetaRes, callBack?: CallableFunction) => {
 	const errorData = error;
-	if (errorData?.messageCode.includes('INVALID_REFRESH_TOKEN') || errorData?.status === 'UNAUTHENTICATED') {
+	if (errorData?.messageCode.includes('INVALID_REFRESH_TOKEN')) {
 		localStorage.clear();
 		sessionStorage.clear();
-		toast.error(t('Session expired, please login again'));
-		setTimeout(() => {
-			window.location.href = `/${ROUTES.login}`;
-		}, 500);
+		window.location.href = `/${ROUTES.login}`;
 	} else if (Array.isArray(errorData?.errors) && errorData?.errors?.length > 0) {
 		errorData.errors.forEach((err) => {
 			toast.error(err?.error);
