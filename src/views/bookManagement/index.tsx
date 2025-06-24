@@ -1,5 +1,5 @@
 import { FETCH_BOOKS } from '@framework/graphql/queries/bookManagement';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BOOK_PUBLISH_STATUS, DELETE_BOOK_BY_ID, GROUP_DELETE_COUPON } from '@framework/graphql/mutations/bookManagement';
 import FilterBooks from '@views/bookManagement/filterBooks';
@@ -59,7 +59,7 @@ const bookManagaement = () => {
 	 * @param values are used set the filter data
 	 */
 	const onSearchCoupon = useCallback(
-	(values: FilterCouponsProps & { filter?: any }) => {
+	(values: FilterCouponsProps & { filter?: PaginationParamsCoupon['filter'] }) => {
 		const payload = {
 			sortBy: 'updated_at',
 			sortOrder: sortOrder,
@@ -74,11 +74,11 @@ const bookManagaement = () => {
 	[filterData]
 );
 
-	useEffect(() => {
-  		if (defaultCategoryId) {
-  		  navigate(`/${ROUTES.app}/${ROUTES.manageBooks}/${ROUTES.list}`, { replace: true });
-  		}
-	}, []);
+	// useEffect(() => {
+  	// 	if (defaultCategoryId) {
+  	// 	  navigate(`/${ROUTES.app}/${ROUTES.manageBooks}/${ROUTES.list}`, { replace: true });
+  	// 	}
+	// }, []);
 
 
 	/**

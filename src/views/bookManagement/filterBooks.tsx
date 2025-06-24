@@ -6,7 +6,7 @@ import { AccesibilityNames, BOOK_STATUS_DRP, IS_ALL } from '@config/constant';
 import { useFormik } from 'formik';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CouponsManagementProps, FilterCouponsProps } from '@type/bookManagement';
+import { CouponsManagementProps, FilterCouponsProps, PaginationParamsCoupon } from '@type/bookManagement';
 import filterServiceProps from '@components/filter/filter';
 import { MultiSelect } from 'primereact/multiselect';
 import { useQuery } from '@apollo/client';
@@ -37,7 +37,7 @@ const FilterBooks = ({ onSearchCoupon, filterData, defaultCategoryId}: CouponsMa
 				isContentModified = true;
 				finalStatus = statusLabel.includes('Published') ? 'Published' : 'Unpublished';
 			}
-			const filter: any = {}; // Start with empty filter
+			const filter: PaginationParamsCoupon['filter'] = {}; // Start with empty filter
 			// Add only if value exists
 			if (values.search?.trim()) {
 				filter.search = values.search.trim();

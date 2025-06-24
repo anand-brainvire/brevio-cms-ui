@@ -4,8 +4,8 @@ export type PaginationParamsCoupon = {
 			status?: number | null | string;
 			isContentModified?: boolean | null;
 		};
-		search: string | null;
-		categories: string[] | null;
+		search?: string | null;
+		categories?: string[] | null;
 	};
 	limit: number;
 	offset: number;
