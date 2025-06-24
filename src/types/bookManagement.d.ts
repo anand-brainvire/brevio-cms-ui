@@ -1,12 +1,16 @@
 export type PaginationParamsCoupon = {
+	filter?: {
+		statusFilter?: {
+			status?: number | null | string;
+			isContentModified?: boolean | null;
+		};
+		search: string | null;
+		categories: string[] | null;
+	};
 	limit: number;
-	page: number;
+	offset: number;
 	sortBy: string;
 	sortOrder: string;
-	offerName: string;
-	startDate?: string | Date;
-	endDate?: string | Date;
-	status: number | null;
 };
 export type CouponColArrType = {
 	name: string;
@@ -14,16 +18,14 @@ export type CouponColArrType = {
 	fildName: string;
 };
 export type CouponsManagementProps = {
+	defaultCategoryId?: string
 	onSearchCoupon: (values: FilterCouponsProps) => void;
-	clearSelectionCoupons: () => void;
 	filterData: PaginationParamsCoupon;
 };
 export type FilterCouponsProps = {
-	offerName: string;
-	startDate?: string | Date;
-	endDate?: string | Date;
-	status: string;
-	categoryId: [];
+	search: string;
+	status?: string;
+	categoryId?: string[];
 };
 export type CreateUpdateCouponProps = {
 	offerName: string;

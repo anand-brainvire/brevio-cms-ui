@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { CreateUpdateCouponProps, GetCouponRes, UsersDataStructureType } from '@type/couponManagement';
+import { CreateUpdateCouponProps, GetCouponRes, UsersDataStructureType } from '@type/bookManagement';
 import useValidation from '@src/hooks/validations';
 import { useFormik } from 'formik';
 import TextInput from '@components/textinput/TextInput';

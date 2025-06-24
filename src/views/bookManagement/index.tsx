@@ -1,5 +1,5 @@
 import { FETCH_BOOKS } from '@framework/graphql/queries/bookManagement';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BOOK_PUBLISH_STATUS, DELETE_BOOK_BY_ID, GROUP_DELETE_COUPON } from '@framework/graphql/mutations/bookManagement';
 import FilterBooks from '@views/bookManagement/filterBooks';
@@ -9,28 +9,42 @@ import useSaveFilterData from '@src/hooks/useSaveFilterData';
 import RoleBaseGuard from '@components/roleGuard';
 import { PERMISSION_LIST } from '@config/permission';
 import BVDataTable from '@components/BVDatatable/BVDataTable';
-import { Gift, PlusCircle } from '@components/icons/icons';
-import { DEFAULT_LIMIT, DEFAULT_PAGE, sortBy, sortOrder, ROUTES } from '@config/constant';
-import { PaginationParamsCoupon, FilterCouponsProps } from '@type/couponManagement';
-import { useNavigate } from 'react-router-dom';
+import { BookIcon, PlusCircle } from '@components/icons/icons';
+import { DEFAULT_LIMIT, DEFAULT_PAGE,sortOrder, ROUTES } from '@config/constant';
+import { PaginationParamsCoupon, FilterCouponsProps } from '@type/bookManagement';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { IColumnsProps } from '@components/BVDatatable/DataTable';
 
-const CouponManagaement = () => {
+const bookManagaement = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const { localFilterData } = useSaveFilterData();
-	const [filterData, setFilterData] = useState<PaginationParamsCoupon>(
-		localFilterData('filterCoupon') ?? {
+	const page = DEFAULT_PAGE;
+	const location = useLocation();
+	const queryParams = new URLSearchParams(location.search);
+	const defaultCategoryId = queryParams.get('categoryId');
+	const [filterData, setFilterData] = useState<PaginationParamsCoupon>(() => {
+  	const saved = localFilterData('filterCoupon');
+	if (defaultCategoryId) {
+		return {
+			limit: DEFAULT_LIMIT,
+			sortBy: 'updated_at',
+			sortOrder: sortOrder,
+			offset: 0,
+			filter: {
+			  categories: [defaultCategoryId]
+			}
+		};
+		}	
+		return saved ?? {
 			limit: DEFAULT_LIMIT,
 			page: DEFAULT_PAGE,
-			sortBy: sortBy,
+			sortBy: 'updated_at',
 			sortOrder: sortOrder,
-			offerName: '',
-			startDate: '',
-			endDate: '',
-			status: null,
-		}
-	);
+			offset: ((DEFAULT_PAGE ?? DEFAULT_PAGE) - 1) * DEFAULT_LIMIT,
+		};
+	});
+
 	const COL_ARR_COUPONS = [
 		{ name: t('Book Title'), sortable: true, fieldName: 'title', type: 'text' },
 		{ name: t('Category'), sortable: true, fieldName: 'categories', type: 'multipleText' },
@@ -39,30 +53,33 @@ const CouponManagaement = () => {
 		{ name: t('Status'), sortable: false, fieldName: 'status', type: 'bookStatus', headerCenter: true },
 		{ name: t('Last Updated'), sortable: true, fieldName: 'start_date', type: 'date' },
 	] as IColumnsProps[];
-	const [selectedCoupons, setSelectedCoupons] = useState<Array<string>>([]);
 
 	/**
 	 *
 	 * @param values are used set the filter data
 	 */
 	const onSearchCoupon = useCallback(
-		(values: FilterCouponsProps) => {
-			setFilterData({
-				...filterData,
-				offerName: values.offerName,
-				status: parseInt(values.status),
-				startDate: values.startDate,
-				endDate: values.endDate,
-				page: DEFAULT_PAGE,
-			});
-			setSelectedCoupons([]);
-			filterServiceProps.saveState('filterCoupon', JSON.stringify({ ...filterData, offerName: values.offerName, status: values.status === '' ? null : +values.status, startDate: values.startDate, endDate: values.endDate, page: DEFAULT_PAGE }));
-		},
-		[filterData]
-	);
-	const clearSelectionCoupons = useCallback(() => {
-		setSelectedCoupons([]);
-	}, [selectedCoupons]);
+	(values: FilterCouponsProps & { filter?: any }) => {
+		const payload = {
+			sortBy: 'updated_at',
+			sortOrder: sortOrder,
+			limit: DEFAULT_LIMIT,
+			offset: ((DEFAULT_PAGE ?? page) - 1) * DEFAULT_LIMIT,
+			filter: values.filter
+		};
+
+		setFilterData(payload);
+		filterServiceProps.saveState('filterCoupon', JSON.stringify(payload));
+	},
+	[filterData]
+);
+
+	useEffect(() => {
+  		if (defaultCategoryId) {
+  		  navigate(`/${ROUTES.app}/${ROUTES.manageBooks}/${ROUTES.list}`, { replace: true });
+  		}
+	}, []);
+
 
 	/**
 	 * Method that redirects to add page
@@ -76,14 +93,14 @@ const CouponManagaement = () => {
 
 	return (
 		<div>
-			<FilterBooks onSearchCoupon={onSearchCoupon} clearSelectionCoupons={clearSelectionCoupons} filterData={filterData} />
+			<FilterBooks onSearchCoupon={onSearchCoupon} filterData={filterData} defaultCategoryId={defaultCategoryId ?? undefined}/>
 			<div className='card-table'>
 				<div className='card-header'>
 					<div className='flex items-center'>
 						<span className='w-3.5 h.3.5 mr-2 text-gray-800 inline-block svg-icon'>
-							<Gift />
+							<BookIcon />
 						</span>
-						<span className='text-sm font-normal'>{t('Offer List')}</span>
+						<span className='text-sm font-normal'>{t('Book List')}</span>
 					</div>
 					<div className='flex flex-wrap gap-2'>
 						<RoleBaseGuard permissions={[PERMISSION_LIST.Coupon.AddAccess]}>
@@ -97,7 +114,7 @@ const CouponManagaement = () => {
 				</div>
 				<div className='card-body'>
 					<BVDataTable
-						defaultActions={['edit', 'delete', 'change_book_status', 'multiple_delete']}
+						defaultActions={['edit', 'delete', 'multiple_delete','change_status']}
 						columns={COL_ARR_COUPONS}
 						queryName={FETCH_BOOKS}
 						sessionFilterName='filterCoupon'
@@ -116,7 +133,7 @@ const CouponManagaement = () => {
 								route: ROUTES.manageOffer,
 							},
 						}}
-						statusKey={'status'}
+						statusKey={'is_published'}
 						idKey={'uuid'}
 						multipleDeleteApiId={'uuid'}
 						singleDeleteApiId={'uuid'}
@@ -128,4 +145,4 @@ const CouponManagaement = () => {
 		</div>
 	);
 };
-export default CouponManagaement;
+export default bookManagaement;

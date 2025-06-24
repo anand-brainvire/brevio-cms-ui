@@ -2,49 +2,59 @@ import Button from '@components/button/button';
 import Dropdown from '@components/dropdown/dropDown';
 import { Refresh, Search } from '@components/icons/icons';
 import TextInput from '@components/textinput/TextInput';
-import { AccesibilityNames, BOOK_STATUS_DRP, DATE_FORMAT, IS_ALL } from '@config/constant';
+import { AccesibilityNames, BOOK_STATUS_DRP, IS_ALL } from '@config/constant';
 import { useFormik } from 'formik';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CouponsManagementProps, FilterCouponsProps } from '@type/couponManagement';
-import { getDateFromat } from '@utils/helpers';
+import { CouponsManagementProps, FilterCouponsProps } from '@type/bookManagement';
 import filterServiceProps from '@components/filter/filter';
 import { MultiSelect } from 'primereact/multiselect';
 import { useQuery } from '@apollo/client';
 import { FETCH_CATEGORY } from '@framework/graphql/queries/category';
 import i18n from '@src/i18n';
 
-const FilterBooks = ({ onSearchCoupon, clearSelectionCoupons, filterData }: CouponsManagementProps) => {
+const FilterBooks = ({ onSearchCoupon, filterData, defaultCategoryId}: CouponsManagementProps) => {
 	const { t } = useTranslation();
 
 	const { data, refetch: fetchAllCategories } = useQuery(FETCH_CATEGORY, { variables: { isAll: IS_ALL } });
 	const [categoryDroData, setCategoryDroData] = useState([]);
-
+	const [isInitialRedirected, setIsInitialRedirected] = useState(false);
 	const initialValues: FilterCouponsProps = {
-		offerName: '',
-		startDate: '',
-		endDate: '',
-		status: '',
-		categoryId: [],
+		search: '',
 	};
-
-	const [datesCpn, setDatesCpn] = useState<Date[]>([]);
 
 	const formik = useFormik({
 		initialValues,
 		onSubmit: (values) => {
-			clearSelectionCoupons();
-
-			const payload = {
-				...values,
-				categoryId: values.categoryId, // UUID array
+			const getStatusLabel = (key: string) => {
+				const status = BOOK_STATUS_DRP.find((s) => s.key === key);
+				return status ? status.name : '';
 			};
-
-			if (datesCpn.length === 2) {
-				payload.startDate = getDateFromat(datesCpn[0]?.toString(), DATE_FORMAT.simpleDateFormat);
-				payload.endDate = getDateFromat(datesCpn[1]?.toString(), DATE_FORMAT.simpleDateFormat);
+			const statusLabel = getStatusLabel(values.status ?? '');
+			let isContentModified = false;
+			let finalStatus = statusLabel;
+			if (statusLabel === 'Published (Modified)' || statusLabel === 'Unpublished (Modified)') {
+				isContentModified = true;
+				finalStatus = statusLabel.includes('Published') ? 'Published' : 'Unpublished';
 			}
-
+			const filter: any = {}; // Start with empty filter
+			// Add only if value exists
+			if (values.search?.trim()) {
+				filter.search = values.search.trim();
+			}
+			if (finalStatus) {
+				filter.statusFilter = {
+					status: finalStatus.toLowerCase(),
+					isContentModified,
+				};
+			}
+			if (values.categoryId?.length) {
+				filter.categories = values.categoryId;
+			}
+			const payload: FilterCouponsProps = {
+				...values,
+				...(Object.keys(filter).length > 0 ? { filter } : {}), // Only include `filter` if not empty
+			};
 			onSearchCoupon(payload);
 		},
 	});
@@ -66,30 +76,37 @@ const FilterBooks = ({ onSearchCoupon, clearSelectionCoupons, filterData }: Coup
 				};
 			});
 			setCategoryDroData(tempDataArr);
+		if (
+			defaultCategoryId &&
+			!formik.values.categoryId?.includes(defaultCategoryId)
+		) {
+			const updatedValues = {
+				...formik.values,
+				categoryId: [defaultCategoryId],
+			};
+			formik.setValues(updatedValues, false);
+			setIsInitialRedirected(true); 
+			setTimeout(() => {
+				formik.submitForm(); // Wait one tick so categoryId is in values
+			}, 0);
 		}
-	}, [data]);
-	console.log('categoryDroData', categoryDroData);
+
+	}}, [data,defaultCategoryId]);
 
 	const onReset = useCallback(() => {
 		formik.resetForm();
-		setDatesCpn([]);
-		clearSelectionCoupons();
 		onSearchCoupon(initialValues);
 	}, []);
 
 	useEffect(() => {
+		if (isInitialRedirected) {
+			return
+		}
 		const savedFilterDataJSONUser = filterServiceProps.getState('filterCoupon', JSON.stringify(filterData));
 		const savedFilterData = JSON.parse(savedFilterDataJSONUser);
 
-		if (savedFilterData.startDate && savedFilterData.endDate) {
-			setDatesCpn([
-				new Date(getDateFromat(savedFilterData.startDate, DATE_FORMAT.momentDateFormat)),
-				new Date(getDateFromat(savedFilterData.endDate, DATE_FORMAT.momentDateFormat)),
-			]);
-		}
-
 		formik.setValues(savedFilterData || initialValues);
-	}, []);
+	}, [isInitialRedirected]);
 
 	return (
 		<div className='card'>
@@ -98,12 +115,12 @@ const FilterBooks = ({ onSearchCoupon, clearSelectionCoupons, filterData }: Coup
 					<div className='card-grid-filter'>
 						<div>
 							<TextInput
-								id='offerName'
+								id='search'
 								placeholder={t('Search by Book Title,Author')}
-								name='offerName'
+								name='search'
 								type='text'
 								onChange={formik.handleChange}
-								value={formik.values.offerName}
+								value={formik.values.search}
 							/>
 						</div>
 
@@ -122,7 +139,7 @@ const FilterBooks = ({ onSearchCoupon, clearSelectionCoupons, filterData }: Coup
 
 						<Dropdown
 							ariaLabel={AccesibilityNames.Status}
-							placeholder={t('')}
+							placeholder={t('Select Status')}
 							name='status'
 							onChange={formik.handleChange}
 							value={formik.values.status ?? ''}

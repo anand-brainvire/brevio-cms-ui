@@ -3,12 +3,13 @@ import { META_FRAGMENT } from '@framework/graphql/fragments';
 
 export const FETCH_BOOKS = gql`
 	${META_FRAGMENT}
-	query GetAllBooks {
-		getAllBooks {
+	query GetAllBooks($filter: BookFilterInput, $sortBy: String, $sortOrder: String, $limit: Int, $offset: Int) {
+		getAllBooks(filter: $filter, sortBy: $sortBy, sortOrder: $sortOrder, limit: $limit, offset: $offset) {
 		data {
     		books {
     			uuid
     			is_content_modified
+				is_published
     			updated_at
     			version_id
     			version_uuid

@@ -128,13 +128,11 @@ export const SHOW_PAGE_COUNT_ARR1 = [
 	{ name: '30', key: 30 },
 ];
 export const BOOK_STATUS_DRP = [
-	{ name: 'Select Status', key: '' },
 	{ name: 'Published', key: '1' },
 	{ name: 'Draft', key: '2' },
 	{ name: 'Unpublished', key: '3' },
 	{ name: 'Published (Modified)', key: '4'},
 	{ name: 'Unpublished (Modified)', key: '5'}
-
 ];
 
 export const STATUS_DRP = [
