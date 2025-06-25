@@ -13,7 +13,7 @@ import Button from '@components/button/button';
 import { CheckCircle, Cross } from '@components/icons/icons';
 import { IS_ALL, ROUTES } from '@config/constant';
 import {
-  FETCH_BOOK_BY_ID,
+  // FETCH_BOOK_BY_ID,
   REFINE_ABOUT_AUTHOR,
   REFINE_ABOUT_BOOK,
 } from '@framework/graphql/queries/bookManagement';
@@ -22,7 +22,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import i18n from '@src/i18n';
 import TextArea from '@components/textarea/TextArea';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
 import RefineText from '@components/popup/refineText';
 
 const editBooks = (): ReactElement => {
@@ -42,11 +42,11 @@ const editBooks = (): ReactElement => {
   const [showRefinePopup, setShowRefinePopup] = useState(false);
   const [refineData, setRefineData] = useState('');
   const [refineFieldKey, setRefineFieldKey] = useState('');
-  const { data: bookData, loading: loader } = useQuery(FETCH_BOOK_BY_ID, {
-    variables: { uuid: params.id },
-    skip: !params.id,
-    fetchPolicy: 'network-only',
-  });
+  // const { data: bookData, loading: loader } = useQuery(FETCH_BOOK_BY_ID, {
+  //   variables: { uuid: params.id },
+  //   skip: !params.id,
+  //   fetchPolicy: 'network-only',
+  // });
   const { addBookInfoValidationSchema } = useValidation();
 
   const initialValues: editBookInfo = {
@@ -188,7 +188,8 @@ const editBooks = (): ReactElement => {
 
   return (
     <div className='card'>
-      {(loader ||
+      {(
+        // loader ||
         updateLoader ||
         refineAboutAuthorLoader ||
         refineAboutBookLoader) && <Loader />}
