@@ -59,7 +59,7 @@ const editBooks = (): ReactElement => {
     learningPoints: [],
   };
 
-  const { register, control, handleSubmit } = useForm({
+  const { register, control } = useForm({
     defaultValues: {
       learningPoints: [{ value: '' }],
     },
@@ -78,7 +78,7 @@ const editBooks = (): ReactElement => {
       },
     })
       .then((res) => {
-        const data = res.data as editBookInfo;
+        const data = res.data;
         if (data.updateSubAdmin.meta.statusCode === 200) {
           formik.resetForm();
           onCancelEditBookInfo();
