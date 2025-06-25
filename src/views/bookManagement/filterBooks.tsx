@@ -13,12 +13,12 @@ import { useQuery } from '@apollo/client';
 import { FETCH_CATEGORY } from '@framework/graphql/queries/category';
 import i18n from '@src/i18n';
 
-const FilterBooks = ({ onSearchCoupon, filterData, defaultCategoryId}: CouponsManagementProps) => {
+const FilterBooks = ({ onSearchCoupon, filterData}: CouponsManagementProps) => {
 	const { t } = useTranslation();
 
 	const { data, refetch: fetchAllCategories } = useQuery(FETCH_CATEGORY, { variables: { isAll: IS_ALL } });
 	const [categoryDroData, setCategoryDroData] = useState([]);
-	const [isInitialRedirected, setIsInitialRedirected] = useState(false);
+	// const [isInitialRedirected, setIsInitialRedirected] = useState(false);
 	const initialValues: FilterCouponsProps = {
 		search: '',
 	};
@@ -76,37 +76,18 @@ const FilterBooks = ({ onSearchCoupon, filterData, defaultCategoryId}: CouponsMa
 				};
 			});
 			setCategoryDroData(tempDataArr);
-		if (
-			defaultCategoryId &&
-			!formik.values.categoryId?.includes(defaultCategoryId)
-		) {
-			const updatedValues = {
-				...formik.values,
-				categoryId: [defaultCategoryId],
-			};
-			formik.setValues(updatedValues, false);
-			setIsInitialRedirected(true); 
-			setTimeout(() => {
-				formik.submitForm(); // Wait one tick so categoryId is in values
-			}, 0);
-		}
-
-	}}, [data,defaultCategoryId]);
-
+	}}, [data]);
 	const onReset = useCallback(() => {
 		formik.resetForm();
 		onSearchCoupon(initialValues);
 	}, []);
 
 	useEffect(() => {
-		if (isInitialRedirected) {
-			return
-		}
 		const savedFilterDataJSONUser = filterServiceProps.getState('filterCoupon', JSON.stringify(filterData));
 		const savedFilterData = JSON.parse(savedFilterDataJSONUser);
 
 		formik.setValues(savedFilterData || initialValues);
-	}, [isInitialRedirected]);
+	}, []);
 
 	return (
 		<div className='card'>

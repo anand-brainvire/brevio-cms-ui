@@ -1,5 +1,5 @@
 import { FETCH_BOOKS } from '@framework/graphql/queries/bookManagement';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BOOK_PUBLISH_STATUS, DELETE_BOOK_BY_ID, GROUP_DELETE_COUPON } from '@framework/graphql/mutations/bookManagement';
 import FilterBooks from '@views/bookManagement/filterBooks';
@@ -12,38 +12,41 @@ import BVDataTable from '@components/BVDatatable/BVDataTable';
 import { BookIcon, PlusCircle } from '@components/icons/icons';
 import { DEFAULT_LIMIT, DEFAULT_PAGE,sortOrder, ROUTES } from '@config/constant';
 import { PaginationParamsCoupon, FilterCouponsProps } from '@type/bookManagement';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { IColumnsProps } from '@components/BVDatatable/DataTable';
+import CreateBook from './createBook';
 
 const bookManagaement = () => {
 	const { t } = useTranslation();
-	const navigate = useNavigate();
 	const { localFilterData } = useSaveFilterData();
-	const page = DEFAULT_PAGE;
 	const location = useLocation();
 	const queryParams = new URLSearchParams(location.search);
-	const defaultCategoryId = queryParams.get('categoryId');
-	const [filterData, setFilterData] = useState<PaginationParamsCoupon>(() => {
-  	const saved = localFilterData('filterCoupon');
-	if (defaultCategoryId) {
-		return {
+	const [defaultCategoryId] = useState<string | null>(queryParams.get('categoryId'));
+	const [isBookModalOpen, setBookModalOpen] = useState(false);
+	const [filterData, setFilterData] = useState<PaginationParamsCoupon>(
+		localFilterData('filterCoupon') || {
 			limit: DEFAULT_LIMIT,
-			sortBy: 'updated_at',
-			sortOrder: sortOrder,
-			offset: 0,
-			filter: {
-			  categories: [defaultCategoryId]
-			}
-		};
-		}	
-		return saved ?? {
-			limit: DEFAULT_LIMIT,
-			page: DEFAULT_PAGE,
 			sortBy: 'updated_at',
 			sortOrder: sortOrder,
 			offset: ((DEFAULT_PAGE ?? DEFAULT_PAGE) - 1) * DEFAULT_LIMIT,
-		};
-	});
+		}
+	);
+
+	useEffect(()=>{
+		if (defaultCategoryId) {
+			setFilterData(
+				{
+					limit: DEFAULT_LIMIT,
+					sortBy: 'updated_at',
+					sortOrder: sortOrder,
+					offset: 0,
+					filter: {
+			  			categories: [defaultCategoryId]
+					}
+				}
+			)
+		}
+	},[defaultCategoryId])
 
 	const COL_ARR_COUPONS = [
 		{ name: t('Book Title'), sortable: true, fieldName: 'title', type: 'text' },
@@ -60,40 +63,41 @@ const bookManagaement = () => {
 	 */
 	const onSearchCoupon = useCallback(
 	(values: FilterCouponsProps & { filter?: PaginationParamsCoupon['filter'] }) => {
-		const payload = {
-			sortBy: 'updated_at',
-			sortOrder: sortOrder,
-			limit: DEFAULT_LIMIT,
-			offset: ((DEFAULT_PAGE ?? page) - 1) * DEFAULT_LIMIT,
+		setFilterData({
+			...filterData,
 			filter: values.filter
-		};
-
-		setFilterData(payload);
-		filterServiceProps.saveState('filterCoupon', JSON.stringify(payload));
+		});
+		filterServiceProps.saveState('filterCoupon', JSON.stringify({
+			...filterData,
+			filter: values.filter
+		}));
 	},
 	[filterData]
 );
 
-	// useEffect(() => {
-  	// 	if (defaultCategoryId) {
-  	// 	  navigate(`/${ROUTES.app}/${ROUTES.manageBooks}/${ROUTES.list}`, { replace: true });
-  	// 	}
-	// }, []);
-
-
 	/**
 	 * Method that redirects to add page
 	 */
-	const addRedirectionCpn = useCallback(() => {
-		navigate(`/${ROUTES.app}/${ROUTES.manageBooks}/${ROUTES.add}`);
+	const openAddBookModal = useCallback(() => {
+		setBookModalOpen(true);
 	}, []);
+
+		const onSubmitBook = useCallback(() => {
+			setBookModalOpen(false);
+			// setFilterData({
+			// 	...filterData,
+			// 	offset: DEFAULT_PAGE
+			// })
+		}, []);
+
+	
 	/**
 	 * function that download file base on file type
 	 */
 
 	return (
 		<div>
-			<FilterBooks onSearchCoupon={onSearchCoupon} filterData={filterData} defaultCategoryId={defaultCategoryId ?? undefined}/>
+			<FilterBooks onSearchCoupon={onSearchCoupon} filterData={filterData}/>
 			<div className='card-table'>
 				<div className='card-header'>
 					<div className='flex items-center'>
@@ -104,7 +108,7 @@ const bookManagaement = () => {
 					</div>
 					<div className='flex flex-wrap gap-2'>
 						<RoleBaseGuard permissions={[PERMISSION_LIST.Coupon.AddAccess]}>
-							<Button className='btn-primary  ' onClick={addRedirectionCpn} type='button' label={t('Add New')}>
+							<Button className='btn-primary  ' onClick={openAddBookModal} type='button' label={t('Add New')}>
 								<span className='inline-block w-4 h-4 mr-1 svg-icon'>
 									<PlusCircle />
 								</span>
@@ -130,7 +134,7 @@ const bookManagaement = () => {
 						updatedFilterData={filterData}
 						actionData={{
 							edit: {
-								route: ROUTES.manageOffer,
+								route: ROUTES.manageBooks,
 							},
 						}}
 						statusKey={'is_published'}
@@ -142,6 +146,10 @@ const bookManagaement = () => {
 					/>
 				</div>
 			</div>
+				<CreateBook
+					isVisible={isBookModalOpen}
+					onSubmitBook={onSubmitBook}
+				/>
 		</div>
 	);
 };

@@ -44,7 +44,7 @@ const ViewAnnouncement = React.lazy(() => import('@views/viewAnnouncement'));
 const RolePermissions = React.lazy(() => import('@views/rolePermissons'));
 const CategoryTreeView = React.lazy(() => import('@views/manageCategory/categoryTreeView'));
 const ManageBooks = React.lazy(() => import('@views/bookManagement'));
-const AddeditManageBooks = React.lazy(() => import('@views/bookManagement/addEditBooks'));
+const AddeditManageBooks = React.lazy(() => import('@views/bookManagement/editBooks'));
 const ActivityTracking = React.lazy(() => import('@views/activityTracking'));
 const EmailNotificationTemplate = React.lazy(() => import('@views/emailNotificationTemplate'));
 const AddEditEmailTemplate = React.lazy(() => import('@views/emailNotificationTemplate/addEditEmailTemplate'));

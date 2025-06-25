@@ -22,6 +22,83 @@ export const BOOK_PUBLISH_STATUS = gql`
 		}
 	}
 `;
+
+export const CREATE_BOOK = gql`
+	${META_FRAGMENT}
+	mutation CreateBook($bookData: [BookInputType]) {
+	createBook(book_data: $bookData) {
+		meta {
+			...MetaFragment
+		}
+	}
+}
+`;
+export const UPDATE_BOOK_INFO = gql`
+	${META_FRAGMENT}
+	mutation UpdateBook($bookUuid: UUID, $categoryUuids: [UUID], $authorsUuids: [UUID], $bookData: [BookVersionTranslationInput]) {
+	updateBook(book_uuid: $bookUuid, category_uuids: $categoryUuids, authors_uuids: $authorsUuids, book_data: $bookData) {
+		data {
+		uuid
+		published_version_id
+		is_published
+		published_at
+		published_by
+		is_content_modified
+		is_active
+		is_best_seller
+		is_free
+		total_unique_completion
+		total_completion
+		created_at
+		updated_at
+		created_by
+		updated_by
+		versions {
+			uuid
+			page_count
+			cover_image_url
+			slug
+			status
+			version_number
+			total_key_points
+			total_minutes
+			total_insights
+			is_active
+			translations {
+			uuid
+			book_version_id
+			lang_code
+			title
+			about_book
+			about_author
+			learning_points
+			}
+			authors {
+			uuid
+			is_active
+			author_translations {
+				lang_code
+				name
+			}
+			}
+			categories {
+			uuid
+			slug
+			is_active
+			category_translations {
+				lang_code
+				name
+				description
+			}
+			}
+		}
+		}
+		meta {
+			...MetaFragment
+		}
+	}
+}
+`;
 export const UPDATE_COUPON = gql`
 	${META_FRAGMENT}
 	mutation UpdateOffer($uuid: UUID, $offerName: String, $offerCode: String, $offerType: Int, $value: REAL, $startDate: Date, $endDate: Date, $offerUsage: Int, $applicable: Int, $selectedUsers: [UUID]) {

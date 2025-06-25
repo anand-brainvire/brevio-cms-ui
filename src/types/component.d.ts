@@ -252,3 +252,10 @@ export type CommonDataArrOfModules = RoleDataArr | FetchCouponsDataArr | Enquiry
 export type LoaderProps = {
 	showText?: boolean;
 };
+
+export type RefineTextProps = {
+  refinedText: string;
+  onAccept: React.MouseEventHandler<HTMLButtonElement>;
+  onCancel: React.MouseEventHandler<HTMLButtonElement>;
+  fieldLabel?: string;
+};

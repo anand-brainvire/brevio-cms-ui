@@ -12,6 +12,20 @@ export type PaginationParamsCoupon = {
 	sortBy: string;
 	sortOrder: string;
 };
+
+export type BookInputType = {
+	bookName: string;
+}
+
+export type editBookInfo = {
+	title: string;
+	categoryId: string[];
+	authorId: string[];
+	whatsInside: string;
+	aboutAuthor: string;
+	coverImage: string;
+	learningPoints: string[];
+}
 export type CouponColArrType = {
 	name: string;
 	sortable: boolean;

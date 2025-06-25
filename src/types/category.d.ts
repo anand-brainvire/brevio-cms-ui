@@ -6,7 +6,7 @@ export type PaginationParams = {
     search : string
 }
 export type CategoryTreeDataArr={
-
+  
     id:number,
     category_name:string
     parent_category:number

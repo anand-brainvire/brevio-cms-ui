@@ -26,7 +26,7 @@ export const FETCH_BOOKS = gql`
     				name
     			}
     		}
-      			totalCount
+      			count
     		}
 
 			meta {
@@ -35,6 +35,102 @@ export const FETCH_BOOKS = gql`
 		}
 	}
 `;
+
+export const FETCH_BOOK_BY_ID = gql`
+	${META_FRAGMENT}
+	query GetBookById($uuid: ID!) {
+	  	getBookById(uuid: $uuid) {
+	    	data {
+	    		uuid
+	    		published_version_id
+	    		is_published
+	    		published_at
+	    		published_by
+	    		is_content_modified
+	    		is_active
+	    		is_best_seller
+	    		is_free
+	    		total_unique_completion
+	    		total_completion
+	    		created_at
+	    		updated_at
+	    		created_by
+	    		updated_by
+	    	  	versions {
+	    	    	uuid
+	    	    	page_count
+	    	    	cover_image_url
+	    	    	slug
+	    	    	status
+	    	    	version_number
+	    	    	total_key_points
+	    	    	total_minutes
+	    	    	total_insights
+	    	    	is_active
+	    	    translations {
+	    	    	uuid
+	    	    	book_version_id
+	    	    	lang_code
+	    	    	title
+	    	    	about_book
+	    	    	about_author
+	    	    	learning_points
+	    	    }
+	    	    authors {
+	    	    	uuid
+	    	    	is_active
+	    	      	author_translations {
+	    	        	lang_code
+	    	        	name
+	    	    	}
+	    	    }
+	    	    categories {
+	    	    	uuid
+	    	    	slug
+	    	    	is_active
+	    	    	category_translations {
+	    	        	lang_code
+	    	        	name
+	    	        	description
+	    	      	}
+	    	    }
+	    	}
+		}	
+		meta {
+			...MetaFragment
+		}	
+	}
+}
+`;
+
+export const REFINE_ABOUT_BOOK = gql`
+	${META_FRAGMENT}
+	mutation RefineAboutBook($uuid: ID!) {
+	refineAboutBook(uuid: $uuid) {
+		data {
+			refinedData
+		}
+		meta {
+			...MetaFragment
+		}	
+	}
+	}
+`;
+
+export const REFINE_ABOUT_AUTHOR = gql`
+	${META_FRAGMENT}
+	mutation RefineAboutAuthor($uuid: ID!) {
+	refineAboutAuthor(uuid: $uuid) {
+		data {
+			refinedData
+		}
+		meta {
+			...MetaFragment
+		}	
+	}
+}
+`;
+
 export const GET_COUPON_BY_ID = gql`
 	${META_FRAGMENT}
 	query GetOffer($uuid: UUID) {

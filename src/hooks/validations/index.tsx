@@ -82,6 +82,10 @@ const useValidation = () => {
 		isRecommendedPlan,
 		planStatus,
 		planPrice,
+		bookName,
+		addCategories,
+		whatsInside,
+		aboutAuthor,
 	} = useValidationFields();
 
 	const loginValidationSchema = Yup.object({
@@ -214,6 +218,17 @@ const useValidation = () => {
 		applicable: applicable,
 	});
 
+	const addBookValidationSchema = Yup.object({
+		bookName: bookName
+	});
+
+	const addBookInfoValidationSchema = Yup.object({
+		title: bookName,
+		categories: addCategories,
+		whatsInside: whatsInside,
+		aboutAuthor: aboutAuthor,
+	})
+
 	const forgotPasswordValidationSchema = Yup.object({
 		email: email,
 	});
@@ -309,6 +324,8 @@ const useValidation = () => {
 		addAnnouncementValidationSchema,
 		addRoleValidationSchema,
 		addCoupenValidationSchema,
+		addBookValidationSchema,
+		addBookInfoValidationSchema,
 		forgotPasswordValidationSchema,
 		resetPasswordValidationSchema,
 		usermValidationSchema,
