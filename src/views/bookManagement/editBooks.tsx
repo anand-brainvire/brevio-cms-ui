@@ -188,7 +188,6 @@ const editBooks = (): ReactElement => {
 
   const UpdateBookInfoFunction = (values: editBookInfo) => {
     // const langCode = i18n.language || 'en';
-    console.log(values);
     updateBookInfo({
       variables: {
         bookUuid: params?.id,
