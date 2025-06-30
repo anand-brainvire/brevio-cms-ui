@@ -53,7 +53,7 @@ const editBooks = (): ReactElement => {
   const [refineData, setRefineData] = useState('');
   const [refineFieldKey, setRefineFieldKey] = useState('');
   const [isFreeBook, setIsFreeBook] = useState(false);
-  const [coverImageFile, setCoverImageFile] = useState<File>(null);
+  const [coverImageFile, setCoverImageFile] = useState<File>();
   const [selectedTab, setSelectedTab] = useState<'draft' | 'published'>(
     'draft'
   );
@@ -310,9 +310,9 @@ const editBooks = (): ReactElement => {
   method to upload cover image
   */
   const handleUploadCoverImage = async () => {
-    const file = formik.values.coverImage;
+    // const file = formik.values.coverImage;
     const bookUuid = params.id;
-    if (!file || !bookUuid){
+    if (!bookUuid || !coverImageFile){
       return;
     } 
     try {
