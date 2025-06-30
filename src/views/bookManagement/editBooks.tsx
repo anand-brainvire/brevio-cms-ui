@@ -172,7 +172,7 @@ const editBooks = (): ReactElement => {
       learningPoints,
     });
     remove();
-    learningPoints.forEach((lp) => append(lp));
+    learningPoints.forEach((lp: { value: string }) => append(lp));
   }, [bookByIdData, selectedTab, params.id, i18n.language]);
 
   const { register, control, reset, getValues } = useForm({
@@ -199,7 +199,7 @@ const editBooks = (): ReactElement => {
             ['lang_code']: 'en',
             ['about_book']: values.whatsInside,
             ['about_author']: values.aboutAuthor,
-            ['learning_points']: values.learningPoints.map((lp) => lp.value),
+            // ['learning_points']: values.learningPoints.map((lp) => lp.value),
           },
         ],
       },
@@ -457,7 +457,7 @@ const editBooks = (): ReactElement => {
 
   const handleSave = () => {
     const rhfLearningPoints = getValues('learningPoints');
-    formik.setFieldValue('learningPoints', rhfLearningPoints, false); // false = don't validate immediately
+    formik.setFieldValue('learningPoints', rhfLearningPoints, false);
     formik.handleSubmit();
   };
 
