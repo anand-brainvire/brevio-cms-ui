@@ -734,6 +734,11 @@ export const FILE_TYPE: { [key: string]: string } = {
 	application: 'application',
 };
 
+export const BOOK_STATUS: { [key:string]: string } = {
+	published: 'published',
+	draft: 'draft'
+} 
+
 export const MODEL_TYPE: { [Key: string]: string } = {
 	add: 'add',
 	rename: 'rename',

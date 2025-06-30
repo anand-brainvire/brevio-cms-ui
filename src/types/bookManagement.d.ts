@@ -23,7 +23,7 @@ export type editBookInfo = {
 	authorId: string[];
 	whatsInside: string;
 	aboutAuthor: string;
-	coverImage: string;
+	coverImage: string | null;
 	learningPoints: string[];
 }
 export type CouponColArrType = {

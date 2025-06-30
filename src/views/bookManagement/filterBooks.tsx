@@ -1,8 +1,7 @@
 import Button from '@components/button/button';
-import Dropdown from '@components/dropdown/dropDown';
 import { Refresh, Search } from '@components/icons/icons';
 import TextInput from '@components/textinput/TextInput';
-import { AccesibilityNames, BOOK_STATUS_DRP, IS_ALL } from '@config/constant';
+import { BOOK_STATUS_DRP, IS_ALL } from '@config/constant';
 import { useFormik } from 'formik';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -118,7 +117,18 @@ const FilterBooks = ({ onSearchCoupon, filterData}: CouponsManagementProps) => {
 							maxSelectedLabels={6}
 						/>
 
-						<Dropdown
+						<MultiSelect
+							value={formik.values.status ?? ''}
+							onChange={(e) => formik.setFieldValue('categoryId', e.value)}
+							options={BOOK_STATUS_DRP}
+							optionLabel='name'
+							optionValue='key'
+							placeholder={t('Select Status') ?? 'Select Status'}
+							display='chip'
+							className='w-full'
+						/>
+
+						{/* <Dropdown
 							ariaLabel={AccesibilityNames.Status}
 							placeholder={t('Select Status')}
 							name='status'
@@ -126,7 +136,7 @@ const FilterBooks = ({ onSearchCoupon, filterData}: CouponsManagementProps) => {
 							value={formik.values.status ?? ''}
 							options={BOOK_STATUS_DRP}
 							id='status'
-						/>
+						/> */}
 
 						<div className='[.show-menu~div_&]:lg:col-span-3 [.show-menu~div_&]:md:col-span-1 md:col-span-3'>
 							<div className='btn-group col-span-3 flex items-start justify-end'>

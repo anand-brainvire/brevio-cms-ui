@@ -227,8 +227,8 @@ const useValidation = () => {
 		categories: addCategories,
 		whatsInside: whatsInside,
 		aboutAuthor: aboutAuthor,
-	})
-
+	});
+	
 	const forgotPasswordValidationSchema = Yup.object({
 		email: email,
 	});

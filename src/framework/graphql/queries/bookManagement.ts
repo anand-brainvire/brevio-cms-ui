@@ -103,34 +103,6 @@ export const FETCH_BOOK_BY_ID = gql`
 }
 `;
 
-export const REFINE_ABOUT_BOOK = gql`
-	${META_FRAGMENT}
-	mutation RefineAboutBook($uuid: ID!) {
-	refineAboutBook(uuid: $uuid) {
-		data {
-			refinedData
-		}
-		meta {
-			...MetaFragment
-		}	
-	}
-	}
-`;
-
-export const REFINE_ABOUT_AUTHOR = gql`
-	${META_FRAGMENT}
-	mutation RefineAboutAuthor($uuid: ID!) {
-	refineAboutAuthor(uuid: $uuid) {
-		data {
-			refinedData
-		}
-		meta {
-			...MetaFragment
-		}	
-	}
-}
-`;
-
 export const GET_COUPON_BY_ID = gql`
 	${META_FRAGMENT}
 	query GetOffer($uuid: UUID) {

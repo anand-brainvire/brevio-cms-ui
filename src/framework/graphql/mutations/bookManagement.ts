@@ -99,6 +99,70 @@ export const UPDATE_BOOK_INFO = gql`
 	}
 }
 `;
+
+export const REFINE_ABOUT_BOOK = gql`
+	${META_FRAGMENT}
+	mutation RefineAboutBook($uuid: ID!) {
+	refineAboutBook(uuid: $uuid) {
+		data {
+			refinedData
+		}
+		meta {
+			...MetaFragment
+		}	
+	}
+	}
+`;
+
+export const REFINE_ABOUT_AUTHOR = gql`
+	${META_FRAGMENT}
+	mutation RefineAboutAuthor($uuid: ID!) {
+	refineAboutAuthor(uuid: $uuid) {
+		data {
+			refinedData
+		}
+		meta {
+			...MetaFragment
+		}	
+	}
+}
+`;
+export const REFINE_LEARNING_POINTS = gql`
+	${META_FRAGMENT}
+	mutation RefineLearningPoints($uuid: ID!) {
+	refineLearningPoints(uuid: $uuid) {
+		data {
+			refinedData
+		}
+		meta {
+			...MetaFragment
+		}
+	}	
+}
+`;
+
+export const TOGGLE_FREE_BOOK = gql`
+	${META_FRAGMENT}
+	mutation ToggleFreeBook($uuid: UUID) {
+	toggleFreeBook(uuid: $uuid) {
+		meta {
+			...MetaFragment
+		}
+	}
+}
+`;
+
+export const PUBLISH_BOOK = gql`
+	${META_FRAGMENT}
+mutation PublishBook($input: saveBookInput) {
+	publishBook(input: $input) {
+		meta {
+			...MetaFragment
+		}
+	}
+}
+`;
+
 export const UPDATE_COUPON = gql`
 	${META_FRAGMENT}
 	mutation UpdateOffer($uuid: UUID, $offerName: String, $offerCode: String, $offerType: Int, $value: REAL, $startDate: Date, $endDate: Date, $offerUsage: Int, $applicable: Int, $selectedUsers: [UUID]) {

@@ -1,4 +1,4 @@
-import { DATE_FORMAT, DOWLOAD_FILE_TYPE, IMAGE_BASE_URL, KEYS, ROUTES, UPLOAD_IMAGE_URL } from '@config/constant';
+import { DATE_FORMAT, DOWLOAD_FILE_TYPE, IMAGE_BASE_URL, KEYS, ROUTES } from '@config/constant';
 import { MetaRes } from '@framework/graphql/graphql';
 import moment from 'moment';
 import { toast } from 'react-toastify';
@@ -74,7 +74,7 @@ export const whiteSpaceRemover = (event: React.FocusEvent<HTMLInputElement> | Re
  */
 export const errorHandler = async (error: MetaRes, callBack?: CallableFunction) => {
 	const errorData = error;
-	if (errorData?.messageCode.includes('INVALID_REFRESH_TOKEN')) {
+	if (errorData?.messageCode.includes('INVALID_REFRESH_TOKEN') || errorData.status.includes('UNAUTHENTICATED')) {
 		localStorage.clear();
 		sessionStorage.clear();
 		window.location.href = `/${ROUTES.login}`;
@@ -158,7 +158,7 @@ export const uploadFile = async (data: { name: string; content: File | string }[
 		data.forEach((singleFormData) => {
 			formData.append(singleFormData.name, singleFormData.content);
 		});
-		const url = `${UPLOAD_IMAGE_URL}${path}`;
+		const url = `https://leadtechadminapi.node.brainvire.dev/api/upload/${path}`;
 		const encryptedToken = localStorage.getItem('authToken') as string;
 		const token = encryptedToken && DecryptionFunction(encryptedToken);
 		const response = await fetch(url, {

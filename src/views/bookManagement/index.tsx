@@ -118,7 +118,7 @@ const bookManagaement = () => {
 				</div>
 				<div className='card-body'>
 					<BVDataTable
-						defaultActions={['edit', 'delete', 'multiple_delete','change_status']}
+						defaultActions={['edit', 'delete', 'multiple_delete','change_book_status']}
 						columns={COL_ARR_COUPONS}
 						queryName={FETCH_BOOKS}
 						sessionFilterName='filterCoupon'
@@ -137,12 +137,12 @@ const bookManagaement = () => {
 								route: ROUTES.manageBooks,
 							},
 						}}
-						statusKey={'is_published'}
+						statusKey={'status'}
 						idKey={'uuid'}
 						multipleDeleteApiId={'uuid'}
 						singleDeleteApiId={'uuid'}
 						statusChangeApiId={'uuid'}
-						statusChangeApiKeyTitle={'status'}
+						statusChangeApiKeyTitle={'is_published'}
 					/>
 				</div>
 			</div>
