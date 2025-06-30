@@ -21,20 +21,21 @@ const categoryManagement = (): ReactElement => {
     const [filterData, setFilterData] = useState<PaginationParams>(
         localFilterData('filterFaqmangment') ?? {
             limit: DEFAULT_LIMIT,
-            offset: DEFAULT_PAGE,
+            offset: ((DEFAULT_PAGE ?? DEFAULT_PAGE) - 1) * DEFAULT_LIMIT,
             sortBy: 'created_at',
             sortOrder: sortOrder,
             search: '',
+            page: DEFAULT_PAGE,
         }
     );
 
     const [searchInput, setSearchInput] = useState(filterData.search || '');
 
     const COL_ARR_CATEGORY = [
-        { name: t('Name'), sortable: true, fieldName: 'category_translations', type: 'multilang', translationKey: 'name' },
-        { name: t('Slug'), sortable: true, fieldName: 'slug', type: 'text' },
+        { name: t('Name'), sortable: false, fieldName: 'category_translations', type: 'multilang', translationKey: 'name' },
+        { name: t('Slug'), sortable: false, fieldName: 'slug', type: 'text' },
         { name: t('Description'), sortable: false, fieldName: 'category_translations', type: 'multilang', translationKey: 'description' },
-        { name: t('Status'), sortable: true, fieldName: 'is_active', type: 'status', headerCenter: 'true' },
+        { name: t('Status'), sortable: false, fieldName: 'is_active', type: 'status', headerCenter: 'true' },
     ] as ColArrType[];
 
     const navigate = useNavigate();
@@ -48,6 +49,7 @@ const categoryManagement = (): ReactElement => {
             ...filterData,
             search: searchInput.trim(),
             page: DEFAULT_PAGE,
+            offset: ((DEFAULT_PAGE ?? filterData.page) - 1) * filterData.limit,
         };
         setFilterData(updatedFilterData);
         filterServiceProps.saveState('filterFaqmangment', JSON.stringify(updatedFilterData));
