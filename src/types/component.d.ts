@@ -39,6 +39,7 @@ export type TextInputProps = {
 	btnShowHideFun?: () => void;
 	btnShowHide?: boolean;
 	autoComplete?: string;
+	accept?: string;
 };
 export type TextAreaInputProps = {
 	id?: string;

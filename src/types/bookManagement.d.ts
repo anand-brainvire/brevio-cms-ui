@@ -16,6 +16,37 @@ export type PaginationParamsCoupon = {
 export type BookInputType = {
 	bookName: string;
 }
+export type Insight = {
+  value: string;
+};
+
+export type FormValues = {
+  keyPoint: string;
+  insights: Insight[];
+};
+
+export type PageFormProps = {
+  index: number;
+  isOpen: boolean;
+  toggle: () => void;
+  richText: string;
+  setRichText: (val: string) => void;
+  formik: {
+    values: {
+      richText: string | undefined;
+      audio: string | number | undefined;
+      keyPoint: string;
+    };
+    handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    setFieldValue: (field: string, value: unknown) => void;
+  };
+  fields: FieldArrayWithId<FormValues, 'insights', 'id'>[];
+  append: UseFieldArrayAppend<FormValues, 'insights'>;
+  remove: UseFieldArrayRemove;
+  register: UseFormRegister<FormValues>;
+  OnBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
+};
+
 
 export type editBookInfo = {
 	title: string;

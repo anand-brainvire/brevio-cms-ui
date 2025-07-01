@@ -7,6 +7,7 @@ import TextInput from '@components/textinput/TextInput';
 import { editBookInfo } from '@type/bookManagement';
 import { uploadFile, whiteSpaceRemover } from '@utils/helpers';
 import { useFormik } from 'formik';
+import BookPages from './bookPages';
 // import useValidation from '@src/hooks/validations';
 import {
   REFINE_ABOUT_AUTHOR,
@@ -15,6 +16,7 @@ import {
   TOGGLE_FREE_BOOK,
   UPDATE_BOOK_INFO,
   PUBLISH_BOOK,
+  REFINE_COVER_IMAGE,
 } from '@framework/graphql/mutations/bookManagement';
 import Button from '@components/button/button';
 import { CheckCircle, Cross } from '@components/icons/icons';
@@ -45,6 +47,8 @@ const editBooks = (): ReactElement => {
     useMutation(REFINE_LEARNING_POINTS);
   const [freeBookStatus, { loading: freeBookLoader }] =
     useMutation(TOGGLE_FREE_BOOK);
+  const [refineCoverImage, { loading: refineCoverImageLoader }] =
+    useMutation(REFINE_COVER_IMAGE);
   const { data, refetch: fetchAllCategories } = useQuery(FETCH_CATEGORY, {
     variables: { isAll: IS_ALL },
   });
@@ -120,8 +124,8 @@ const editBooks = (): ReactElement => {
   };
 
   useEffect(() => {
-    if(!bookByIdData?.getBookById?.data || !params.id) {
-     return;
+    if (!bookByIdData?.getBookById?.data || !params.id) {
+      return;
     }
     const data = bookByIdData.getBookById.data;
 
@@ -199,7 +203,7 @@ const editBooks = (): ReactElement => {
             ['lang_code']: 'en',
             ['about_book']: values.whatsInside,
             ['about_author']: values.aboutAuthor,
-            // ['learning_points']: values.learningPoints.map((lp) => lp.value),
+            ['learning_points']: values.learningPoints,
           },
         ],
       },
@@ -273,9 +277,9 @@ const editBooks = (): ReactElement => {
   */
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.currentTarget.files?.[0];
-    if (!file){
+    if (!file) {
       return;
-    } 
+    }
     const img = new Image();
     const objectUrl = URL.createObjectURL(file);
 
@@ -312,9 +316,9 @@ const editBooks = (): ReactElement => {
   const handleUploadCoverImage = async () => {
     // const file = formik.values.coverImage;
     const bookUuid = params.id;
-    if (!bookUuid || !coverImageFile){
+    if (!bookUuid || !coverImageFile) {
       return;
-    } 
+    }
     try {
       await uploadFile(
         [
@@ -330,6 +334,42 @@ const editBooks = (): ReactElement => {
     } catch {
       toast.error('Failed to upload cover image');
     }
+  };
+
+  /**
+   * Method to generate the cover image
+   */
+  const handlGenerateImage = async () => {
+    try {
+      const res = await refineCoverImage({
+        variables: {
+          uuid: params.id,
+        },
+      });
+
+      const data = res.data;
+      if (data.refineCoverImage.meta.statusCode === 200) {
+        const imageUrl = data.refineCoverImage.data.refinedCoverImage;
+        toast.success(data.refineCoverImage.meta.message);
+
+        const file = await urlToFile(imageUrl, 'generated-cover.png'); // ✅ await here
+
+        // Optional: Set to Formik or local state
+        // formik.setFieldValue('coverImage', file);
+      }
+    } catch {
+      return;
+    }
+  };
+
+  /*
+   * Method to convert the url into image  file
+   */
+  const urlToFile = async (url: string, filename: string): Promise<File> => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const contentType = blob.type || 'image/png';
+    return new File([blob], filename, { type: contentType });
   };
 
   /**
@@ -462,377 +502,390 @@ const editBooks = (): ReactElement => {
   };
 
   return (
-    <div className='card'>
-      {(loader ||
-        updateLoader ||
-        refineAboutAuthorLoader ||
-        refineAboutBookLoader ||
-        refineLearningPointsLoader ||
-        freeBookLoader ||
-        publishBookLoading) && <Loader />}
-      <form onSubmit={formik.handleSubmit}>
-        <div className='card-body'>
-          <div className='flex items-center justify-between w-full mb-4'>
-            <h2 className='text-xl font-semibold'>Book Information</h2>
-            <button
-              type='button'
-              className='btn btn-primary'
-              onClick={handlePublishBook}
-            >
-              {t('Publish')}
-            </button>
-          </div>
-          <div className='flex items-center justify-between w-full mb-4'>
-            {/* Left side: Draft | Publish buttons */}
-            <div className='flex border border-gray-300 rounded-tl-lg rounded-tr-lg overflow-hidden w-fit'>
+    <>
+      <div className='card'>
+        {(loader ||
+          updateLoader ||
+          refineAboutAuthorLoader ||
+          refineAboutBookLoader ||
+          refineLearningPointsLoader ||
+          freeBookLoader ||
+          publishBookLoading ||
+          refineCoverImageLoader) && <Loader />}
+        <form onSubmit={formik.handleSubmit}>
+          <div className='card-body'>
+            <div className='flex items-center justify-between w-full mb-4'>
+              <h2 className='text-xl font-semibold'>Book Information</h2>
               <button
                 type='button'
-                onClick={() => setSelectedTab('draft')}
-                className={`px-8 py-4 text-sm font-medium rounded-none ${
-                  selectedTab === 'draft'
-                    ? 'bg-primary text-white'
-                    : 'bg-white text-gray-600'
-                }`}
+                className='btn btn-primary'
+                onClick={handlePublishBook}
               >
-                Draft
+                {t('Publish')}
               </button>
-
-              {/* {isPublished && ( */}
-              <button
-                type='button'
-                onClick={() => setSelectedTab('published')}
-                className={`px-8 py-4 text-sm font-medium rounded-none ${
-                  selectedTab === 'published'
-                    ? 'bg-primary text-white'
-                    : 'bg-white text-gray-600'
-                }`}
-              >
-                Published
-              </button>
-              {/* )} */}
             </div>
+            <div className='flex items-center justify-between w-full mb-4'>
+              {/* Left side: Draft | Publish buttons */}
+              <div className='flex border border-gray-300 rounded-tl-lg rounded-tr-lg overflow-hidden w-fit'>
+                <button
+                  type='button'
+                  onClick={() => setSelectedTab('draft')}
+                  className={`px-8 py-4 text-sm font-medium rounded-none ${selectedTab === 'draft'
+                      ? 'bg-primary text-white'
+                      : 'bg-white text-gray-600'
+                    }`}
+                >
+                  Draft
+                </button>
 
-            {/* Right side: Status badge + Free Book checkbox */}
-            <div className='flex items-center gap-6'>
-              {/* Status display */}
-              <div className='flex items-center text-sm'>
-                <span className='text-gray-700 mr-1'>{t('Status')}:</span>
-                {selectedTab === 'published' ? (
-                  <span className='bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
-                    {t('Published')}
-                  </span>
-                ) : (
-                  // ) : selectedTab === 'unpublished' ? (
-                  //   <span className='bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
-                  //     {t('Unpublished')}
-                  //   </span>
-                  <span className='bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
-                    {t('Draft')}
-                  </span>
-                )}
+                {/* {isPublished && ( */}
+                <button
+                  type='button'
+                  onClick={() => setSelectedTab('published')}
+                  className={`px-8 py-4 text-sm font-medium rounded-none ${selectedTab === 'published'
+                      ? 'bg-primary text-white'
+                      : 'bg-white text-gray-600'
+                    }`}
+                >
+                  Published
+                </button>
+                {/* )} */}
               </div>
 
-              {/* Free Book Checkbox */}
-              <label className='flex items-center gap-2 text-sm text-gray-700'>
-                <input
-                  type='checkbox'
-                  checked={isFreeBook}
-                  onChange={handleFreeBookStatus}
-                  className='form-checkbox h-5 w-5 text-primary'
-                />
-                {t('Mark as free')}
-              </label>
-            </div>
-          </div>
-
-          <div className='border p-4 mt-[-1px]'>
-            <div className='card-title-container'>
-              <p>
-                {t('Fields marked with')} <span className='error'>*</span>{' '}
-                {t('are mandatory.')}
-              </p>
-            </div>
-            <div className='card-grid-addedit-page'>
-              <div>
-                <TextInput
-                  id={'title'}
-                  onBlur={OnBlur}
-                  disabled={!isEditable}
-                  required={true}
-                  placeholder={t('Book Title')}
-                  name='title'
-                  onChange={formik.handleChange}
-                  label={t('Book Title')}
-                  value={formik.values.title}
-                  error={getErrorSubAdmin('title')}
-                />
-              </div>
-              <div>
-                <label htmlFor='categoryId' className='block mb-2 font-medium'>
-                  {t('Select Categories')} <span className='error'>*</span>
-                </label>
-                <MultiSelect
-                  id={'categoryId'}
-                  value={formik.values.categoryId || []}
-                  onChange={(e) => formik.setFieldValue('categoryId', e.value)}
-                  options={categoryDroData}
-                  optionLabel='name'
-                  optionValue='key'
-                  filter
-                  placeholder={t('Select Category') ?? 'Select Category'}
-                  display='chip'
-                  className='w-full'
-                  maxSelectedLabels={6}
-                  disabled={!isEditable}
-                />
-              </div>
-              <div>
-                <label htmlFor='authorId' className='block mb-2 font-medium'>
-                  {t('Select Author')} <span className='error'>*</span>
-                </label>
-                <MultiSelect
-                  id='authorId'
-                  value={formik.values.authorId || []}
-                  onChange={(e) => formik.setFieldValue('authorId', e.value)}
-                  options={authors}
-                  optionLabel='name'
-                  optionValue='id'
-                  filter
-                  display='chip'
-                  className='w-full'
-                  maxSelectedLabels={6}
-                  disabled={!isEditable}
-                  virtualScrollerOptions={{
-                    itemSize: 40,
-                    lazy: true,
-                    showLoader: true,
-                    loading: authorLoading,
-                    items: authors,
-                    onLazyLoad: async () => {
-                      if (!hasMoreAuthors || authorLoading) {
-                        return;
-                      } 
-                      const { data } = await fetchMore({
-                        variables: {
-                          offset: authors.length,
-                          limit: 75,
-                        },
-                      });
-                      const newFetched = transformAuthors(
-                        data?.getAllAuthors?.data?.authors || []
-                      );
-                      setAuthors((prev) => [...prev, ...newFetched]);
-                      if (newFetched.length < 75){
-                        setHasMoreAuthors(false);
-                      } 
-                    },
-                  }}
-                />
-              </div>
-              <div>
-                <label htmlFor='whatsInside' className='block mb-2 font-medium'>
-                  {t('Whats Inside (About)')} <span className='error'>*</span>
-                </label>
-                <div className='flex gap-2 items'>
-                  <div className='w-full'>
-                    <TextArea
-                      id='whatsInside'
-                      name='whatsInside'
-                      onChange={formik.handleChange}
-                      placeholder=''
-                      onBlur={OnBlur}
-                      value={formik.values.whatsInside}
-                      rows={4}
-                      className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
-                      error={getErrorSubAdmin('whatsInside')}
-                      disabled={!isEditable}
-                    />
-                  </div>
-                  {isEditable && (
-                    <button
-                      type='button'
-                      className='btn btn-secondary h-fit mt-1'
-                      onClick={() => handleRefineClick('whatsInside')}
-                    >
-                      Refine
-                    </button>
+              {/* Right side: Status badge + Free Book checkbox */}
+              <div className='flex items-center gap-6'>
+                {/* Status display */}
+                <div className='flex items-center text-sm'>
+                  <span className='text-gray-700 mr-1'>{t('Status')}:</span>
+                  {selectedTab === 'published' ? (
+                    <span className='bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
+                      {t('Published')}
+                    </span>
+                  ) : (
+                    // ) : selectedTab === 'unpublished' ? (
+                    //   <span className='bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
+                    //     {t('Unpublished')}
+                    //   </span>
+                    <span className='bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
+                      {t('Draft')}
+                    </span>
                   )}
                 </div>
-              </div>
-              <div>
-                <label htmlFor='aboutAuthor' className='block mb-2 font-medium'>
-                  {t('About Author')} <span className='error'>*</span>
+
+                {/* Free Book Checkbox */}
+                <label className='flex items-center gap-2 text-sm text-gray-700'>
+                  <input
+                    type='checkbox'
+                    checked={isFreeBook}
+                    onChange={handleFreeBookStatus}
+                    className='form-checkbox h-5 w-5 text-primary'
+                  />
+                  {t('Mark as free')}
                 </label>
-                <div className='flex gap-2 items-center'>
-                  <div className='w-full'>
-                    <TextArea
-                      id='aboutAuthor'
-                      name='aboutAuthor'
-                      onChange={formik.handleChange}
-                      placeholder=''
-                      onBlur={OnBlur}
-                      value={formik.values.aboutAuthor}
-                      rows={4}
-                      className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
-                      error={getErrorSubAdmin('aboutAuthor')}
-                      disabled={!isEditable}
-                    />
-                  </div>
-                  {isEditable && (
-                    <button
-                      type='button'
-                      className='btn btn-secondary whitespace-nowrap'
-                      onClick={() => handleRefineClick('aboutAuthor')}
-                    >
-                      Refine
-                    </button>
-                  )}
-                </div>
               </div>
-              <div className='flex items-end gap-4 mb-4'>
-                {/* Cover Image File Input */}
-                <div className='w-2/3'>
+            </div>
+
+            <div className='border p-4 mt-[-1px]'>
+              <div className='card-title-container'>
+                <p>
+                  {t('Fields marked with')} <span className='error'>*</span>{' '}
+                  {t('are mandatory.')}
+                </p>
+              </div>
+              <div className='card-grid-addedit-page'>
+                <div>
                   <TextInput
-                    type='file'
-                    id='coverImage'
+                    id={'title'}
                     onBlur={OnBlur}
-                    placeholder={t('Cover')}
-                    name='coverImage'
-                    label={t('Cover')}
-                    error={getErrorSubAdmin('coverImage')}
-                    className='w-full' // fill the 2/3 parent width
                     disabled={!isEditable}
-                    onChange={handleImageChange}
+                    required={true}
+                    placeholder={t('Book Title')}
+                    name='title'
+                    onChange={formik.handleChange}
+                    label={t('Book Title')}
+                    value={formik.values.title}
+                    error={getErrorSubAdmin('title')}
                   />
                 </div>
-
-                {/* Buttons aligned to input bottom */}
-                {isEditable && (
-                  <div className='flex gap-2'>
-                    <button
-                      type='button'
-                      className='btn btn-secondary whitespace-nowrap'
-                      onClick={handleUploadCoverImage}
-                    >
-                      Submit
-                    </button>
-                    <button
-                      type='button'
-                      className='btn btn-secondary whitespace-nowrap'
-                      // onClick={...}
-                    >
-                      Generate
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label className='block mb-2 font-medium'>
-                  {t('Learning Points')} <span className='error'>*</span>
-                </label>
-
-                {fields.map((field, index) => (
-                  <div
-                    key={field.id || index}
-                    className='flex items-center gap-2 mb-2'
+                <div>
+                  <label
+                    htmlFor='categoryId'
+                    className='block mb-2 font-medium'
                   >
-                    <input
-                      {...register(`learningPoints.${index}.value`)}
-                      defaultValue={field.value}
-                      placeholder={`Point ${index + 1}`}
-                      className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
-                      disabled={!isEditable}
-                    />
+                    {t('Select Categories')} <span className='error'>*</span>
+                  </label>
+                  <MultiSelect
+                    id={'categoryId'}
+                    value={formik.values.categoryId || []}
+                    onChange={(e) =>
+                      formik.setFieldValue('categoryId', e.value)
+                    }
+                    options={categoryDroData}
+                    optionLabel='name'
+                    optionValue='key'
+                    filter
+                    placeholder={t('Select Category') ?? 'Select Category'}
+                    display='chip'
+                    className='w-full'
+                    maxSelectedLabels={6}
+                    disabled={!isEditable}
+                  />
+                </div>
+                <div>
+                  <label htmlFor='authorId' className='block mb-2 font-medium'>
+                    {t('Select Author')} <span className='error'>*</span>
+                  </label>
+                  <MultiSelect
+                    id='authorId'
+                    value={formik.values.authorId || []}
+                    onChange={(e) => formik.setFieldValue('authorId', e.value)}
+                    options={authors}
+                    optionLabel='name'
+                    optionValue='id'
+                    filter
+                    display='chip'
+                    className='w-full'
+                    maxSelectedLabels={6}
+                    disabled={!isEditable}
+                    virtualScrollerOptions={{
+                      itemSize: 40,
+                      lazy: true,
+                      showLoader: true,
+                      loading: authorLoading,
+                      items: authors,
+                      onLazyLoad: async () => {
+                        if (!hasMoreAuthors || authorLoading) {
+                          return;
+                        }
+                        const { data } = await fetchMore({
+                          variables: {
+                            offset: authors.length,
+                            limit: 75,
+                          },
+                        });
+                        const newFetched = transformAuthors(
+                          data?.getAllAuthors?.data?.authors || []
+                        );
+                        setAuthors((prev) => [...prev, ...newFetched]);
+                        if (newFetched.length < 75) {
+                          setHasMoreAuthors(false);
+                        }
+                      },
+                    }}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor='whatsInside'
+                    className='block mb-2 font-medium'
+                  >
+                    {t('Whats Inside (About)')} <span className='error'>*</span>
+                  </label>
+                  <div className='flex gap-2 items'>
+                    <div className='w-full'>
+                      <TextArea
+                        id='whatsInside'
+                        name='whatsInside'
+                        onChange={formik.handleChange}
+                        placeholder=''
+                        onBlur={OnBlur}
+                        value={formik.values.whatsInside}
+                        rows={4}
+                        className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
+                        error={getErrorSubAdmin('whatsInside')}
+                        disabled={!isEditable}
+                      />
+                    </div>
                     {isEditable && (
                       <button
                         type='button'
-                        onClick={() => remove(index)}
-                        className='btn btn-secondary'
+                        className='btn btn-secondary h-fit mt-1'
+                        onClick={() => handleRefineClick('whatsInside')}
                       >
-                        <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
-                          <Cross />
-                        </span>
+                        Refine
                       </button>
                     )}
                   </div>
-                ))}
-
-                {isEditable && (
-                  <div className='flex gap-4 mt-2'>
-                    <button
-                      type='button'
-                      onClick={() => append({ value: '' })}
-                      className='btn btn-secondary'
-                    >
-                      + Add Learning Point
-                    </button>
-                    <button
-                      type='button'
-                      className='btn btn-secondary'
-                      onClick={() => handleRefineClick('learningPoints')}
-                    >
-                      Refine
-                    </button>
+                </div>
+                <div>
+                  <label
+                    htmlFor='aboutAuthor'
+                    className='block mb-2 font-medium'
+                  >
+                    {t('About Author')} <span className='error'>*</span>
+                  </label>
+                  <div className='flex gap-2 items-center'>
+                    <div className='w-full'>
+                      <TextArea
+                        id='aboutAuthor'
+                        name='aboutAuthor'
+                        onChange={formik.handleChange}
+                        placeholder=''
+                        onBlur={OnBlur}
+                        value={formik.values.aboutAuthor}
+                        rows={4}
+                        className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
+                        error={getErrorSubAdmin('aboutAuthor')}
+                        disabled={!isEditable}
+                      />
+                    </div>
+                    {isEditable && (
+                      <button
+                        type='button'
+                        className='btn btn-secondary whitespace-nowrap'
+                        onClick={() => handleRefineClick('aboutAuthor')}
+                      >
+                        Refine
+                      </button>
+                    )}
                   </div>
-                )}
+                </div>
+                <div className='flex items-end gap-4 mb-4'>
+                  {/* Cover Image File Input */}
+                  <div className='w-2/3'>
+                    <TextInput
+                      type='file'
+                      id='coverImage'
+                      onBlur={OnBlur}
+                      placeholder={t('Cover')}
+                      name='coverImage'
+                      label={t('Cover')}
+                      error={getErrorSubAdmin('coverImage')}
+                      className='w-full' // fill the 2/3 parent width
+                      disabled={!isEditable}
+                      onChange={handleImageChange}
+                    />
+                  </div>
+
+                  {/* Buttons aligned to input bottom */}
+                  {isEditable && (
+                    <div className='flex gap-2'>
+                      <button
+                        type='button'
+                        className='btn btn-secondary whitespace-nowrap'
+                        onClick={handleUploadCoverImage}
+                      >
+                        Submit
+                      </button>
+                      <button
+                        type='button'
+                        className='btn btn-secondary whitespace-nowrap'
+                        onClick={handlGenerateImage}
+                      >
+                        Generate
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className='block mb-2 font-medium'>
+                    {t('Learning Points')} <span className='error'>*</span>
+                  </label>
+
+                  {fields.map((field, index) => (
+                    <div
+                      key={field.id || index}
+                      className='flex items-center gap-2 mb-2'
+                    >
+                      <input
+                        {...register(`learningPoints.${index}.value`)}
+                        defaultValue={field.value}
+                        placeholder={`Point ${index + 1}`}
+                        className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
+                        disabled={!isEditable}
+                      />
+                      {isEditable && (
+                        <button
+                          type='button'
+                          onClick={() => remove(index)}
+                          className='btn btn-secondary'
+                        >
+                          <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
+                            <Cross />
+                          </span>
+                        </button>
+                      )}
+                    </div>
+                  ))}
+
+                  {isEditable && (
+                    <div className='flex gap-4 mt-2'>
+                      <button
+                        type='button'
+                        onClick={() => append({ value: '' })}
+                        className='btn btn-secondary'
+                      >
+                        + Add Learning Point
+                      </button>
+                      <button
+                        type='button'
+                        className='btn btn-secondary'
+                        onClick={() => handleRefineClick('learningPoints')}
+                      >
+                        Refine
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className='card-footer btn-group'>
-          {isEditable && (
+          <div className='card-footer btn-group'>
+            {isEditable && (
+              <Button
+                className='btn-primary '
+                type='button'
+                label={t('Save')}
+                onClick={handleSave}
+              >
+                <span className='text-white mr-1 w-3.5 h-3.5 inline-block svg-icon'>
+                  <CheckCircle />
+                </span>
+              </Button>
+            )}
+
             <Button
-              className='btn-primary '
-              type='button'
-              label={t('Save')}
-              onClick={handleSave}
+              className='btn-secondary'
+              label={t('Cancel')}
+              onClick={onCancelEditBookInfo}
             >
-              <span className='text-white mr-1 w-3.5 h-3.5 inline-block svg-icon'>
-                <CheckCircle />
+              <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
+                <Cross />
               </span>
             </Button>
-          )}
-
-          <Button
-            className='btn-secondary'
-            label={t('Cancel')}
-            onClick={onCancelEditBookInfo}
-          >
-            <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
-              <Cross />
-            </span>
-          </Button>
-        </div>
-      </form>
-      {showRefinePopup && refineFieldKey && (
-        <RefineText
-          refinedText={refineData}
-          fieldLabel={`Refined ${t(
-            refineFieldKey === 'whatsInside'
-              ? 'About Book'
-              : refineFieldKey === 'aboutAuthor'
-              ? 'About Author'
-              : 'Learning Points'
-          )}`}
-          onAccept={() => {
-            if (refineFieldKey === 'learningPoints') {
-              // Assuming you want to set it as one learning point
-              // If it's multiple, you'll need to parse and append
-              formik.setFieldValue('learningPoints', [{ value: refineData }]);
-            } else {
-              formik.setFieldValue(refineFieldKey, refineData);
-            }
-            setShowRefinePopup(false);
-            setRefineFieldKey('');
-          }}
-          onCancel={() => {
-            setShowRefinePopup(false);
-            setRefineFieldKey('');
-          }}
-        />
-      )}
-    </div>
+          </div>
+        </form>
+        {showRefinePopup && refineFieldKey && (
+          <RefineText
+            refinedText={refineData}
+            fieldLabel={`Refined ${t(
+              refineFieldKey === 'whatsInside'
+                ? 'About Book'
+                : refineFieldKey === 'aboutAuthor'
+                  ? 'About Author'
+                  : 'Learning Points'
+            )}`}
+            onAccept={() => {
+              if (refineFieldKey === 'learningPoints') {
+                // Assuming you want to set it as one learning point
+                // If it's multiple, you'll need to parse and append
+                formik.setFieldValue('learningPoints', [{ value: refineData }]);
+              } else {
+                formik.setFieldValue(refineFieldKey, refineData);
+              }
+              setShowRefinePopup(false);
+              setRefineFieldKey('');
+            }}
+            onCancel={() => {
+              setShowRefinePopup(false);
+              setRefineFieldKey('');
+            }}
+          />
+        )}
+      </div>
+      <BookPages />
+    </>
   );
 };
 

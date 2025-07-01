@@ -154,15 +154,28 @@ export const TOGGLE_FREE_BOOK = gql`
 
 export const PUBLISH_BOOK = gql`
 	${META_FRAGMENT}
-mutation PublishBook($input: saveBookInput) {
-	publishBook(input: $input) {
+	mutation PublishBook($input: saveBookInput) {
+		publishBook(input: $input) {
+			meta {
+				...MetaFragment
+			}
+		}
+}
+`;
+
+export const REFINE_COVER_IMAGE = gql`
+	${META_FRAGMENT}
+	mutation RefineCoverImage($uuid: ID!) {
+	refineCoverImage(uuid: $uuid) {
+		data {
+			refinedCoverImage
+		}
 		meta {
 			...MetaFragment
 		}
 	}
 }
 `;
-
 export const UPDATE_COUPON = gql`
 	${META_FRAGMENT}
 	mutation UpdateOffer($uuid: UUID, $offerName: String, $offerCode: String, $offerType: Int, $value: REAL, $startDate: Date, $endDate: Date, $offerUsage: Int, $applicable: Int, $selectedUsers: [UUID]) {
