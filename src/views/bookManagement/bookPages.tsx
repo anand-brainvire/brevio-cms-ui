@@ -39,7 +39,7 @@ const BookPages = () => {
 
   const formik = useFormik({
     initialValues: { keyPoint: '',richText: '', audio:''},
-    onSubmit: (values) => {
+    onSubmit: () => {
     //   console.log('Submitted Pages:', pages);
     //   console.log('Formik Values:', values);
     },

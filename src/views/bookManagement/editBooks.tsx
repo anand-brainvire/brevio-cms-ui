@@ -349,10 +349,10 @@ const editBooks = (): ReactElement => {
 
       const data = res.data;
       if (data.refineCoverImage.meta.statusCode === 200) {
-        const imageUrl = data.refineCoverImage.data.refinedCoverImage;
+        // const imageUrl = data.refineCoverImage.data.refinedCoverImage;
         toast.success(data.refineCoverImage.meta.message);
 
-        const file = await urlToFile(imageUrl, 'generated-cover.png'); // ✅ await here
+        // const file = await urlToFile(imageUrl, 'generated-cover.png'); // ✅ await here
 
         // Optional: Set to Formik or local state
         // formik.setFieldValue('coverImage', file);
@@ -365,12 +365,12 @@ const editBooks = (): ReactElement => {
   /*
    * Method to convert the url into image  file
    */
-  const urlToFile = async (url: string, filename: string): Promise<File> => {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const contentType = blob.type || 'image/png';
-    return new File([blob], filename, { type: contentType });
-  };
+  // const urlToFile = async (url: string, filename: string): Promise<File> => {
+  //   const response = await fetch(url);
+  //   const blob = await response.blob();
+  //   const contentType = blob.type || 'image/png';
+  //   return new File([blob], filename, { type: contentType });
+  // };
 
   /**
    * Method to change the free book status
