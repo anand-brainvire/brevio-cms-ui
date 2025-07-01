@@ -395,14 +395,14 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 										<div className={`flex items-center ${column?.headerCenter && 'justify-center'} `}>
 											{column?.name}
 											{column.sortable && (
-												<button title='Sort' className='cursor-pointer' onClick={() => handleOnSort(column?.fieldName)}>
-													{(filterData?.sortOrder === '' || filterData?.sortBy !== column?.fieldName) && (
+												<button title='Sort' className='cursor-pointer' onClick={() => handleOnSort(column.sortKey || column?.fieldName)}>
+													{(filterData?.sortOrder === '' || filterData?.sortBy !== (column.sortKey || column?.fieldName)) && (
 														<span className='svg-icon inline-block ml-1 w-3 h-3'>
 															<GetDefaultIcon />
 														</span>
 													)}
-													{filterData?.sortOrder === 'asc' && filterData?.sortBy === column?.fieldName && <AngleUp />}
-													{filterData?.sortOrder === 'desc' && filterData?.sortBy === column?.fieldName && <AngleDown />}
+													{filterData?.sortOrder === 'asc' && filterData?.sortBy === (column.sortKey || column.fieldName) && <AngleUp />}
+													{filterData?.sortOrder === 'desc' && filterData?.sortBy === (column.sortKey || column.fieldName) && <AngleDown />}
 												</button>
 											)}
 										</div>
