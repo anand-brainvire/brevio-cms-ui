@@ -36,6 +36,7 @@ function Author() {
 			fieldName: 'author_translations',
 			type: 'multilang',
 			translationKey: 'name',
+			sortKey: 'name'	
 		},
 		{
 			name: t('Status'),

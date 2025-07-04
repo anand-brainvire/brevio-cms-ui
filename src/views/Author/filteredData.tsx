@@ -26,13 +26,9 @@ const FilterBanner = ({ onSearchAuthor, filterData }: BannerProps) => {
 	 */
 	useEffect(() => {
 		const savedFilterDataJSONUser = filterServiceProps.getState('filterBanner', JSON.stringify(filterData));
-
-		// Parse the JSON data retrieved from local storage
 		const savedFilterData = JSON.parse(savedFilterDataJSONUser);
-
-		// Set the formik field values using setValues
 		formik.setValues(savedFilterData || initialValues);
-	}, []);
+	}, [filterData]);
 
 	const onReset = useCallback(() => {
 		formik.resetForm();
