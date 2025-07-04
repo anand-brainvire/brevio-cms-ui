@@ -77,7 +77,10 @@ export const errorHandler = async (error: MetaRes, callBack?: CallableFunction) 
 	if (errorData?.messageCode.includes('INVALID_REFRESH_TOKEN') || errorData.status.includes('UNAUTHENTICATED')) {
 		localStorage.clear();
 		sessionStorage.clear();
-		window.location.href = `/${ROUTES.login}`;
+		toast.error('Your session is expired, please login again');
+		setTimeout(() => {
+			window.location.href = `/${ROUTES.login}`;
+		}, 1000);
 	} else if (Array.isArray(errorData?.errors) && errorData?.errors?.length > 0) {
 		errorData.errors.forEach((err) => {
 			toast.error(err?.error);

@@ -34,6 +34,7 @@ export type ColArrType = {
 	type: 'image' | 'text' | 'date' | 'status' | 'action';
 	headerCenter?: boolean;
 	isBase64ImageUrl?: boolean;
+	sortKey?: string;
 };
 
 export type PaginationParams = {

@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 
 export interface IColumnsProps {
+	sortKey?: string;
 	fieldName: string;
 	name: string;
 	sortable: boolean;

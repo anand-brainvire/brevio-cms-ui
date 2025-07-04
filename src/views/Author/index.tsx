@@ -26,6 +26,7 @@ function Author() {
 			status: null,
 			sortBy: 'created_at',
 			sortOrder: sortOrder,
+			offset: ((DEFAULT_PAGE ?? DEFAULT_PAGE) - 1) * DEFAULT_LIMIT,
 		}
 	);
 	const COL_ARR = [
@@ -35,6 +36,7 @@ function Author() {
 			fieldName: 'author_translations',
 			type: 'multilang',
 			translationKey: 'name',
+			sortKey: 'name'	
 		},
 		{
 			name: t('Status'),
@@ -57,8 +59,9 @@ function Author() {
 		(values: FilterAuthorProps) => {
 			const updatedFilterData = {
 				...filterData,
-				search: values.search,
+				search: values.search.trim(),
 				page: DEFAULT_PAGE,
+				offset: ((DEFAULT_PAGE ?? filterData.page) - 1) * filterData.limit,
 			};
 			setFilterData(updatedFilterData);
 		},

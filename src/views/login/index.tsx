@@ -86,7 +86,6 @@ const Login = (): ReactElement => {
 					}
 				})
 				.catch(() => {
-					toast.error(t('Something went wrong'));
 					return;
 				});
 		},

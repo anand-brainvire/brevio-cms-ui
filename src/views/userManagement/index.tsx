@@ -181,7 +181,7 @@ const UserManagement = (): ReactElement => {
 						// multipleDeleteMutation={GRP_DEL_USER}
 						updateStatusMutation={CHANGE_USER_STATUS}
 						actionWisePermissions={{
-							edit: PERMISSION_LIST.UserManagement.EditAccess,
+							view: PERMISSION_LIST.UserManagement.ViewAccess,
 							delete: PERMISSION_LIST.UserManagement.DeleteAccess,
 							changeStatus: PERMISSION_LIST.UserManagement.ChangeStatusAccess,
 							multipleDelete: PERMISSION_LIST.UserManagement.GroupDeleteAcsess,
