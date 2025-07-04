@@ -119,7 +119,8 @@ const useValidationFields = () => {
 	const planStatus = Yup.string().required(translationFun('Please select Plan Status'));
 	const planPrice = Yup.string().required(translationFun('Please enter plan price')).matches(ONLY_DIGIT, translationFun('Plan Price must be numeric'));
 	const bookName = Yup.string().required(translationFun('Please enter book name')).min(2,translationFun('Book name should not be less than 2 characters Please enter valid content')).max(20,translationFun('Book name should not be greater than 20 characters'))
-	const addCategories = Yup.string().required(translationFun('Please select atlease 1 category'));
+	const addCategories = Yup.array().min(1, 'At least one category is required');
+	const AddAuthors = Yup.array().min(1, 'At least one author is required');
 	const whatsInside= Yup.string().required(translationFun('Please enter the what\'s inside'));
 	const aboutAuthor = Yup.string().required(translationFun('Please enter the about author'));
 	return {
@@ -213,6 +214,7 @@ const useValidationFields = () => {
 		addCategories,
 		whatsInside,
 		aboutAuthor,
+		AddAuthors,
 	};
 };
 

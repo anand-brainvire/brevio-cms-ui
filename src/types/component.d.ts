@@ -256,7 +256,7 @@ export type LoaderProps = {
 
 export type RefineTextProps = {
   refinedText: string;
-  onAccept: React.MouseEventHandler<HTMLButtonElement>;
-  onCancel: React.MouseEventHandler<HTMLButtonElement>;
+  onAccept: () => void;
+  onCancel: () => void;
   fieldLabel?: string;
 };

@@ -103,6 +103,46 @@ export const FETCH_BOOK_BY_ID = gql`
 }
 `;
 
+export const GET_ALL_BOOK_PAGES = gql`
+	${META_FRAGMENT}
+	query GetAllBookPages($bookId: String!) {
+		getAllBookPages(book_id: $bookId) {
+		data {
+			version_status
+				pages {
+					uuid
+					page_number
+					is_active
+					translations {
+						uuid
+						lang_code
+						key_point
+						html_content
+						audio_male
+						audio_female
+						total_minutes
+						total_seconds
+					}
+					insights {
+						uuid
+						book_page_id
+						key
+						translations {
+							uuid
+							lang_code
+							text
+						}
+					}
+				}
+			}
+		meta {
+			...MetaFragment
+		}
+		
+	}
+}
+`;
+
 export const GET_COUPON_BY_ID = gql`
 	${META_FRAGMENT}
 	query GetOffer($uuid: UUID) {

@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { RefineTextProps } from '@type/component';
+import { Cross } from '@components/icons/icons';
+import Button from '@components/button/button';
 
 const RefineText = ({
   refinedText,
@@ -7,20 +9,57 @@ const RefineText = ({
   onCancel,
   fieldLabel = 'Refined Text',
 }: RefineTextProps) => {
+  // Handle outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (
+        target?.id === 'refine-text-model' ||
+        target?.id === 'refine-text-model-child'
+      ) {
+        onCancel();
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [onCancel]);
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-md p-6 w-[500px] shadow-lg">
-        <h3 className="text-lg font-semibold mb-4">{fieldLabel}</h3>
-        <div className="mb-4 max-h-[200px] overflow-auto text-sm whitespace-pre-line border p-3 rounded bg-gray-100">
-          {refinedText}
-        </div>
-        <div className="flex justify-end gap-4">
-          <button className="btn btn-primary" onClick={onAccept}>
-            Accept
-          </button>
-          <button className="btn btn-secondary" onClick={onCancel}>
-            Cancel
-          </button>
+    <div
+      id='refine-text-model'
+      tabIndex={-1}
+      data-modal-show={true}
+      aria-hidden='false'
+      className={'model-container'}
+    >
+      <div
+        id='refine-text-model-child'
+        tabIndex={-1}
+        data-modal-show={true}
+        aria-hidden='false'
+        className='model animate-fade-in'
+      >
+        <div className='model-content'>
+          <div className='model-header'>
+            <p className='text-lg font-medium text-white'>{fieldLabel}</p>
+            <Button onClick={onCancel} title='Close'>
+              <span className='mr-1 text-white w-2.5 h-2.5 inline-block svg-icon'>
+                <Cross />
+              </span>
+            </Button>
+          </div>
+
+          <div className='model-body'>
+            <div className='mb-4 max-h-[200px] overflow-auto text-sm whitespace-pre-line border p-3 rounded bg-gray-100'>
+              {refinedText}
+            </div>
+          </div>
+
+          <div className='model-footer'>
+            <Button className='btn-primary' onClick={onAccept} label='Accept' />
+            <Button className='btn-secondary' onClick={onCancel} label='Cancel' />
+          </div>
         </div>
       </div>
     </div>

@@ -84,8 +84,7 @@ const useValidation = () => {
 		planPrice,
 		bookName,
 		addCategories,
-		whatsInside,
-		aboutAuthor,
+		AddAuthors
 	} = useValidationFields();
 
 	const loginValidationSchema = Yup.object({
@@ -224,9 +223,8 @@ const useValidation = () => {
 
 	const addBookInfoValidationSchema = Yup.object({
 		title: bookName,
-		categories: addCategories,
-		whatsInside: whatsInside,
-		aboutAuthor: aboutAuthor,
+		categoryId: addCategories,
+		authorId: AddAuthors
 	});
 	
 	const forgotPasswordValidationSchema = Yup.object({

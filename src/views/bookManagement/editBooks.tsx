@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TextInput from '@components/textinput/TextInput';
-import { editBookInfo } from '@type/bookManagement';
+import { Category, editBookInfo } from '@type/bookManagement';
 import { uploadFile, whiteSpaceRemover } from '@utils/helpers';
 import { useFormik } from 'formik';
 import BookPages from './bookPages';
-// import useValidation from '@src/hooks/validations';
+import { ValidationError } from 'yup';
 import {
   REFINE_ABOUT_AUTHOR,
   REFINE_ABOUT_BOOK,
@@ -17,6 +17,10 @@ import {
   UPDATE_BOOK_INFO,
   PUBLISH_BOOK,
   REFINE_COVER_IMAGE,
+  GENERATE_NEW_BOOK,
+  DELETE_DRAFT_BOOK_PAGE,
+  RESTORE_TO_DRAFT,
+  BOOK_PUBLISH_STATUS,
 } from '@framework/graphql/mutations/bookManagement';
 import Button from '@components/button/button';
 import { CheckCircle, Cross } from '@components/icons/icons';
@@ -30,6 +34,8 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import RefineText from '@components/popup/refineText';
 import { GET_AUTHOR } from '@framework/graphql/queries/author';
+import GenerateBookConfirmPopup from '@components/popup/generateBook';
+import useValidation from '@src/hooks/validations';
 
 const editBooks = (): ReactElement => {
   const { t } = useTranslation();
@@ -49,15 +55,27 @@ const editBooks = (): ReactElement => {
     useMutation(TOGGLE_FREE_BOOK);
   const [refineCoverImage, { loading: refineCoverImageLoader }] =
     useMutation(REFINE_COVER_IMAGE);
+  const [generateNewBook, { loading: generateNewBookLoader }] =
+    useMutation(GENERATE_NEW_BOOK);
+  const [deleteDraftBookPages, { loading: deleteDraftBookPagesLoader }] =
+    useMutation(DELETE_DRAFT_BOOK_PAGE);
+  const [restoreToDraf, { loading: restoreToDraftLoader }] =
+    useMutation(RESTORE_TO_DRAFT);
+  const [unpublishBook, { loading: unpublishBookLoader }] =
+    useMutation(BOOK_PUBLISH_STATUS);
+
   const { data, refetch: fetchAllCategories } = useQuery(FETCH_CATEGORY, {
     variables: { isAll: IS_ALL },
   });
-  const [categoryDroData, setCategoryDroData] = useState([]);
+  const [categoryDroData, setCategoryDroData] = useState<Category[]>([]);
   const [showRefinePopup, setShowRefinePopup] = useState(false);
   const [refineData, setRefineData] = useState('');
   const [refineFieldKey, setRefineFieldKey] = useState('');
   const [isFreeBook, setIsFreeBook] = useState(false);
   const [coverImageFile, setCoverImageFile] = useState<File>();
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+  const [showBookGeneratePopup, setShowBookGeneratePopup] = useState(false);
+  const [generatedContent, setGeneratedContent] = useState(null);
   const [selectedTab, setSelectedTab] = useState<'draft' | 'published'>(
     'draft'
   );
@@ -100,7 +118,7 @@ const editBooks = (): ReactElement => {
       setHasMoreAuthors(newAuthors.length === 75);
     },
   });
-  // const { addBookInfoValidationSchema } = useValidation();
+  const { addBookInfoValidationSchema } = useValidation();
   const initialValues: editBookInfo = {
     title: '',
     categoryId: [],
@@ -203,17 +221,17 @@ const editBooks = (): ReactElement => {
             ['lang_code']: 'en',
             ['about_book']: values.whatsInside,
             ['about_author']: values.aboutAuthor,
-            ['learning_points']: values.learningPoints,
+            ['learning_points']: values.learningPoints.map((lp:any) => lp.value),
           },
         ],
       },
     })
       .then((res) => {
         const data = res.data;
-        if (data.updateBookInfo?.meta?.statusCode === 200) {
+        if (data.updateBook?.meta?.statusCode === 201) {
           toast.success(t('Book updated successfully'));
           formik.resetForm();
-          onCancelEditBookInfo();
+          // onCancelEditBookInfo();
         }
       })
       .catch(() => {
@@ -224,10 +242,164 @@ const editBooks = (): ReactElement => {
   const formik = useFormik({
     initialValues,
     // validationSchema: addBookInfoValidationSchema,
-    onSubmit: (values) => {
-      UpdateBookInfoFunction(values);
+    onSubmit: async (values) => {
+      await UpdateBookInfoFunction(values); // success/error already handled inside
     },
   });
+
+  const getCategoryNames = () => {
+    return categoryDroData
+      .filter((cat) => formik.values.categoryId.includes(cat.uuid))
+      .map((cat) => {
+        const enTranslation = cat.category_translations.find(
+          (t) => t.lang_code === 'en'
+        );
+        return enTranslation?.name || 'Unnamed Category';
+      });
+  };
+
+  const getAuthorNames = () => {
+    return authors
+      .filter((auth) => formik.values.authorId.includes(auth.id))
+      .map((auth) => auth.name);
+  };
+
+  /*
+  Method to generating new book
+  */
+
+  const handleGenerateNewBookApi = async (pageCount?: number) => {
+    try {
+      const generateRes = await generateNewBook({
+        variables: {
+          input: {
+            bookUuid: params.id,
+            pageCount,
+            categoryUuids: formik.values.categoryId,
+            authorUuids: formik.values.authorId,
+          },
+        },
+      });
+
+      if (generateRes?.data?.generateBookContent?.meta?.statusCode === 200) {
+        toast.success(generateRes.data.generateBookContent.meta.message);
+        const d = generateRes.data.generateBookContent.data;
+        const pages = generateRes.data.generateBookContent.data.pages;
+        setGeneratedContent(pages);
+        formik.setValues({
+          title: d.title,
+          categoryId: d.categories.map((c: any) => c.uuid),
+          authorId: d.authors.map((a: any) => a.uuid),
+          whatsInside: d.about_book,
+          aboutAuthor: d.about_authors,
+          coverImage: d.cover_image_url,
+          learningPoints: d.learning_points.map((pt: string) => ({
+            value: pt,
+          })),
+        });
+
+        remove();
+        d.learning_points.forEach((pt: string) => append({ value: pt }));
+
+        setShowBookGeneratePopup(false);
+      } else {
+        toast.error(t('Failed to generate new book'));
+      }
+    } catch {
+      return;
+    }
+  };
+
+  /*
+  Method to delete draft pages before generating new book
+  */
+
+  const deleteDraftPages = async () => {
+    try {
+      const res = await deleteDraftBookPages({
+        variables: {
+          bookUuid: params.id,
+        },
+      });
+
+      const statusCode = res?.data?.deleteDraftBookPages?.meta?.statusCode;
+      if (statusCode === 200) {
+        toast.success(t('Draft pages deleted successfully'));
+        setShowConfirmPopup(false);
+        setShowBookGeneratePopup(true); // show input popup after delete success
+      } else {
+        toast.error(t('Failed to delete draft pages'));
+      }
+    } catch {
+      toast.error(t('Something went wrong'));
+    }
+  };
+
+  /*
+  Method to unpublish the book
+  */
+  const handleUnpublishBook = () => {
+    unpublishBook({
+      variables: {
+        uuid: params.id,
+      },
+    })
+      .then((res) => {
+        const data = res.data;
+        if (data?.togglePublishBook?.meta?.statusCode === 200) {
+          toast.success(data.togglePublishBook.meta.message);
+        }
+      })
+      .catch(() => {
+        return;
+      });
+  };
+
+  /*
+  Method to clone the published pages into the draft
+  */
+  const handleRestoreToDraft = () => {
+    restoreToDraf({
+      variables: {
+        uuid: params.id,
+      },
+    })
+      .then((res) => {
+        const data = res.data;
+        if (data?.clonePublishToDraft?.meta?.statusCode === 200) {
+          toast.success(data.clonePublishToDraft.meta.message);
+        }
+      })
+      .catch(() => {
+        return;
+      });
+  };
+  /*
+  Method to Generate new the new book
+  */
+  const handleGenerateNewBook = async () => {
+    try {
+      // Only validate title, categoryId, authorId
+      const partial = addBookInfoValidationSchema.pick([
+        'title',
+        'categoryId',
+        'authorId',
+      ]);
+      await partial.validate(formik.values, { abortEarly: false });
+      setShowConfirmPopup(true);
+    } catch (err: any) {
+      if (err instanceof ValidationError) {
+        const fieldErrors: Record<string, string> = {};
+        err.inner.forEach((e: ValidationError) => {
+          if (e.path) {
+            fieldErrors[e.path] = e.message;
+            toast.error(e.message);
+          }
+        });
+        formik.setErrors(fieldErrors);
+      }
+    }
+  };
 
   /*
   Method to publish the book
@@ -259,9 +431,9 @@ const editBooks = (): ReactElement => {
         },
       });
 
-      if (data?.publishBook?.meta?.statusCode === 200) {
+      if (data?.publishBook?.meta?.statusCode === 201) {
         toast.success(t('Book published successfully'));
-        refetch(); // Optionally refetch book data
+        refetch();
       } else {
         toast.error(
           data?.publishBook?.meta?.message || t('Failed to publish book')
@@ -353,7 +525,6 @@ const editBooks = (): ReactElement => {
         toast.success(data.refineCoverImage.meta.message);
 
         // const file = await urlToFile(imageUrl, 'generated-cover.png'); // ✅ await here
-
         // Optional: Set to Formik or local state
         // formik.setFieldValue('coverImage', file);
       }
@@ -363,7 +534,8 @@ const editBooks = (): ReactElement => {
   };
 
   /*
-   * Method to convert the url into image  file
+   * Method to convert the u
+  rl into image  file
    */
   // const urlToFile = async (url: string, filename: string): Promise<File> => {
   //   const response = await fetch(url);
@@ -511,29 +683,66 @@ const editBooks = (): ReactElement => {
           refineLearningPointsLoader ||
           freeBookLoader ||
           publishBookLoading ||
-          refineCoverImageLoader) && <Loader />}
+          refineCoverImageLoader ||
+          generateNewBookLoader ||
+          deleteDraftBookPagesLoader ||
+          restoreToDraftLoader ||
+          unpublishBookLoader) && <Loader />}
         <form onSubmit={formik.handleSubmit}>
           <div className='card-body'>
             <div className='flex items-center justify-between w-full mb-4'>
               <h2 className='text-xl font-semibold'>Book Information</h2>
-              <button
-                type='button'
-                className='btn btn-primary'
-                onClick={handlePublishBook}
-              >
-                {t('Publish')}
-              </button>
+
+              <div className='flex gap-2'>
+                {isEditable ? (
+                  <>
+                    <button
+                      type='button'
+                      className='btn btn-primary'
+                      onClick={handleGenerateNewBook}
+                    >
+                      {t('Generate New Book')}
+                    </button>
+                    <button
+                      type='button'
+                      className='btn btn-primary'
+                      onClick={handlePublishBook}
+                    >
+                      {t('Publish')}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type='button'
+                      className='btn btn-primary'
+                      onClick={handleRestoreToDraft}
+                    >
+                      {t('Restore to Draft')}
+                    </button>
+                    <button
+                      type='button'
+                      className='btn btn-primary'
+                      onClick={handleUnpublishBook}
+                    >
+                      {t('Unpublish')}
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
+
             <div className='flex items-center justify-between w-full mb-4'>
               {/* Left side: Draft | Publish buttons */}
               <div className='flex border border-gray-300 rounded-tl-lg rounded-tr-lg overflow-hidden w-fit'>
                 <button
                   type='button'
                   onClick={() => setSelectedTab('draft')}
-                  className={`px-8 py-4 text-sm font-medium rounded-none ${selectedTab === 'draft'
+                  className={`px-8 py-4 text-sm font-medium rounded-none ${
+                    selectedTab === 'draft'
                       ? 'bg-primary text-white'
                       : 'bg-white text-gray-600'
-                    }`}
+                  }`}
                 >
                   Draft
                 </button>
@@ -542,10 +751,11 @@ const editBooks = (): ReactElement => {
                 <button
                   type='button'
                   onClick={() => setSelectedTab('published')}
-                  className={`px-8 py-4 text-sm font-medium rounded-none ${selectedTab === 'published'
+                  className={`px-8 py-4 text-sm font-medium rounded-none ${
+                    selectedTab === 'published'
                       ? 'bg-primary text-white'
                       : 'bg-white text-gray-600'
-                    }`}
+                  }`}
                 >
                   Published
                 </button>
@@ -588,7 +798,7 @@ const editBooks = (): ReactElement => {
             <div className='border p-4 mt-[-1px]'>
               <div className='card-title-container'>
                 <p>
-                  {t('Fields marked with')} <span className='error'>*</span>{' '}
+                  {t('Fields marked with')}
                   {t('are mandatory.')}
                 </p>
               </div>
@@ -612,7 +822,7 @@ const editBooks = (): ReactElement => {
                     htmlFor='categoryId'
                     className='block mb-2 font-medium'
                   >
-                    {t('Select Categories')} <span className='error'>*</span>
+                    {t('Select Categories')}
                   </label>
                   <MultiSelect
                     id={'categoryId'}
@@ -633,7 +843,7 @@ const editBooks = (): ReactElement => {
                 </div>
                 <div>
                   <label htmlFor='authorId' className='block mb-2 font-medium'>
-                    {t('Select Author')} <span className='error'>*</span>
+                    {t('Select Author')}
                   </label>
                   <MultiSelect
                     id='authorId'
@@ -679,7 +889,7 @@ const editBooks = (): ReactElement => {
                     htmlFor='whatsInside'
                     className='block mb-2 font-medium'
                   >
-                    {t('Whats Inside (About)')} <span className='error'>*</span>
+                    {t('Whats Inside (About)')}
                   </label>
                   <div className='flex gap-2 items'>
                     <div className='w-full'>
@@ -712,7 +922,7 @@ const editBooks = (): ReactElement => {
                     htmlFor='aboutAuthor'
                     className='block mb-2 font-medium'
                   >
-                    {t('About Author')} <span className='error'>*</span>
+                    {t('About Author')}
                   </label>
                   <div className='flex gap-2 items-center'>
                     <div className='w-full'>
@@ -863,8 +1073,8 @@ const editBooks = (): ReactElement => {
               refineFieldKey === 'whatsInside'
                 ? 'About Book'
                 : refineFieldKey === 'aboutAuthor'
-                  ? 'About Author'
-                  : 'Learning Points'
+                ? 'About Author'
+                : 'Learning Points'
             )}`}
             onAccept={() => {
               if (refineFieldKey === 'learningPoints') {
@@ -883,8 +1093,34 @@ const editBooks = (): ReactElement => {
             }}
           />
         )}
+        {showConfirmPopup && (
+          <RefineText
+            refinedText={t(
+              'All the current pages of this book will be deleted. Are you sure you want to proceed?'
+            )}
+            fieldLabel={t('Confirm Book Regeneration').toString()}
+            onAccept={deleteDraftPages}
+            onCancel={() => setShowConfirmPopup(false)}
+          />
+        )}
+        {showBookGeneratePopup && (
+          <GenerateBookConfirmPopup
+            show={showBookGeneratePopup}
+            onClose={() => setShowBookGeneratePopup(false)}
+            onConfirm={handleGenerateNewBookApi} // pass pageCount from popup
+            bookTitle={formik.values.title}
+            categoryNames={getCategoryNames()}
+            authorNames={getAuthorNames()}
+          />
+        )}
       </div>
-      <BookPages />
+      {params.id && (
+        <BookPages
+          bookUuid={params.id}
+          status={selectedTab}
+          generatedPages={generatedContent}
+        />
+      )}
     </>
   );
 };

@@ -152,38 +152,52 @@ export const uuid = (): string => {
  * @param data
  * @param path
  */
-export const uploadFile = async (data: { name: string; content: File | string }[], path: string): Promise<void> => {
-	try {
-		const formData = new FormData();
-		data.forEach((singleFormData) => {
-			formData.append(singleFormData.name, singleFormData.content);
-		});
-		const url = `https://leadtechadminapi.node.brainvire.dev/api/upload/${path}`;
-		const encryptedToken = localStorage.getItem('authToken') as string;
-		const token = encryptedToken && DecryptionFunction(encryptedToken);
-		const response = await fetch(url, {
-			method: 'POST',
-			body: formData,
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		});
+export const uploadFile = async (
+  data: { name: string; content: File | string }[],
+  path: string
+): Promise<void> => {
+  try {
+    const formData = new FormData();
 
-		if (response.ok) {
-			if (path.includes('bsmedia')) {
-				const data = await response.json();
-				toast.success(data.meta.message);
-			}
-		} else {
-			const data = await response.json();
-			errorHandler(data.meta);
-		}
-	} catch (error) {
-		if (error) {
-			toast.error(t('Failed to upload file'));
-		}
-	}
+    // ✅ Force the file key as 'pageAudio' — this is what the backend expects
+    data.forEach((singleFormData) => {
+      const fieldName =
+        path.includes('page-audio') && singleFormData.name !== 'pageAudio'
+          ? 'pageAudio'
+          : singleFormData.name;
+
+      formData.append(fieldName, singleFormData.content);
+    });
+
+    const url = `https://leadtechadminapi.node.brainvire.dev/api/upload/${path}`;
+    const encryptedToken = localStorage.getItem('authToken') as string;
+    const token = encryptedToken && DecryptionFunction(encryptedToken);
+
+    const response = await fetch(url, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.ok) {
+      if (path.includes('bsmedia')) {
+        const data = await response.json();
+        toast.success(data.meta.message);
+      } else {
+        toast.success('File uploaded successfully');
+      }
+    } else {
+      console.error('Upload failed', await response.text());
+      toast.error('Failed to upload file');
+    }
+  } catch (error) {
+    console.error('Upload error:', error);
+    toast.error(t('Failed to upload file'));
+  }
 };
+
 /**
  * Method used to navigate in given route path
  * @param options

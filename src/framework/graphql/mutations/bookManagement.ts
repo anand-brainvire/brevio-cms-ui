@@ -176,6 +176,93 @@ export const REFINE_COVER_IMAGE = gql`
 	}
 }
 `;
+
+export const CREATE_BOOK_PAGE = gql`
+	${META_FRAGMENT}
+	mutation CreateBookPage($bookId: String!, $translations: [BookPageTranslationInput!]!, $insights: [BookPageInsightInput!]!) {
+  	createBookPage(book_id: $bookId, translations: $translations, insights: $insights) {
+    	meta {
+				...MetaFragment
+			}
+		}
+	}
+`;
+
+export const UPDATE_BOOK_PAGE = gql`
+	${META_FRAGMENT}
+	mutation UpdateBookPage($uuid: ID!, $insights: [BookPageInsightInput!]!, $translations: [BookPageTranslationInput!]) {
+	updateBookPage(uuid: $uuid, insights: $insights, translations: $translations) {
+		meta {
+				...MetaFragment
+			}
+		}
+	}
+`;
+
+export const DELETE_DRAFT_BOOK_PAGE = gql`
+	${META_FRAGMENT}
+	mutation DeleteDraftBookPages($bookUuid: UUID) {
+  	deleteDraftBookPages(bookUuid: $bookUuid) {
+		meta {
+				...MetaFragment
+			}
+		}
+  	}
+`;
+
+export const GENERATE_NEW_BOOK = gql`
+	${META_FRAGMENT}
+mutation GenerateBookContent($input: GenerateBookContentInput!) {
+  generateBookContent(input: $input) {
+		data {
+			slug
+			title
+			status
+			book_uuid
+			book_version_uuid
+			total_pages
+			total_insights
+			author_names
+			about_book
+			about_authors
+			learning_points
+			cover_image_url
+			pages {
+				page_number
+				key_point
+				html_content
+				insights {
+				key
+				text
+				}
+			}
+			authors {
+				name
+				uuid
+			}
+			categories {
+				name
+				slug
+				uuid
+				description
+			}
+		}
+    	meta {
+			...MetaFragment
+		}
+  	}
+}
+`;
+export const RESTORE_TO_DRAFT = gql`
+	${META_FRAGMENT}
+mutation ClonePublishToDraft($uuid: UUID) {
+	clonePublishToDraft(uuid: $uuid) {
+		meta {
+			...MetaFragment
+		}
+	}
+}
+`;
 export const UPDATE_COUPON = gql`
 	${META_FRAGMENT}
 	mutation UpdateOffer($uuid: UUID, $offerName: String, $offerCode: String, $offerType: Int, $value: REAL, $startDate: Date, $endDate: Date, $offerUsage: Int, $applicable: Int, $selectedUsers: [UUID]) {

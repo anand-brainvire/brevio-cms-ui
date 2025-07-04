@@ -47,6 +47,20 @@ export type PageFormProps = {
   OnBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
 };
 
+export type Category = {
+  uuid: string;
+  slug: string;
+  category_translations: {
+    lang_code: string;
+    name: string;
+    description: string;
+  }[];
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  created_by: number;
+  updated_by: number | null;
+};
 
 export type editBookInfo = {
 	title: string;
