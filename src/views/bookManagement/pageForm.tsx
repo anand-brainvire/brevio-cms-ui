@@ -5,26 +5,26 @@ import React, {
   useImperativeHandle,
   useEffect,
   useState,
-} from "react";
-import { useForm, useFieldArray } from "react-hook-form";
-import { useFormik } from "formik";
-import { toast } from "react-toastify";
-import { uploadFile, whiteSpaceRemover } from "@utils/helpers";
-import CKEditorComponent from "@components/ckEditor/ckEditor";
-import TextInput from "@components/textinput/TextInput";
-import { Cross, AngleDown, AngleUp } from "@components/icons/icons";
-import { t } from "i18next";
-import { useParams } from "react-router-dom";
-import { Url } from "url";
-import AudioPlayerOnHover from "@components/audio/AudioPlayerOnHoverProps";
-import { useMutation } from "@apollo/client";
+} from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { useFormik } from 'formik';
+import { toast } from 'react-toastify';
+import { uploadFile, whiteSpaceRemover } from '@utils/helpers';
+import CKEditorComponent from '@components/ckEditor/ckEditor';
+import TextInput from '@components/textinput/TextInput';
+import { Cross, AngleDown, AngleUp } from '@components/icons/icons';
+import { t } from 'i18next';
+import { useParams } from 'react-router-dom';
+import { Url } from 'url';
+import AudioPlayerOnHover from '@components/audio/AudioPlayerOnHoverProps';
+import { useMutation } from '@apollo/client';
 import {
   REFINE_INSIGHTS,
   REFINE_KEY_POINTS,
   REFINE_PAGE_CONTENT,
-} from "@framework/graphql/mutations/bookManagement";
-import RefineText from "@components/popup/refineText";
-import { Loader } from "@components/index";
+} from '@framework/graphql/mutations/bookManagement';
+import RefineText from '@components/popup/refineText';
+import { Loader } from '@components/index';
 
 interface PageFormProps {
   index: number;
@@ -65,8 +65,8 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
     const params = useParams();
     const [audioFile, setAudioFile] = useState<File | null>(null);
     const [showRefinePopup, setShowRefinePopup] = useState(false);
-    const [refineData, setRefineData] = useState("");
-    const [refineFieldKey, setRefineFieldKey] = useState("");
+    const [refineData, setRefineData] = useState('');
+    const [refineFieldKey, setRefineFieldKey] = useState('');
     const [refinedInsightId, setRefinedInsightId] = useState<string | null>(
       null
     );
@@ -93,13 +93,13 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
       defaultValues: {
         insights: initialData?.insights?.length
           ? initialData.insights
-          : [{ value: "" }],
+          : [{ value: '' }],
       },
     });
 
     const { fields, append, remove } = useFieldArray({
       control,
-      name: "insights",
+      name: 'insights',
     });
 
     useEffect(() => {
@@ -110,8 +110,8 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
 
     const formik = useFormik({
       initialValues: {
-        keyPoint: initialData?.keyPoint || "",
-        richText: initialData?.richText || "",
+        keyPoint: initialData?.keyPoint || '',
+        richText: initialData?.richText || '',
       },
       enableReinitialize: true,
       onSubmit: () => {
@@ -147,21 +147,21 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
         return;
       }
 
-      const isMP3 = file.type === "audio/mpeg" || file.name.endsWith(".mp3");
+      const isMP3 = file.type === 'audio/mpeg' || file.name.endsWith('.mp3');
       const isSizeValid = file.size <= 5 * 1024 * 1024;
 
       if (!isMP3) {
-        return toast.error("Only .mp3 files are allowed");
+        return toast.error('Only .mp3 files are allowed');
       }
       if (!isSizeValid) {
-        return toast.error("File size should not exceed 5MB");
+        return toast.error('File size should not exceed 5MB');
       }
 
       setAudioFile(file);
     };
 
     const handleRefineClick = (key: string, _insightUuid?: string) => {
-      if (key === "keyPoint") {
+      if (key === 'keyPoint') {
         refineKeyPoints({
           variables: { uuid: initialData?.uuid },
         })
@@ -176,7 +176,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
           .catch(() => {
             return;
           });
-      } else if (key === "richText") {
+      } else if (key === 'richText') {
         refinePageContent({
           variables: { uuid: initialData?.uuid },
         })
@@ -191,7 +191,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
           .catch(() => {
             return;
           });
-      } else if (key === "insights") {
+      } else if (key === 'insights') {
         refineInsight({
           variables: {
             bookPageUuid: initialData?.uuid,
@@ -215,12 +215,12 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
 
     const handleAudioSubmit = async () => {
       if (!audioFile) {
-        return toast.error("No file selected");
+        return toast.error('No file selected');
       }
 
       try {
         const path = `page-audio?bookUuid=${params.id}&bookPagePageUuid=${initialData?.uuid}&langCode=en`;
-        await uploadFile([{ name: "pageAudio", content: audioFile }], path);
+        await uploadFile([{ name: 'pageAudio', content: audioFile }], path);
         const generatedUrl = `book/${params.id}/draft/pages/${initialData?.uuid}/en_male.mp3`;
         setUploadedAudioUrl(generatedUrl);
         setIsUploaded(true);
@@ -237,12 +237,12 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
     };
 
     return (
-      <div className="border mb-6 rounded shadow-sm">
+      <div className='border mb-6 rounded shadow-sm'>
         <div
-          className="flex justify-between items-center px-4 py-2 bg-gray-100 cursor-pointer"
+          className='flex justify-between items-center px-4 py-2 bg-gray-100 cursor-pointer'
           onClick={toggle}
         >
-          <h3 className="text-lg font-semibold">Page {index + 1}</h3>
+          <h3 className='text-lg font-semibold'>Page {index + 1}</h3>
           <div>{isOpen ? <AngleUp /> : <AngleDown />}</div>
         </div>
 
@@ -251,21 +251,21 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
             {refineKeyPointsLoader ||
               refineInsightLoader ||
               (refinePageContentLoader && Loader)}
-            <form className="p-4 space-y-6">
+            <form className='p-4 space-y-6'>
               <CKEditorComponent
                 id={`rich-text-editor-${index}`}
-                label="Rich Text Editor with Preview"
+                label='Rich Text Editor with Preview'
                 required
                 value={formik.values.richText}
                 onChange={(val: string) =>
-                  formik.setFieldValue("richText", val)
+                  formik.setFieldValue('richText', val)
                 }
               />
               {isEditable && (
                 <button
-                  type="button"
-                  className="btn btn-secondary h-fit mt-1"
-                  onClick={() => handleRefineClick("richText")}
+                  type='button'
+                  className='btn btn-secondary h-fit mt-1'
+                  onClick={() => handleRefineClick('richText')}
                 >
                   Refine
                 </button>
@@ -274,34 +274,34 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                 id={`keyPoint-${index}`}
                 onBlur={handleBlur}
                 required
-                placeholder={t("Key Point")}
-                name="keyPoint"
+                placeholder={t('Key Point')}
+                name='keyPoint'
                 onChange={formik.handleChange}
-                label={t("keyPoint")}
+                label={t('keyPoint')}
                 value={formik.values.keyPoint}
               />
               {isEditable && (
                 <button
-                  type="button"
-                  className="btn btn-secondary h-fit mt-1"
-                  onClick={() => handleRefineClick("keyPoint")}
+                  type='button'
+                  className='btn btn-secondary h-fit mt-1'
+                  onClick={() => handleRefineClick('keyPoint')}
                 >
                   Refine
                 </button>
               )}
               <div>
-                <label className="block mb-2 font-medium">
-                  {t("Insights")} <span className="error">*</span>
+                <label className='block mb-2 font-medium'>
+                  {t('Insights')} <span className='error'>*</span>
                 </label>
-                <div className="space-y-2">
+                <div className='space-y-2'>
                   {fields.map((field, i) => (
-                    <div key={field.id} className="flex items-center gap-2">
+                    <div key={field.id} className='flex items-center gap-2'>
                       <span
-                        className="min-w-[110px] text-gray-600 font-mono text-sm cursor-pointer hover:text-primary"
+                        className='min-w-[110px] text-gray-600 font-mono text-sm cursor-pointer hover:text-primary'
                         onClick={() => {
                           const key = `##INSIGHT_${i + 1}##`;
                           navigator.clipboard.writeText(key);
-                          toast.success("Copied to clipboard");
+                          toast.success('Copied to clipboard');
                         }}
                       >
                         {`##INSIGHT_${i + 1}##`}
@@ -311,25 +311,25 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                           required: true,
                         })}
                         placeholder={`Point ${i + 1}`}
-                        className="form-input w-full border border-gray-300 rounded-md px-3 py-2"
+                        className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
                       />
                       {isEditable && (
                         <button
-                          type="button"
+                          type='button'
                           onClick={() => remove(i)}
-                          className="btn btn-secondary"
+                          className='btn btn-secondary'
                         >
-                          <span className="mr-1 w-2.5 h-2.5 text-white inline-block svg-icon">
+                          <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
                             <Cross />
                           </span>
                         </button>
                       )}
                       {isEditable && (
                         <button
-                          type="button"
-                          className="btn btn-secondary h-fit mt-1"
+                          type='button'
+                          className='btn btn-secondary h-fit mt-1'
                           onClick={() =>
-                            handleRefineClick("insights", field.id)
+                            handleRefineClick('insights', field.id)
                           }
                         >
                           Refine
@@ -339,11 +339,11 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                   ))}
                 </div>
                 {isEditable && (
-                  <div className="flex gap-4 mt-3">
+                  <div className='flex gap-4 mt-3'>
                     <button
-                      type="button"
-                      onClick={() => append({ value: "" })}
-                      className="btn btn-secondary h-fit mt-1"
+                      type='button'
+                      onClick={() => append({ value: '' })}
+                      className='btn btn-secondary h-fit mt-1'
                     >
                       + Add Insight
                     </button>
@@ -351,29 +351,29 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                 )}
               </div>
 
-              <div className="flex items-center gap-4 mb-4 flex-wrap">
+              <div className='flex items-center gap-4 mb-4 flex-wrap'>
                 {isUploaded && uploadedAudioUrl ? (
                   <>
                     <AudioPlayerOnHover
                       audioUrl={
-                        typeof uploadedAudioUrl === "string"
+                        typeof uploadedAudioUrl === 'string'
                           ? uploadedAudioUrl
-                          : ""
+                          : ''
                       }
                     />
                     {isEditable && (
                       <>
                         <button
-                          type="button"
+                          type='button'
                           onClick={handleAudioRemove}
-                          className="btn btn-secondary"
+                          className='btn btn-secondary'
                         >
-                          <span className="mr-1 w-2.5 h-2.5 text-white inline-block svg-icon">
+                          <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
                             <Cross />
                           </span>
                         </button>
 
-                        <button type="button" className="btn btn-secondary">
+                        <button type='button' className='btn btn-secondary'>
                           Generate
                         </button>
                       </>
@@ -381,17 +381,17 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                   </>
                 ) : (
                   <>
-                    <div className="w-2/3">
+                    <div className='w-2/3'>
                       <TextInput
-                        type="file"
-                        accept="audio/*"
+                        type='file'
+                        accept='audio/*'
                         id={`audio-${index}`}
                         onBlur={handleBlur}
                         required
-                        placeholder={t("Audio")}
-                        name="audio"
+                        placeholder={t('Audio')}
+                        name='audio'
                         onChange={handleAudioChange}
-                        label={t("Audio")}
+                        label={t('Audio')}
                       />
                     </div>
 
@@ -399,24 +399,24 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                     {isEditable && (
                       <>
                         <button
-                          type="button"
+                          type='button'
                           onClick={handleAudioRemove}
-                          className="btn btn-secondary"
+                          className='btn btn-secondary'
                         >
-                          <span className="mr-1 w-2.5 h-2.5 text-white inline-block svg-icon">
+                          <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
                             <Cross />
                           </span>
                         </button>
 
                         <button
-                          type="button"
+                          type='button'
                           onClick={handleAudioSubmit}
-                          className="btn btn-secondary"
+                          className='btn btn-secondary'
                         >
                           Submit
                         </button>
                         
-                        <button type="button" className="btn btn-secondary">
+                        <button type='button' className='btn btn-secondary'>
                           Generate
                         </button>
                       </>
@@ -425,11 +425,11 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                 )}
               </div>
 
-              <div className="flex justify-between items-center pt-4">
+              <div className='flex justify-between items-center pt-4'>
                 {isEditable && (
                   <button
-                    type="button"
-                    className="btn btn-primary"
+                    type='button'
+                    className='btn btn-primary'
                     onClick={() => {
                       const pageData = {
                         ...formik.values,
@@ -451,10 +451,10 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                 {isEditable &&
                   (initialData?.uuid ? (
                     <button
-                      type="button"
-                      className="btn btn-danger"
+                      type='button'
+                      className='btn btn-danger'
                       onClick={() => {
-                        const event = new CustomEvent("deleteSavedPage", {
+                        const event = new CustomEvent('deleteSavedPage', {
                           detail: { uuid: initialData.uuid, index },
                         });
                         window.dispatchEvent(event);
@@ -464,10 +464,10 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                     </button>
                   ) : (
                     <button
-                      type="button"
-                      className="btn btn-secondary"
+                      type='button'
+                      className='btn btn-secondary'
                       onClick={() => {
-                        const event = new CustomEvent("removeUnsavedPage", {
+                        const event = new CustomEvent('removeUnsavedPage', {
                           detail: { index },
                         });
                         window.dispatchEvent(event);
@@ -484,19 +484,19 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
           <RefineText
             refinedText={refineData}
             fieldLabel={`Refined ${t(
-              refineFieldKey === "keyPoints"
-                ? "Key Points"
-                : refineFieldKey === "richText"
-                ? "Page Content"
-                : "Insight"
+              refineFieldKey === 'keyPoints'
+                ? 'Key Points'
+                : refineFieldKey === 'richText'
+                ? 'Page Content'
+                : 'Insight'
             )}`}
             onAccept={() => {
-              if (refineFieldKey === "insights") {
+              if (refineFieldKey === 'insights') {
                 const index = fields.findIndex(
                   (f) => f.id === refinedInsightId
                 );
                 if (index !== -1) {
-                  const refined = refineData.trim().replace(/^[-•\s]+/, "");
+                  const refined = refineData.trim().replace(/^[-•\s]+/, '');
                   setValue(`insights.${index}.value`, refined, {
                     shouldDirty: true,
                     shouldValidate: true,
@@ -507,11 +507,11 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                 formik.setFieldValue(refineFieldKey, refineData);
               }
               setShowRefinePopup(false);
-              setRefineFieldKey("");
+              setRefineFieldKey('');
             }}
             onCancel={() => {
               setShowRefinePopup(false);
-              setRefineFieldKey("");
+              setRefineFieldKey('');
             }}
           />
         )}
@@ -519,5 +519,5 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
     );
   }
 );
-PageForm.displayName = "PageForm";
+PageForm.displayName = 'PageForm';
 export default PageForm;
