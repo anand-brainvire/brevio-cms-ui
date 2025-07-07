@@ -525,7 +525,6 @@ const editBooks = (): ReactElement => {
         toast.success(data.refineCoverImage.meta.message);
 
         // const file = await urlToFile(imageUrl, 'generated-cover.png'); // ✅ await here
-        // Optional: Set to Formik or local state
         // formik.setFieldValue('coverImage', file);
       }
     } catch {
@@ -1078,9 +1077,26 @@ const editBooks = (): ReactElement => {
             )}`}
             onAccept={() => {
               if (refineFieldKey === 'learningPoints') {
-                // Assuming you want to set it as one learning point
-                // If it's multiple, you'll need to parse and append
-                formik.setFieldValue('learningPoints', [{ value: refineData }]);
+                // Split the refinedData string into lines (if it's a single multiline string)
+                const refinedPoints = Array.isArray(refineData)
+                  ? refineData
+                  : refineData.split('\n').filter(Boolean); // handles '- point' or line-based text
+
+                // Clear existing values first
+                remove();
+
+                // Append each point to useFieldArray
+                refinedPoints.forEach((point: string) => {
+                  append({ value: point.trim().replace(/^[-•\s]+/, '') });
+                });
+
+                // Set Formik values too
+                formik.setFieldValue(
+                  'learningPoints',
+                  refinedPoints.map((point: string) => ({
+                    value: point.trim().replace(/^[-•\s]+/, ''),
+                  }))
+                );
               } else {
                 formik.setFieldValue(refineFieldKey, refineData);
               }
