@@ -1,42 +1,42 @@
-import { useTranslation } from "react-i18next";
-import React, { useEffect } from "react";
+import { useTranslation } from 'react-i18next';
+import React, { useEffect } from 'react';
 import {
   BestSellerIcon,
   DraftBookIcon,
   PopularBookIcon,
   PublishedBookIcon,
   TotalBooksIcon,
-} from "@components/icons/icons";
-import TopCard from "./topCards";
-import { useQuery } from "@apollo/client";
+} from '@components/icons/icons';
+import TopCard from './topCards';
+import { useQuery } from '@apollo/client';
 import {
   GET_AUTHOR_STATS,
   GET_BOOK_STATS,
   GET_CATEGORY_STATS,
   GET_FREE_BOOKS,
-} from "@framework/graphql/queries/dashboard";
-import { AuthorStatItem, BookStats, CategoryStats } from "@type/dashboard";
-import BarChartCard from "./charts";
-import { toast } from "react-toastify";
-import mobileClient from "@framework/graphql/apolloMobileClient";
-import { Loader } from "@components/index";
+} from '@framework/graphql/queries/dashboard';
+import { AuthorStatItem, BookStats, CategoryStats } from '@type/dashboard';
+import BarChartCard from './charts';
+import { toast } from 'react-toastify';
+import mobileClient from '@framework/graphql/apolloMobileClient';
+import { Loader } from '@components/index';
 const Dashboard = () => {
   const { refetch: bookStats, loading: bookStateLoader } = useQuery(
     GET_BOOK_STATS,
     {
-      fetchPolicy: "network-only",
+      fetchPolicy: 'network-only',
     }
   );
   const { refetch: fetchCategoryStats, loading: categoryStateLoader } =
     useQuery(GET_CATEGORY_STATS, {
-      fetchPolicy: "network-only",
+      fetchPolicy: 'network-only',
       skip: true, // prevents it from running immediately
     });
 
   const { refetch: fetchAuthorStats, loading: authorStateLoader } = useQuery(
     GET_AUTHOR_STATS,
     {
-      fetchPolicy: "network-only",
+      fetchPolicy: 'network-only',
       skip: true, // prevents it from running immediately
     }
   );
@@ -61,14 +61,14 @@ const Dashboard = () => {
             }),
           ]);
 
-        if (bookRes.status === "fulfilled") {
+        if (bookRes.status === 'fulfilled') {
           const bookStatsData = bookRes.value?.data?.getBookStats?.data;
           if (bookStatsData) {
             setBookData(bookStatsData);
           }
         }
 
-        if (categoryRes.status === "fulfilled") {
+        if (categoryRes.status === 'fulfilled') {
           const categoryStatsData =
             categoryRes.value?.data?.getCategoryStats?.data;
           if (categoryStatsData) {
@@ -76,21 +76,21 @@ const Dashboard = () => {
           }
         }
 
-        if (authorRes.status === "fulfilled") {
+        if (authorRes.status === 'fulfilled') {
           const authorStatsData = authorRes.value?.data?.getAuthorStats?.data;
           if (authorStatsData) {
             setAuthorData(authorStatsData);
           }
         }
 
-        if (freeBooks.status === "fulfilled") {
+        if (freeBooks.status === 'fulfilled') {
 		  const freeBooksData = freeBooks.value?.data?.getFreeBooks?.data;
 		  if (freeBooksData) {
 			setFreeBooks(freeBooksData);
 		  }
         }
       } catch {
-        toast.error(t("Something went wrong while fetching data"));
+        toast.error(t('Something went wrong while fetching data'));
       }
     };
     fetchData();
@@ -102,67 +102,67 @@ const Dashboard = () => {
         <Loader />
       )}
       {/* 🟦 Horizontal row of cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 w-full">
+      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 w-full'>
         <TopCard
-          label="Total Books"
+          label='Total Books'
           value={bookData.totalBooks}
           icon={<TotalBooksIcon />}
         />
         <TopCard
-          label="Total Books in Draft"
+          label='Total Books in Draft'
           value={bookData.draftBookCount}
           icon={<DraftBookIcon />}
         />
         <TopCard
-          label="Total Published Books"
+          label='Total Published Books'
           value={bookData.publishedBookCount}
           icon={<PublishedBookIcon />}
         />
         <TopCard
-          label="Total Best Seller Book"
+          label='Total Best Seller Book'
           value={bookData?.bestSellerBooks?.length}
           icon={<BestSellerIcon />}
         />
         <TopCard
-          label="Total Popular Books"
+          label='Total Popular Books'
           value={bookData?.topPopularBooks?.length}
           icon={<PopularBookIcon />}
         />
       </div>
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div className='mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
         <BarChartCard
-          title="Top 10 Popular Books"
+          title='Top 10 Popular Books'
           data={bookData.topPopularBooks}
-          xKey="title"
-          yKey="read_count"
+          xKey='title'
+          yKey='read_count'
         />
         <BarChartCard
-          title="Top 10 Best Seller Books"
+          title='Top 10 Best Seller Books'
           data={bookData.bestSellerBooks}
-          xKey="title"
-          yKey="read_count"
+          xKey='title'
+          yKey='read_count'
         />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
         <BarChartCard
-          title="Most Read Categories"
+          title='Most Read Categories'
           data={categoryData.topReadCategories}
-          xKey="name"
-          yKey="read_count"
+          xKey='name'
+          yKey='read_count'
         />
         <BarChartCard
-          title="Categoriy wise No. of Books Published"
+          title='Categoriy wise No. of Books Published'
           data={categoryData.categoryBooks}
-          xKey="name"
-          yKey="total_books"
+          xKey='name'
+          yKey='total_books'
         />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
         <BarChartCard
-          title="Top 10 Best Seller Authors"
+          title='Top 10 Best Seller Authors'
           data={authorData}
-          xKey="name"
-          yKey="read_count"
+          xKey='name'
+          yKey='read_count'
         />
       </div>
     </div>
