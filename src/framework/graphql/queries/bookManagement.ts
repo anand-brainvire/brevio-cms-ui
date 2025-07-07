@@ -128,7 +128,6 @@ export const GET_ALL_BOOK_PAGES = gql`
 						book_page_id
 						key
 						translations {
-							uuid
 							lang_code
 							text
 						}

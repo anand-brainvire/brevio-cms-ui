@@ -230,7 +230,7 @@ const editBooks = (): ReactElement => {
         const data = res.data;
         if (data.updateBook?.meta?.statusCode === 201) {
           toast.success(t('Book updated successfully'));
-          formik.resetForm();
+          // formik.resetForm();
           // onCancelEditBookInfo();
         }
       })

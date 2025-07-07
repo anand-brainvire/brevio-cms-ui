@@ -4,7 +4,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import {
   CREATE_BOOK_PAGE,
   UPDATE_BOOK_PAGE,
-  DELETE_DRAFT_BOOK_PAGE,
+  DELETE_BOOK_PAGE,
 } from '@framework/graphql/mutations/bookManagement';
 import { GET_ALL_BOOK_PAGES } from '@framework/graphql/queries/bookManagement';
 import { toast } from 'react-toastify';
@@ -27,14 +27,12 @@ const BookPages = ({
   status,
   generatedPages = null,
 }: BookPagesProps) => {
-  const [pages, setPages] = useState<{ isOpen: boolean; initialData?: any }[]>([
-    { isOpen: true },
-  ]);
+  const [pages, setPages] = useState<{ isOpen: boolean; initialData?: any }[]>([]);
 
   const pageRefs = useRef<PageFormRef[]>([]);
   const [createBookPage] = useMutation(CREATE_BOOK_PAGE);
   const [updateBookPage] = useMutation(UPDATE_BOOK_PAGE);
-  const [deleteBookPage] = useMutation(DELETE_DRAFT_BOOK_PAGE);
+  const [deleteBookPage] = useMutation(DELETE_BOOK_PAGE);
 
   const { data } = useQuery(GET_ALL_BOOK_PAGES, {
     variables: { bookId: bookUuid },
@@ -72,7 +70,6 @@ const BookPages = ({
         ['key']: i.key,
         ['value']: i.text,
       }));
-
       const initialDataObj: any = {};
       Object.assign(initialDataObj, {
         ['uuid']: undefined,
@@ -168,7 +165,7 @@ const BookPages = ({
     }
     try {
       const response = await deleteBookPage({
-        variables: { bookUuid: uuid },
+        variables: { uuid: uuid },
       });
 
       const message =

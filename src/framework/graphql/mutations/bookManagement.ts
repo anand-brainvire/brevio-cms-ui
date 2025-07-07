@@ -210,6 +210,17 @@ export const DELETE_DRAFT_BOOK_PAGE = gql`
   	}
 `;
 
+export const DELETE_BOOK_PAGE = gql`
+	${META_FRAGMENT}
+	mutation DeleteBookPage($uuid: ID!) {
+		deleteBookPage(uuid: $uuid) {
+			meta {
+				...MetaFragment
+			}
+		}
+	}
+`;
+
 export const GENERATE_NEW_BOOK = gql`
 	${META_FRAGMENT}
 mutation GenerateBookContent($input: GenerateBookContentInput!) {

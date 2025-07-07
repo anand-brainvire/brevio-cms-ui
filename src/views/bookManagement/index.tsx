@@ -52,7 +52,7 @@ const bookManagaement = () => {
 		{ name: t('Book Title'), sortable: true, fieldName: 'title', type: 'text' },
 		{ name: t('Category'), sortable: true, fieldName: 'categories', type: 'multipleText' },
 		{ name: t('Book Author'), sortable: true, fieldName: 'authors', type: 'multipleText' },
-		{ name: t('Cover Image'), sortable: false, fieldName: 'cover_image', type: 'image' },
+		{ name: t('Cover Image'), sortable: false, fieldName: 'cover_image_url', type: 'image', headerCenter: true},
 		{ name: t('Status'), sortable: false, fieldName: 'status', type: 'bookStatus', headerCenter: true },
 		{ name: t('Last Updated'), sortable: true, fieldName: 'start_date', type: 'date' },
 	] as IColumnsProps[];

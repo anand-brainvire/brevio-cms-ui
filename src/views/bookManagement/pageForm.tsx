@@ -15,6 +15,8 @@ import TextInput from '@components/textinput/TextInput';
 import { Cross, AngleDown, AngleUp } from '@components/icons/icons';
 import { t } from 'i18next';
 import { useParams } from 'react-router-dom';
+import { Url } from 'url';
+import AudioPlayerOnHover from '@components/audio/AudioPlayerOnHoverProps';
 
 interface PageFormProps {
   index: number;
@@ -25,7 +27,7 @@ interface PageFormProps {
     page_number?: number;
     keyPoint: string;
     richText: string;
-    audioMale?: string;
+    audioMale?: Url | string;
     audioFemale?: string;
     insights: { key: string; value: string }[];
   };
@@ -42,14 +44,12 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
   ({ index, isOpen, toggle, onPageSave, onPageUpdate, initialData }, ref) => {
     const params = useParams();
     const [audioFile, setAudioFile] = useState<File | null>(null);
-    const [showAudioPlayer, setShowAudioPlayer] = useState(false);
-    const [uploadedAudioUrl, setUploadedAudioUrl] = useState<string | null>(
-      initialData?.audioMale || null
-    );
+    const [uploadedAudioUrl, setUploadedAudioUrl] = useState<
+      Url | string | null
+    >(initialData?.audioMale || null);
     const [isUploaded, setIsUploaded] = useState<boolean>(
       !!initialData?.audioMale
     );
-
     const {
       register,
       control,
@@ -81,7 +81,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
       },
       enableReinitialize: true,
       onSubmit: () => {
-          // No-op: form submission handled manually
+        // No-op: form submission handled manually
       },
     });
 
@@ -111,17 +111,17 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
       const file = e.target.files?.[0];
       if (!file) {
         return;
-      } 
+      }
 
       const isMP3 = file.type === 'audio/mpeg' || file.name.endsWith('.mp3');
       const isSizeValid = file.size <= 5 * 1024 * 1024;
 
       if (!isMP3) {
         return toast.error('Only .mp3 files are allowed');
-      } 
+      }
       if (!isSizeValid) {
         return toast.error('File size should not exceed 5MB');
-      } 
+      }
 
       setAudioFile(file);
     };
@@ -147,7 +147,6 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
       setAudioFile(null);
       setUploadedAudioUrl(null);
       setIsUploaded(false);
-      setShowAudioPlayer(false);
     };
 
     return (
@@ -229,21 +228,13 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
             <div className='flex items-center gap-4 mb-4 flex-wrap'>
               {isUploaded && uploadedAudioUrl ? (
                 <>
-                  <audio controls className='w-[250px]'>
-                    <source
-                      src={
-                        uploadedAudioUrl.startsWith('http')
-                          ? uploadedAudioUrl
-                          : `https://leadtechadminapi.node.brainvire.dev/${uploadedAudioUrl}`
-                      }
-                      type='audio/mpeg'
-                    />
-                    Your browser does not support the audio element.
-                  </audio>
-
-                  <span className='text-sm truncate max-w-[200px]'>
-                    {audioFile?.name || 'Uploaded audio file'}
-                  </span>
+                  <AudioPlayerOnHover
+                    audioUrl={
+                      typeof uploadedAudioUrl === 'string'
+                        ? uploadedAudioUrl
+                        : ''
+                    }
+                  />
 
                   <button
                     type='button'
@@ -253,14 +244,6 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                     <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
                       <Cross />
                     </span>
-                  </button>
-
-                  <button
-                    type='button'
-                    onClick={() => setShowAudioPlayer((prev) => !prev)}
-                    className='btn btn-secondary'
-                  >
-                    {showAudioPlayer ? 'Pause Audio' : 'Play Audio'}
                   </button>
 
                   <button type='button' className='btn btn-secondary'>
