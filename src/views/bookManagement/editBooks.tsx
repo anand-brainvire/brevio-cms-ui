@@ -5,7 +5,7 @@ import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TextInput from '@components/textinput/TextInput';
 import { Category, editBookInfo } from '@type/bookManagement';
-import { uploadFile, whiteSpaceRemover } from '@utils/helpers';
+import { uploadFile, urlToFile, whiteSpaceRemover } from '@utils/helpers';
 import { useFormik } from 'formik';
 import BookPages from './bookPages';
 import { ValidationError } from 'yup';
@@ -521,9 +521,9 @@ const editBooks = (): ReactElement => {
 
       const data = res.data;
       if (data.refineCoverImage.meta.statusCode === 200) {
-        // const imageUrl = data.refineCoverImage.data.refinedCoverImage;
+        const imageUrl = data.refineCoverImage.data.refinedCoverImage;
         toast.success(data.refineCoverImage.meta.message);
-
+        handleImageFetch(imageUrl);
         // const file = await urlToFile(imageUrl, 'generated-cover.png'); // ✅ await here
         // formik.setFieldValue('coverImage', file);
       }
@@ -531,6 +531,19 @@ const editBooks = (): ReactElement => {
       return;
     }
   };
+
+const handleImageFetch = async (imageURL: URL) => {
+  try {
+    const file = await urlToFile(
+      imageURL,
+      'cover-image.jpg'
+    );
+    // Example usage with Formik
+    formik.setFieldValue('coverImage', file);
+  } catch (err) {
+    console.error('Error fetching image:', err);
+  }
+};
 
   /*
    * Method to convert the u

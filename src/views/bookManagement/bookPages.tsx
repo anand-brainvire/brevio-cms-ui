@@ -27,13 +27,15 @@ const BookPages = ({
   status,
   generatedPages = null,
 }: BookPagesProps) => {
-  const [pages, setPages] = useState<{ isOpen: boolean; initialData?: any }[]>([]);
+  const [pages, setPages] = useState<{ isOpen: boolean; initialData?: any }[]>(
+    []
+  );
 
   const pageRefs = useRef<PageFormRef[]>([]);
   const [createBookPage] = useMutation(CREATE_BOOK_PAGE);
   const [updateBookPage] = useMutation(UPDATE_BOOK_PAGE);
   const [deleteBookPage] = useMutation(DELETE_BOOK_PAGE);
-
+  const isEditable = status === 'draft';
   const { data } = useQuery(GET_ALL_BOOK_PAGES, {
     variables: { bookId: bookUuid },
     skip: !bookUuid || generatedPages !== null,
@@ -283,7 +285,7 @@ const BookPages = ({
               toggle={() => togglePage(index)}
               ref={(el) => {
                 if (el) {
-                    pageRefs.current[index] = el;
+                  pageRefs.current[index] = el;
                 }
               }}
               onPageSave={(data) =>
@@ -292,18 +294,21 @@ const BookPages = ({
                   : handleSinglePageSave(index, data)
               }
               initialData={page.initialData}
+              isEditable={isEditable}
             />
           </div>
         ))}
 
         <div className='flex items-center justify-between mt-6'>
-          <button
-            type='button'
-            className='btn btn-outline-primary'
-            onClick={handleAddPage}
-          >
-            + Add Page
-          </button>
+          {isEditable && (
+            <button
+              type='button'
+              className='btn btn-outline-primary'
+              onClick={handleAddPage}
+            >
+              + Add Page
+            </button>
+          )}
           <p className='text-sm font-semibold'>Total Pages: {pages.length}</p>
         </div>
       </div>

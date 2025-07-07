@@ -299,3 +299,22 @@ export const getYear = (value: Date | string): number => {
 	const year = date.getFullYear();
 	return year;
 };
+
+/**
+ * Converts a remote image URL into a File object.
+ * @param url - The URL of the image.
+ * @param filename - The desired filename (e.g. 'image.png').
+ * @returns Promise<File>
+ */
+export const urlToFile = async (url: URL, filename: string): Promise<File> => {
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch file from URL: ${url}`);
+  }
+
+  const blob = await response.blob();
+  const mimeType = blob.type || 'image/png'; // fallback to PNG
+
+  return new File([blob], filename, { type: mimeType });
+};

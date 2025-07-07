@@ -339,3 +339,45 @@ export const GROUP_DELETE_COUPON = gql`
 		}
 	}
 `;
+
+export const REFINE_KEY_POINTS = gql`
+	${META_FRAGMENT}
+mutation RefinePageKeyPoint($uuid: ID!) {
+  refinePageKeyPoint(uuid: $uuid) {
+    data {
+      refinedData
+    }
+    meta {
+		...MetaFragment
+	}
+  }
+}
+`;
+
+export const REFINE_PAGE_CONTENT = gql`
+	${META_FRAGMENT}
+mutation RefinePageContent($uuid: ID!) {
+  refinePageContent(uuid: $uuid) {
+    data {
+      refinedData
+    }
+    meta {
+		...MetaFragment
+	}
+  }
+}
+`;
+
+export const REFINE_INSIGHTS = gql`
+	${META_FRAGMENT}
+	mutation RefinePageInsight($bookPageUuid: ID!, $insightUuid: ID!) {
+  refinePageInsight(bookPageUuid: $bookPageUuid, insightUuid: $insightUuid) {
+    data {
+      refinedData
+    }
+	meta {
+		...MetaFragment
+	}  
+  }
+}
+`;
