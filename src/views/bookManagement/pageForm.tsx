@@ -19,6 +19,7 @@ import { Url } from 'url';
 import AudioPlayerOnHover from '@components/audio/AudioPlayerOnHoverProps';
 import { useMutation } from '@apollo/client';
 import {
+  GENERATE_AUDIO,
   REFINE_INSIGHTS,
   REFINE_KEY_POINTS,
   REFINE_PAGE_CONTENT,
@@ -49,6 +50,7 @@ export interface PageFormRef {
   validate: () => boolean;
 }
 
+
 const PageForm = forwardRef<PageFormRef, PageFormProps>(
   (
     {
@@ -76,6 +78,8 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
       useMutation(REFINE_PAGE_CONTENT);
     const [refineInsight, { loading: refineInsightLoader }] =
       useMutation(REFINE_INSIGHTS);
+    const [generateAudio, { loading: generateAudioLoader }] =
+      useMutation(GENERATE_AUDIO);
 
     const [uploadedAudioUrl, setUploadedAudioUrl] = useState<
       Url | string | null
@@ -213,6 +217,26 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
       }
     };
 
+    const handleGenerateAudio = async () => {
+        generateAudio({
+            variables: {
+                bookPageUuid: initialData?.uuid,
+                type: ''
+            }
+        })
+        .then((res) =>{
+            const data = res.data;
+            if (data.generatePageAudio.meta.statusCode === 200) {
+                const generatedUrl = data.generatePageAudio.data.url;
+                setUploadedAudioUrl(generatedUrl);
+                setIsUploaded(true);
+                toast.success(data.generatePageAudio.meta.message);
+            } else {
+                toast.error(data.generatePageAudio.meta.message);
+            }
+        })
+    };
+
     const handleAudioSubmit = async () => {
       if (!audioFile) {
         return toast.error('No file selected');
@@ -250,7 +274,8 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
           <>
             {refineKeyPointsLoader ||
               refineInsightLoader ||
-              (refinePageContentLoader && Loader)}
+              refinePageContentLoader ||
+              (generateAudioLoader && Loader)}
             <form className='p-4 space-y-6'>
               <CKEditorComponent
                 id={`rich-text-editor-${index}`}
@@ -317,9 +342,9 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                         <button
                           type='button'
                           onClick={() => remove(i)}
-                          className='btn btn-secondary'
+                          className=''
                         >
-                          <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
+                          <span className='mr-1 w-2.5 h-2.5 text-black inline-block svg-icon'>
                             <Cross />
                           </span>
                         </button>
@@ -373,7 +398,11 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                           </span>
                         </button>
 
-                        <button type='button' className='btn btn-secondary'>
+                        <button
+                          type='button'
+                          className='btn btn-secondary'
+                          onClick={handleGenerateAudio}
+                        >
                           Generate
                         </button>
                       </>
@@ -415,7 +444,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                         >
                           Submit
                         </button>
-                        
+
                         <button type='button' className='btn btn-secondary'>
                           Generate
                         </button>

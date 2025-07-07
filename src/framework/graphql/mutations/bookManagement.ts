@@ -381,3 +381,18 @@ export const REFINE_INSIGHTS = gql`
   }
 }
 `;
+
+export const GENERATE_AUDIO = gql`
+	${META_FRAGMENT}
+	mutation GeneratePageAudio($bookPageUuid: ID!, $type: String) {
+  	generatePageAudio(book_page_uuid: $bookPageUuid, type: $type) {
+    data {
+      url
+      path
+    }
+    meta {
+		...MetaFragment
+	} 
+  }
+}
+`;

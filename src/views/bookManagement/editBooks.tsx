@@ -867,6 +867,7 @@ const handleImageFetch = async (imageURL: URL) => {
                     filter
                     display='chip'
                     className='w-full'
+                    placeholder={t('Select Author') ?? 'Select Author'}
                     maxSelectedLabels={6}
                     disabled={!isEditable}
                     virtualScrollerOptions={{
