@@ -46,7 +46,7 @@ const Dashboard = () => {
     {} as CategoryStats
   );
   const [authorData, setAuthorData] = React.useState<AuthorStatItem[]>([]);
-  const [freeBooks, setFreeBooks] = React.useState<AuthorStatItem[]>([]);
+//   const [freeBooks, setFreeBooks] = React.useState<AuthorStatItem[]>([]);
   
   useEffect(() => {
     const fetchData = async () => {
@@ -86,7 +86,7 @@ const Dashboard = () => {
         if (freeBooks.status === 'fulfilled') {
 		  const freeBooksData = freeBooks.value?.data?.getFreeBooks?.data;
 		  if (freeBooksData) {
-			setFreeBooks(freeBooksData);
+			// setFreeBooks(freeBooksData);
 		  }
         }
       } catch {
