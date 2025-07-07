@@ -4,7 +4,6 @@ import {
   BestSellerIcon,
   DraftBookIcon,
   PopularBookIcon,
-  ProfileIcon,
   PublishedBookIcon,
   TotalBooksIcon,
 } from '@components/icons/icons';
@@ -84,8 +83,9 @@ const Dashboard = () => {
 
   return (
     <div>
-		{(bookStateLoader ||
-	  categoryStateLoader || authorStateLoader) && (<Loader/>)}
+      {(bookStateLoader || categoryStateLoader || authorStateLoader) && (
+        <Loader />
+      )}
       {/* 🟦 Horizontal row of cards */}
       <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 w-full'>
         <TopCard
@@ -114,15 +114,13 @@ const Dashboard = () => {
           icon={<PopularBookIcon />}
         />
       </div>
-      <div className='mt-6'>
+      <div className='mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
         <BarChartCard
           title='Top 10 Popular Books'
           data={bookData.topPopularBooks}
           xKey='title'
           yKey='read_count'
         />
-      </div>
-      <div className='mt-6'>
         <BarChartCard
           title='Top 10 Best Seller Books'
           data={bookData.bestSellerBooks}
@@ -130,15 +128,13 @@ const Dashboard = () => {
           yKey='read_count'
         />
       </div>
-      <div className='mt-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
         <BarChartCard
           title='Most Read Categories'
           data={categoryData.topReadCategories}
           xKey='name'
           yKey='read_count'
         />
-      </div>
-      <div className='mt-6'>
         <BarChartCard
           title='Categoriy wise No. of Books Published'
           data={categoryData.categoryBooks}
@@ -146,7 +142,7 @@ const Dashboard = () => {
           yKey='total_books'
         />
       </div>
-      <div className='mt-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
         <BarChartCard
           title='Top 10 Best Seller Authors'
           data={authorData}
@@ -154,21 +150,6 @@ const Dashboard = () => {
           yKey='read_count'
         />
       </div>
-
-      {/* Rest of the content below */}
-      <div className='card-header flex-wrap gap-2'>
-        <div className='flex items-center'>
-          <span className='w-3.5 h-3.5 mr-2 text-md leading-4 inline-block svg-icon'>
-            <ProfileIcon />
-          </span>
-          {t('User Chart')}
-        </div>
-        <div className='btn-group flex gap-y-2 flex-wrap'>
-          {/* Date Picker here */}
-        </div>
-      </div>
-
-      {/* <HighchartsReact highcharts={Highcharts} options={options} /> */}
     </div>
   );
 };
