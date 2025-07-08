@@ -109,3 +109,45 @@ query FindFreeBooks {
   }
 }
 `;
+
+export const GET_RECENTLY_ADDED_BOOKS = gql`
+  ${META_FRAGMENT}
+query ExploreBooks($input: ExploreBooksInput!) {
+  exploreBooks(input: $input) {
+    total
+    books {
+      book_uuid
+      book_version_uuid
+      version_number
+      slug
+      status
+      cover_image_url
+      total_pages
+      duration_in_seconds
+      total_insights
+      labels
+      publishedDate
+      title
+      subtitle
+      about_book
+      about_authors
+      authors {
+        uuid
+        name
+      }
+      categories {
+        uuid
+        name
+        slug
+        description
+      }
+      current_page
+      learning_points
+      author_names
+    }
+    meta {
+        ...MetaFragment
+    }
+  }
+}
+`;

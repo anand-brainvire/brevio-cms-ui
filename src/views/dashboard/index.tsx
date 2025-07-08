@@ -14,12 +14,14 @@ import {
   GET_BOOK_STATS,
   GET_CATEGORY_STATS,
   GET_FREE_BOOKS,
+  GET_RECENTLY_ADDED_BOOKS,
 } from '@framework/graphql/queries/dashboard';
 import { AuthorStatItem, BookStats, CategoryStats } from '@type/dashboard';
 import BarChartCard from './charts';
 import { toast } from 'react-toastify';
 import mobileClient from '@framework/graphql/apolloMobileClient';
 import { Loader } from '@components/index';
+import List from './list';
 const Dashboard = () => {
   const { refetch: bookStats, loading: bookStateLoader } = useQuery(
     GET_BOOK_STATS,
@@ -46,18 +48,29 @@ const Dashboard = () => {
     {} as CategoryStats
   );
   const [authorData, setAuthorData] = React.useState<AuthorStatItem[]>([]);
-//   const [freeBooks, setFreeBooks] = React.useState<AuthorStatItem[]>([]);
-  
+  const [freeBooks, setFreeBooks] = React.useState<AuthorStatItem[]>([]);
+  const [recentlyAddedBooks, setRecentlyAddedBooks] = React.useState<
+    AuthorStatItem[]
+  >([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [bookRes, categoryRes, authorRes, freeBooks] =
+        const [bookRes, categoryRes, authorRes, freeBooks, recentlyAddedBook] =
           await Promise.allSettled([
             bookStats(),
             fetchCategoryStats(),
             fetchAuthorStats(),
             mobileClient.query({
               query: GET_FREE_BOOKS,
+            }),
+            mobileClient.query({
+              query: GET_RECENTLY_ADDED_BOOKS,
+              variables: {
+                input: {
+                  limit: 10,
+                },
+              },
             }),
           ]);
 
@@ -84,10 +97,18 @@ const Dashboard = () => {
         }
 
         if (freeBooks.status === 'fulfilled') {
-		  const freeBooksData = freeBooks.value?.data?.getFreeBooks?.data;
-		  if (freeBooksData) {
-			// setFreeBooks(freeBooksData);
-		  }
+          const freeBooksData = freeBooks.value?.data?.findFreeBooks?.books;
+          if (freeBooksData) {
+            setFreeBooks(freeBooksData);
+          }
+        }
+
+        if (recentlyAddedBook.status === 'fulfilled') {
+          const recentlyAddedBooksData =
+            recentlyAddedBook.value?.data?.exploreBooks?.books;
+          if (recentlyAddedBooksData) {
+            setRecentlyAddedBooks(recentlyAddedBooksData);
+          }
         }
       } catch {
         toast.error(t('Something went wrong while fetching data'));
@@ -164,6 +185,22 @@ const Dashboard = () => {
           xKey='name'
           yKey='read_count'
         />
+      </div>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 item-start'>
+        <div>
+          <List
+            books={freeBooks}
+            fieldsToDisplay={['title', 'categories']}
+            title='List of Free Books'
+          />
+        </div>
+        <div>
+          <List
+            books={recentlyAddedBooks}
+            fieldsToDisplay={['title', 'categories']}
+            title='List of Recently Added Books'
+          />
+        </div>
       </div>
     </div>
   );
