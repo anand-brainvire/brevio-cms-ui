@@ -59,7 +59,7 @@ const BarChartCard: React.FC<BarChartCardProps> = ({
           <Tooltip />
           <Bar dataKey={yKey} radius={[6, 6, 0, 0]}>
             {(data ?? []).map((_, index) => (
-              <Cell key={index} fill={barColors[index % barColors.length]} />
+              <Cell key={index} fill="#6200FF" />
             ))}
           </Bar>
         </BarChart>
