@@ -21,7 +21,7 @@ const authLink = setContext((_request, previousContext) => {
   return {
     headers: {
       ...previousContext.headers,
-      'x-internal-secret': token,
+      'x-internal-secret': `Bearer ${token}`,
       ...(internalUserId && { 'x-internal-user-id': internalUserId }),
     },
   };
