@@ -63,7 +63,7 @@ const AddEditAuthor = () => {
 							langCode: 'en',
 						},
 					],
-					isActive: Number(values.status) === STATUS.active,
+					isActive: values.status === STATUS.active,
 				},
 			});
 

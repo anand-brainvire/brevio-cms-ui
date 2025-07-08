@@ -5,7 +5,7 @@ export interface IColumnsProps {
 	fieldName: string;
 	name: string;
 	sortable: boolean;
-	type: 'image' | 'text' | 'date' | 'status' | 'action' | 'badge' | 'ratings' | 'number' | 'multilang';
+	type: 'image' | 'text' | 'date' | 'status' | 'action' | 'badge' | 'ratings' | 'number' | 'multilang' | 'multipleText' | 'bookStatus';
 	headerCenter?: boolean;
 	conversationValue?: IListData;
 	isBase64ImageUrl?: boolean;
@@ -53,7 +53,7 @@ export interface IBVDataTablesProps {
 	sessionFilterName: string;
 	updatedFilterData: IFilterTypes;
 	actionWisePermissions?: IActionWisePermissions;
-	defaultActions: Array<'edit' | 'delete' | 'change_status' | 'view' | 'multiple_delete'> | null;
+	defaultActions: Array<'edit' | 'delete' | 'change_status'| 'change_book_status' | 'view' | 'multiple_delete'> | null;
 	actionData?: IActionData;
 	extraActions?: ReactNode;
 	statusKey?: string;

@@ -9,7 +9,6 @@ const useValidation = () => {
 		abuseThreshold,
 		categorSuggestion,
 		newPassword,
-		currentPassword,
 		confirmPassword,
 		metaTitleEnglish,
 		descriptionEnglish,
@@ -83,6 +82,9 @@ const useValidation = () => {
 		isRecommendedPlan,
 		planStatus,
 		planPrice,
+		bookName,
+		addCategories,
+		AddAuthors
 	} = useValidationFields();
 
 	const loginValidationSchema = Yup.object({
@@ -100,7 +102,6 @@ const useValidation = () => {
 	const changeProfileValidationSchema = Yup.object({
 		newPassword: newPassword,
 		confirmPassword: confirmPassword,
-		oldPassword: currentPassword,
 	});
 
 	const updateAdminValidationSchema = Yup.object({
@@ -216,6 +217,16 @@ const useValidation = () => {
 		applicable: applicable,
 	});
 
+	const addBookValidationSchema = Yup.object({
+		bookName: bookName
+	});
+
+	const addBookInfoValidationSchema = Yup.object({
+		title: bookName,
+		categoryId: addCategories,
+		authorId: AddAuthors
+	});
+	
 	const forgotPasswordValidationSchema = Yup.object({
 		email: email,
 	});
@@ -311,6 +322,8 @@ const useValidation = () => {
 		addAnnouncementValidationSchema,
 		addRoleValidationSchema,
 		addCoupenValidationSchema,
+		addBookValidationSchema,
+		addBookInfoValidationSchema,
 		forgotPasswordValidationSchema,
 		resetPasswordValidationSchema,
 		usermValidationSchema,

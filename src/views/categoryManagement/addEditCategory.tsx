@@ -169,7 +169,14 @@ const AddEditCategory = (): ReactElement => {
 				.replace(/\s+/g, '-')
 				.replace(/[^\w\-]+/g, '')
 				.replace(/\-\-+/g, '-');
-		}		
+		}	
+		
+		const handleViewAllBooks = useCallback(() => {
+		if (params.id) {
+			navigate(`/${ROUTES.app}/${ROUTES.manageBooks}/${ROUTES.list}?categoryId=${params.id}`);
+		}
+		}, [params.id, navigate]);
+
 		return (
 			<div className='card'>
 				{(createLoader || updateLoader) && <Loader />}
@@ -236,13 +243,15 @@ const AddEditCategory = (): ReactElement => {
 							</span>
 						</Button>
 					</div>
-					<div className='card-footer-secondary btn-group'>
-						<Button className='btn-secondary ' onClick={''} label={t('View All Books')}>
-							<span className='text-white mr-1 w-3.5 h-3.5 inline-block svg-icon'>
-								<CheckCircle />
-							</span>
-						</Button>
-					</div>
+					{params.id && (
+						<div className='card-footer-secondary btn-group'>
+							<Button className='btn-secondary ' onClick={handleViewAllBooks} label={t('View All Books')}>
+								<span className='text-white mr-1 w-3.5 h-3.5 inline-block svg-icon'>
+									<CheckCircle />
+								</span>
+							</Button>
+						</div>
+					)}
 				</form>
 			</div>
 		);

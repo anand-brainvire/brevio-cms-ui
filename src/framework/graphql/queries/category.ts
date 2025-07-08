@@ -3,8 +3,8 @@ import { META_FRAGMENT } from '@framework/graphql/fragments';
 
 export const FETCH_CATEGORY = gql`
 	${META_FRAGMENT}
-	query GetAllCategories($search: String, $isActive: Boolean, $sortBy: String, $sortOrder: String, $limit: Int, $offset: Int) {
-		getAllCategories(search: $search, is_active: $isActive, sortBy: $sortBy, sortOrder: $sortOrder, limit: $limit, offset: $offset) {
+	query GetAllCategories($search: String, $isActive: Boolean, $sortBy: String, $sortOrder: String, $limit: Int, $offset: Int,$isAll: Boolean) {
+		getAllCategories(search: $search, is_active: $isActive, sortBy: $sortBy, sortOrder: $sortOrder, limit: $limit, offset: $offset,isAll: $isAll) {
     		data {
     		  	categories {
     		    	uuid

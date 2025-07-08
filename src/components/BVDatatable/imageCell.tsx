@@ -1,12 +1,11 @@
 import React from 'react';
 import { IImageCell } from './DataTable';
-import { IMAGE_BASE_URL } from '@config/constant';
 
 const ImageCell: React.FC<IImageCell> = ({ column, row, openImageModel }) => {
-    const imageUrl = column?.isBase64ImageUrl
-        ? row?.[column.fieldName]
-        : `${IMAGE_BASE_URL}${row?.[column.fieldName]?.original_file}`;
-
+    // const imageUrl = column?.isBase64ImageUrl
+        // ? row?.[column.fieldName]
+        // : `${IMAGE_BASE_URL}${row?.[column.fieldName]?.original_file}`;
+    const imageUrl = (row?.[column.fieldName]);
     return (
         <button
             title={column?.fieldName}

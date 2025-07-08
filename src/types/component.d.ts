@@ -39,6 +39,7 @@ export type TextInputProps = {
 	btnShowHideFun?: () => void;
 	btnShowHide?: boolean;
 	autoComplete?: string;
+	accept?: string;
 };
 export type TextAreaInputProps = {
 	id?: string;
@@ -251,4 +252,11 @@ export type CommonDataArrOfModules = RoleDataArr | FetchCouponsDataArr | Enquiry
 
 export type LoaderProps = {
 	showText?: boolean;
+};
+
+export type RefineTextProps = {
+  refinedText: string;
+  onAccept: () => void;
+  onCancel: () => void;
+  fieldLabel?: string;
 };

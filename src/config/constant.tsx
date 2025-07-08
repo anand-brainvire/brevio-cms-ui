@@ -1,7 +1,7 @@
 import React from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 // import { BannerIcon, ClipBoardIcon, Document, Email, Gift, Lock, PhoneCall, ProfileIcon, Question, SettingsSliders, User, ArrowRight, Marker, TimerIcon, SuggestionIcon, UserReportIcon, Star, Megaphone, QrCodeIcon, GeoLocationIcon, PlanManagementIcon, SubscriptionIcon } from '@components/icons/icons';
-import { Listing,Lock, ProfileIcon, User } from '@components/icons/icons';
+import { BookIcon, Listing,Lock, ProfileIcon, User } from '@components/icons/icons';
 
 import { uuid } from '@utils/helpers';
 import { PERMISSION_LIST } from '@config/permission';
@@ -43,8 +43,8 @@ const AddEditRulesSets = React.lazy(() => import('@views/rulesSestsManagement/ad
 const ViewAnnouncement = React.lazy(() => import('@views/viewAnnouncement'));
 const RolePermissions = React.lazy(() => import('@views/rolePermissons'));
 const CategoryTreeView = React.lazy(() => import('@views/manageCategory/categoryTreeView'));
-const ManageOffer = React.lazy(() => import('@views/couponsManagement'));
-const AddeditManageOffer = React.lazy(() => import('@views/couponsManagement/addEditCoupons'));
+const ManageBooks = React.lazy(() => import('@views/bookManagement'));
+const AddeditManageBooks = React.lazy(() => import('@views/bookManagement/editBooks'));
 const ActivityTracking = React.lazy(() => import('@views/activityTracking'));
 const EmailNotificationTemplate = React.lazy(() => import('@views/emailNotificationTemplate'));
 const AddEditEmailTemplate = React.lazy(() => import('@views/emailNotificationTemplate/addEditEmailTemplate'));
@@ -126,6 +126,13 @@ export const SHOW_PAGE_COUNT_ARR1 = [
 	{ name: '10', key: 10 },
 	{ name: '20', key: 20 },
 	{ name: '30', key: 30 },
+];
+export const BOOK_STATUS_DRP = [
+	{ name: 'Published', key: '1' },
+	{ name: 'Draft', key: '2' },
+	{ name: 'Unpublished', key: '3' },
+	{ name: 'Published (Modified)', key: '4'},
+	{ name: 'Unpublished (Modified)', key: '5'}
 ];
 
 export const STATUS_DRP = [
@@ -225,7 +232,7 @@ export const ROUTES: { [key: string]: string } = {
 	rolePermissions: 'role-permissions',
 	profile: 'profile',
 	category: 'manage-category',
-	manageOffer: 'manage-offer',
+	manageBooks: 'manage-books',
 	geg: 'geg',
 	reset: 'reset',
 	activityTracking: 'activity-tracking',
@@ -266,7 +273,7 @@ export const RedirectPages = {
 	manageRulesSets: `/${ROUTES.app}/${ROUTES.manageRulesSets}`,
 	announcement: `/${ROUTES.app}/${ROUTES.announcement}`,
 	rolePermissions: `/${ROUTES.app}/${ROUTES.rolePermissions}`,
-	manageOffer: `/${ROUTES.app}/${ROUTES.manageOffer}`,
+	manageBooks: `/${ROUTES.app}/${ROUTES.manageBooks}`,
 	activityTracking: `/${ROUTES.app}/${ROUTES.activityTracking}`,
 	email: `/${ROUTES.app}/${ROUTES.email}`,
 	bsMedia: `/${ROUTES.app}/${ROUTES.bsMedia}`,
@@ -336,9 +343,9 @@ export const privateRoutes: { path: string; element: React.LazyExoticComponent<(
 	{ path: `${ROUTES.manageRulesSets}/edit/:id`, element: AddEditRulesSets, permission: [] },
 	{ path: `${ROUTES.profile}`, element: UpdateProfileForm, permission: [] },
 	{ path: `${ROUTES.rolePermissions}`, element: RolePermissions, permission: [PERMISSION_LIST.Role.ListAccess] },
-	{ path: `${ROUTES.manageOffer}/list`, element: ManageOffer, permission: [PERMISSION_LIST.Coupon.ListAccess] },
-	{ path: `${ROUTES.manageOffer}/add`, element: AddeditManageOffer, permission: [PERMISSION_LIST.Coupon.AddAccess] },
-	{ path: `${ROUTES.manageOffer}/edit/:id`, element: AddeditManageOffer, permission: [PERMISSION_LIST.Coupon.EditAccess] },
+	{ path: `${ROUTES.manageBooks}/list`, element: ManageBooks, permission: [PERMISSION_LIST.Coupon.ListAccess] },
+	{ path: `${ROUTES.manageBooks}/add`, element: AddeditManageBooks, permission: [PERMISSION_LIST.Coupon.AddAccess] },
+	{ path: `${ROUTES.manageBooks}/edit/:id`, element: AddeditManageBooks, permission: [PERMISSION_LIST.Coupon.EditAccess] },
 	{ path: `${ROUTES.activityTracking}/list`, element: ActivityTracking },
 	{ path: `${ROUTES.email}/list`, element: EmailNotificationTemplate, permission: [PERMISSION_LIST.EmailTemplate.ListAccess] },
 	{ path: `${ROUTES.email}/add`, element: AddEditEmailTemplate, permission: [PERMISSION_LIST.EmailTemplate.AddAccess] },
@@ -464,14 +471,14 @@ export const SIDEBAR_NAVLINKS: sidebarNavlinksArray[] = [
 		childRoutes: [],
 		permissions: [PERMISSION_LIST.Category.ListAccess],
 	},
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.manageOffer}/${ROUTES.list}`,
-	// 	text: 'Book Management',
-	// 	icon: <Gift />,
-	// 	redirectPage: RedirectPages.manageOffer,
-	// 	childRoutes: [],
-	// 	permissions: [PERMISSION_LIST.Coupon.ListAccess],
-	// },
+	{
+		to: `/${ROUTES.app}/${ROUTES.manageBooks}/${ROUTES.list}`,
+		text: 'Book Management',
+		icon: <BookIcon />,
+		redirectPage: RedirectPages.manageBooks,
+		childRoutes: [],
+		permissions: [PERMISSION_LIST.Coupon.ListAccess],
+	},
 	{
 		to: `/${ROUTES.app}/${ROUTES.user}/${ROUTES.list}`,
 		text: 'User Management',
@@ -726,6 +733,11 @@ export const FILE_TYPE: { [key: string]: string } = {
 	video: 'video',
 	application: 'application',
 };
+
+export const BOOK_STATUS: { [key:string]: string } = {
+	published: 'published',
+	draft: 'draft'
+} 
 
 export const MODEL_TYPE: { [Key: string]: string } = {
 	add: 'add',

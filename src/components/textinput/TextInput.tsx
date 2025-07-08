@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import Button from '@components/button/button';
 import { Eye, EyeCrossed } from '@components/icons/icons';
 
-const TextInput = ({ btnShowHide, btnShowHideFun, id, label, placeholder, min, name, required = false, type = 'text', onChange, onKeyDown, onBlur, value, error, note, inputIcon, disabled, hidden, loginInput, max, maxLength, minLength, pattern, password, className }: TextInputProps): ReactElement => {
+const TextInput = ({ btnShowHide, btnShowHideFun, id, label, placeholder, min, name, required = false, type = 'text', onChange, onKeyDown, onBlur, value, error, note, inputIcon, disabled, hidden, loginInput, max, maxLength, minLength, pattern, password, className, accept }: TextInputProps): ReactElement => {
 	const { t } = useTranslation();
 
 	return (
@@ -19,7 +19,7 @@ const TextInput = ({ btnShowHide, btnShowHideFun, id, label, placeholder, min, n
 			<div className='relative'>
 				<div className={` ${FormClassess['input-group']}  ${inputIcon ? FormClassess['with-icon'] : ''}`}>
 					{inputIcon && <div className={FormClassess['input-icon']}>{inputIcon}</div>}
-					<input autoComplete='new-Password' className={`${FormClassess['form-control']} ${className ?? ''} ${loginInput ? FormClassess['input-login'] : ''} ${password ? FormClassess['input-password'] : ''}  ${error ? FormClassess['error'] : ''}`} id={id} type={type} name={name} placeholder={placeholder} onChange={onChange} value={value} disabled={disabled} hidden={hidden} min={min} max={max} maxLength={maxLength} minLength={minLength} onBlur={onBlur} pattern={pattern} onKeyDown={onKeyDown} />
+					<input autoComplete='new-Password' className={`${FormClassess['form-control']} ${className ?? ''} ${loginInput ? FormClassess['input-login'] : ''} ${password ? FormClassess['input-password'] : ''}  ${error ? FormClassess['error'] : ''}`} id={id} type={type} name={name} placeholder={placeholder} onChange={onChange} value={type === 'file' ? undefined : value} disabled={disabled} hidden={hidden} min={min} max={max} maxLength={maxLength} minLength={minLength} onBlur={onBlur} pattern={pattern} onKeyDown={onKeyDown} accept={accept}/>
 				</div>
 
 				{password && (

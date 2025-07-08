@@ -35,6 +35,7 @@ const categoryManagement = (): ReactElement => {
         { name: t('Name'), sortable: true, fieldName: 'category_translations', type: 'multilang', translationKey: 'name' ,sortKey: 'name',},
         { name: t('Slug'), sortable: true, fieldName: 'slug', type: 'text' },
         { name: t('Description'), sortable: false, fieldName: 'category_translations', type: 'multilang', translationKey: 'description' },
+        { name: t('Slug'), sortable: false, fieldName: 'slug', type: 'text' },
         { name: t('Status'), sortable: true, fieldName: 'is_active', type: 'status', headerCenter: 'true' },
     ] as ColArrType[];
 

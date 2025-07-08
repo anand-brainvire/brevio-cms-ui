@@ -33,7 +33,6 @@ const UserManagement = (): ReactElement => {
 			sortBy: sortBy,
 			sortOrder: sortOrder,
 			search: '',
-			offset: ((DEFAULT_PAGE ?? DEFAULT_PAGE) - 1) * DEFAULT_LIMIT,
 		}
 	);
 	// const [isLoadingDownloadFile, setIsLoadingDownloadFile] = useState<boolean>(false);
@@ -43,7 +42,7 @@ const UserManagement = (): ReactElement => {
 		{ name: t('Email'), sortable: true, type: 'text', fieldName: 'email' },
 		{ name: t('Registration At'), sortable: true, type: 'date', fieldName: 'created_at' },
 		// { name: t('Last Updated At'), sortable: true, type: 'date', fieldName: 'updated_at' },
-		{ name: t('Status'), sortable: true, type: 'status', fieldName: 'is_active', headerCenter: 'true' },
+		{ name: t('Status'), sortable: true, type: 'status', fieldName: 'is_active' },
 		// { name: t('Gender'), sortable: true, type: 'badge', fieldName: 'gender', conversationValue: UserGenderEnum },
 		// { name: t('Date of Birth'), sortable: true, type: 'date', fieldName: 'date_of_birth' },
 		// { name: t('Phone Number'), sortable: true, type: 'text', fieldName: 'phone_no' },
@@ -65,7 +64,6 @@ const UserManagement = (): ReactElement => {
 			// gender: parseInt(values.gender),
 			// phoneNo: values.phoneNo,
 			page: DEFAULT_PAGE,
-			offset: ((DEFAULT_PAGE ?? filterData.page) - 1) * filterData.limit,
 		};
 		setFilterData(updatedFilterData);
 		filterServiceProps.saveState('filterusermangment', JSON.stringify(updatedFilterData));
@@ -175,8 +173,7 @@ const UserManagement = (): ReactElement => {
 				<div className='card-body'>
 					<div className='flex justify-between mb-3'></div>
 					<BVDataTable
-						// defaultActions={['delete', 'change_status', 'view']}
-						defaultActions={['view']}
+						defaultActions={['delete', 'change_status', 'view', 'multiple_delete']}
 						columns={COL_ARR_USER_MNGT}
 						queryName={GET_USER}
 						sessionFilterName='filterusermangment'
