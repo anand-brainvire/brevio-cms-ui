@@ -36,7 +36,7 @@ const BookPages = ({
   const [updateBookPage] = useMutation(UPDATE_BOOK_PAGE);
   const [deleteBookPage] = useMutation(DELETE_BOOK_PAGE);
   const isEditable = status === 'draft';
-  const { data } = useQuery(GET_ALL_BOOK_PAGES, {
+  const { data, refetch } = useQuery(GET_ALL_BOOK_PAGES, {
     variables: { bookId: bookUuid },
     skip: !bookUuid || generatedPages !== null,
     fetchPolicy: 'network-only',
@@ -102,6 +102,7 @@ const BookPages = ({
     );
 
     if (!version?.pages?.length) {
+      setPages([{ isOpen: true }]);
       return;
     }
 
@@ -212,16 +213,18 @@ const BookPages = ({
         ['translations']: [translationObj],
         ['insights']: insightObjs,
       };
-
       const response = await createBookPage({ variables });
-
-      const message =
-        response?.data?.createBookPage?.meta?.message ||
-        'Page saved successfully';
-      toast.success(message);
-    } catch (error: any) {
-      console.error('Error creating book page:', error);
-      toast.error('Failed to save page');
+        if (response?.data?.createBookPage?.meta?.statusCode !== 201) {
+          toast.success(response?.data?.createBookPage?.meta?.message);
+        } else {
+          toast.error(
+            response?.data?.createBookPage?.meta?.message ||
+              'Failed to save page'
+          );
+        }  
+      await refetch();
+    } catch {
+      return;
     }
   };
 
@@ -261,14 +264,16 @@ const BookPages = ({
       };
 
       const response = await updateBookPage({ variables });
-
-      const message =
-        response?.data?.updateBookPage?.meta?.message ||
-        'Page updated successfully';
-      toast.success(message);
-    } catch (error: any) {
-      console.error('Error updating book page:', error);
-      toast.error('Failed to update page');
+      if (response?.data?.updateBookPage?.meta?.statusCode !== 201) {
+        toast.success(response?.data?.updateBookPage?.meta?.message);
+      } else {
+        toast.error(
+          response?.data?.updateBookPage?.meta?.message ||
+            'Failed to update page'
+        );
+      }
+    } catch {
+      return;
     }
   };
 
