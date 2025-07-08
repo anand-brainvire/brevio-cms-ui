@@ -82,7 +82,6 @@ const editBooks = (): ReactElement => {
   const isEditable = selectedTab === 'draft';
 
   const {
-    data: bookByIdData,
     loading: loader,
     refetch,
   } = useQuery(FETCH_BOOK_BY_ID, {
@@ -142,60 +141,66 @@ const editBooks = (): ReactElement => {
   };
 
   useEffect(() => {
-    if (!bookByIdData?.getBookById?.data || !params.id) {
-      return;
-    }
-    const data = bookByIdData.getBookById.data;
+    const fetchAndSetData = async () => {
+      if (!params.id) {
+        return;
+      }
+      // Refetch latest data
+      const { data } = await refetch();
+      const book = data?.getBookById?.data;
+      if (!book)
+        {
+          return;
+        } 
 
-    setIsFreeBook(!!data.is_free);
+      setIsFreeBook(!!book.is_free);
 
-    // Get the matching version (draft or published)
-    const version = data.versions?.find((v: any) => v.status === selectedTab);
+      const version = book.versions?.find((v: any) => v.status === selectedTab);
+      if (!version) {
+        formik.setValues({
+          title: '',
+          authorId: [],
+          categoryId: [],
+          whatsInside: '',
+          aboutAuthor: '',
+          coverImage: '',
+          learningPoints: [],
+        });
+        remove();
+        formik.resetForm();
+        reset({ learningPoints: [] });
+        return;
+      }
 
-    if (!version) {
-      // If the version doesn't exist (e.g., no published version), clear form
+      const translation =
+        version.translations?.find((t: any) => t.lang_code === i18n.language) ||
+        version.translations?.find((t: any) => t.lang_code === 'en') ||
+        version.translations?.[0];
+
+      const authorId = version.authors?.map((a: any) => a.uuid) || [];
+      const categoryId = version.categories?.map((c: any) => c.uuid) || [];
+
+      const learningPoints =
+        translation?.learning_points?.map((point: string) => ({
+          value: point,
+        })) || [];
+
       formik.setValues({
-        title: '',
-        authorId: [],
-        categoryId: [],
-        whatsInside: '',
-        aboutAuthor: '',
-        coverImage: '',
-        learningPoints: [],
+        title: translation?.title || '',
+        authorId,
+        categoryId,
+        whatsInside: translation?.about_book || '',
+        aboutAuthor: translation?.about_author || '',
+        coverImage: version.cover_image_url || '',
+        learningPoints,
       });
+
       remove();
-      formik.resetForm();
-      reset({ learningPoints: [] }); // clear hook form fields (learning points)
-      return;
-    }
+      learningPoints.forEach((lp: { value: string }) => append(lp));
+    };
 
-    // Get translation based on language preference
-    const translation =
-      version.translations?.find((t: any) => t.lang_code === i18n.language) ||
-      version.translations?.find((t: any) => t.lang_code === 'en') ||
-      version.translations?.[0];
-
-    const authorId = version.authors?.map((a: any) => a.uuid) || [];
-    const categoryId = version.categories?.map((c: any) => c.uuid) || [];
-
-    const learningPoints =
-      translation?.learning_points?.map((point: string) => ({
-        value: point,
-      })) || [];
-
-    // Set the values in formik
-    formik.setValues({
-      title: translation?.title || '',
-      authorId,
-      categoryId,
-      whatsInside: translation?.about_book || '',
-      aboutAuthor: translation?.about_author || '',
-      coverImage: version.cover_image_url || '',
-      learningPoints,
-    });
-    remove();
-    learningPoints.forEach((lp: { value: string }) => append(lp));
-  }, [bookByIdData, selectedTab, params.id, i18n.language]);
+    fetchAndSetData();
+  }, [selectedTab, params.id, i18n.language]);
 
   const { register, control, reset, getValues } = useForm({
     defaultValues: {
@@ -221,7 +226,9 @@ const editBooks = (): ReactElement => {
             ['lang_code']: 'en',
             ['about_book']: values.whatsInside,
             ['about_author']: values.aboutAuthor,
-            ['learning_points']: values.learningPoints.map((lp:any) => lp.value),
+            ['learning_points']: values.learningPoints.map(
+              (lp: any) => lp.value
+            ),
           },
         ],
       },
@@ -243,7 +250,7 @@ const editBooks = (): ReactElement => {
     initialValues,
     // validationSchema: addBookInfoValidationSchema,
     onSubmit: async (values) => {
-      await UpdateBookInfoFunction(values); // success/error already handled inside
+      await UpdateBookInfoFunction(values);
     },
   });
 
@@ -532,18 +539,15 @@ const editBooks = (): ReactElement => {
     }
   };
 
-const handleImageFetch = async (imageURL: URL) => {
-  try {
-    const file = await urlToFile(
-      imageURL,
-      'cover-image.jpg'
-    );
-    // Example usage with Formik
-    formik.setFieldValue('coverImage', file);
-  } catch (err) {
-    console.error('Error fetching image:', err);
-  }
-};
+  const handleImageFetch = async (imageURL: URL) => {
+    try {
+      const file = await urlToFile(imageURL, 'cover-image.jpg');
+      // Example usage with Formik
+      formik.setFieldValue('coverImage', file);
+    } catch (err) {
+      console.error('Error fetching image:', err);
+    }
+  };
 
   /*
    * Method to convert the u
@@ -560,6 +564,7 @@ const handleImageFetch = async (imageURL: URL) => {
    * Method to change the free book status
    */
   const handleFreeBookStatus = async () => {
+    setIsFreeBook(!isFreeBook);
     try {
       const { data } = await freeBookStatus({
         variables: {
@@ -569,7 +574,7 @@ const handleImageFetch = async (imageURL: URL) => {
 
       if (data?.toggleFreeBook?.meta?.statusCode === 200) {
         toast.success(data.toggleFreeBook.meta.message);
-        await refetch();
+        // await refetch();
       } else {
         toast.error(
           data?.toggleFreeBook?.meta?.message || t('Failed to update status')
@@ -937,7 +942,7 @@ const handleImageFetch = async (imageURL: URL) => {
                   >
                     {t('About Author')}
                   </label>
-                  <div className='flex gap-2 items-center'>
+                  <div className='flex gap-2 items'>
                     <div className='w-full'>
                       <TextArea
                         id='aboutAuthor'
@@ -955,7 +960,7 @@ const handleImageFetch = async (imageURL: URL) => {
                     {isEditable && (
                       <button
                         type='button'
-                        className='btn btn-secondary whitespace-nowrap'
+                        className='btn btn-secondary h-fit mt-1'
                         onClick={() => handleRefineClick('aboutAuthor')}
                       >
                         Refine
@@ -1022,9 +1027,9 @@ const handleImageFetch = async (imageURL: URL) => {
                         <button
                           type='button'
                           onClick={() => remove(index)}
-                          className='btn btn-secondary'
+                          className=''
                         >
-                          <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
+                          <span className='mr-1 w-2.5 h-2.5 text-black inline-block svg-icon'>
                             <Cross />
                           </span>
                         </button>

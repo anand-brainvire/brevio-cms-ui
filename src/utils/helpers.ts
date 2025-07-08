@@ -158,7 +158,7 @@ export const uuid = (): string => {
 export const uploadFile = async (
   data: { name: string; content: File | string }[],
   path: string
-): Promise<void> => {
+): Promise<string | undefined> => {
   try {
     const formData = new FormData();
 
@@ -183,22 +183,17 @@ export const uploadFile = async (
         Authorization: `Bearer ${token}`,
       },
     });
-
-    if (response.ok) {
-      if (path.includes('bsmedia')) {
+    if (response) {
         const data = await response.json();
         toast.success(data.meta.message);
-      } else {
-        toast.success('File uploaded successfully');
-      }
+		return data.data.url;
     } else {
-      console.error('Upload failed', await response.text());
       toast.error('Failed to upload file');
+	  return;
     }
-  } catch (error) {
-    console.error('Upload error:', error);
-    toast.error(t('Failed to upload file'));
-  }
+  } catch {
+	return;
+}
 };
 
 /**

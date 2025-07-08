@@ -423,7 +423,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 							return (
 								<tr className='text-left' key={row?.[`${idKey}`] ?? row.uuid}>
 									{columns?.map((column) => (
-										<td key={column.name}>
+										<td className='text-center' key={column.name}>
 											{column.type === 'image' && <ImageCell
 												column={column}
 												row={row}

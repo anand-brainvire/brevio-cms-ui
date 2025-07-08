@@ -50,7 +50,6 @@ export interface PageFormRef {
   validate: () => boolean;
 }
 
-
 const PageForm = forwardRef<PageFormRef, PageFormProps>(
   (
     {
@@ -72,6 +71,10 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
     const [refinedInsightId, setRefinedInsightId] = useState<string | null>(
       null
     );
+    const [lastSyncedContentForAudio, setLastSyncedContentForAudio] = useState(
+      initialData?.richText || ''
+    );
+    const [audioError, setAudioError] = useState<string | null>(null);
     const [refineKeyPoints, { loading: refineKeyPointsLoader }] =
       useMutation(REFINE_KEY_POINTS);
     const [refinePageContent, { loading: refinePageContentLoader }] =
@@ -82,7 +85,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
       useMutation(GENERATE_AUDIO);
 
     const [uploadedAudioUrl, setUploadedAudioUrl] = useState<
-      Url | string | null
+      Url | string | null | undefined
     >(initialData?.audioMale || null);
     const [isUploaded, setIsUploaded] = useState<boolean>(
       !!initialData?.audioMale
@@ -218,37 +221,40 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
     };
 
     const handleGenerateAudio = async () => {
-        generateAudio({
-            variables: {
-                bookPageUuid: initialData?.uuid,
-                type: ''
-            }
-        })
-        .then((res) =>{
-            const data = res.data;
-            if (data.generatePageAudio.meta.statusCode === 200) {
-                const generatedUrl = data.generatePageAudio.data.url;
-                setUploadedAudioUrl(generatedUrl);
-                setIsUploaded(true);
-                toast.success(data.generatePageAudio.meta.message);
-            } else {
-                toast.error(data.generatePageAudio.meta.message);
-            }
-        })
+      generateAudio({
+        variables: {
+          bookPageUuid: initialData?.uuid,
+          type: '',
+        },
+      }).then((res) => {
+        const data = res.data;
+        if (data.generatePageAudio.meta.statusCode === 200) {
+          const generatedUrl = data.generatePageAudio.data.url;
+          setUploadedAudioUrl(generatedUrl);
+          setIsUploaded(true);
+          setLastSyncedContentForAudio(formik.values.richText);
+          setAudioError(null);
+          toast.success(data.generatePageAudio.meta.message);
+        } else {
+          toast.error(data.generatePageAudio.meta.message);
+        }
+      });
     };
 
     const handleAudioSubmit = async () => {
       if (!audioFile) {
         return toast.error('No file selected');
       }
-
       try {
         const path = `page-audio?bookUuid=${params.id}&bookPagePageUuid=${initialData?.uuid}&langCode=en`;
-        await uploadFile([{ name: 'pageAudio', content: audioFile }], path);
-        const generatedUrl = `book/${params.id}/draft/pages/${initialData?.uuid}/en_male.mp3`;
-        setUploadedAudioUrl(generatedUrl);
+        const audioUrl = await uploadFile(
+          [{ name: 'pageAudio', content: audioFile }],
+          path
+        );
+        setUploadedAudioUrl(audioUrl);
         setIsUploaded(true);
-        // toast.success('Audio uploaded successfully');
+        setLastSyncedContentForAudio(formik.values.richText);
+        setAudioError(null);
       } catch {
         return;
       }
@@ -259,7 +265,6 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
       setUploadedAudioUrl(null);
       setIsUploaded(false);
     };
-
     return (
       <div className='border mb-6 rounded shadow-sm'>
         <div
@@ -375,7 +380,12 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                   </div>
                 )}
               </div>
-
+              <label className='block font-medium'>
+                {t('Audio')} <span className='error'>*</span>
+              </label>
+              {audioError && (
+                <p className='text-red-500 text-sm mt-1'>{audioError}</p>
+              )}
               <div className='flex items-center gap-4 mb-4 flex-wrap'>
                 {isUploaded && uploadedAudioUrl ? (
                   <>
@@ -391,9 +401,9 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                         <button
                           type='button'
                           onClick={handleAudioRemove}
-                          className='btn btn-secondary'
+                          className=''
                         >
-                          <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
+                          <span className='mr-1 w-2.5 h-2.5 text-black inline-block svg-icon'>
                             <Cross />
                           </span>
                         </button>
@@ -420,7 +430,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                         placeholder={t('Audio')}
                         name='audio'
                         onChange={handleAudioChange}
-                        label={t('Audio')}
+                        // label={t('Audio')}
                       />
                     </div>
 
@@ -430,9 +440,9 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                         <button
                           type='button'
                           onClick={handleAudioRemove}
-                          className='btn btn-secondary'
+                          className=''
                         >
-                          <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
+                          <span className='mr-1 w-2.5 h-2.5 text-black inline-block svg-icon'>
                             <Cross />
                           </span>
                         </button>
@@ -445,7 +455,11 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                           Submit
                         </button>
 
-                        <button type='button' className='btn btn-secondary'>
+                        <button
+                          type='button'
+                          className='btn btn-secondary'
+                          onClick={handleGenerateAudio}
+                        >
                           Generate
                         </button>
                       </>
@@ -464,6 +478,17 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                         ...formik.values,
                         insights: getFieldValues().insights,
                       };
+                      const hasUnsyncedAudio =
+                        lastSyncedContentForAudio.trim() !==
+                        formik.values.richText.trim();
+
+                      if (hasUnsyncedAudio) {
+                        setAudioError(
+                          'Page content has changed. Please regenerate or upload audio.'
+                        );
+                      }
+                      setAudioError(null);
+
                       if (initialData?.uuid && onPageUpdate) {
                         onPageUpdate(initialData.uuid, pageData);
                       } else {
