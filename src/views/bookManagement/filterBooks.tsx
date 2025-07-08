@@ -34,7 +34,6 @@ const FilterBooks = ({
   const formik = useFormik({
     initialValues,
     onSubmit: (values) => {
-      console.log(values);
       const getStatusLabel = (key: string) => {
         const status = BOOK_STATUS_DRP.find((s) => s.key === key);
         return status ? status.name : '';
@@ -89,7 +88,6 @@ const FilterBooks = ({
         ...values,
         ...(Object.keys(filter).length > 0 ? { filter } : {}), // Only include `filter` if not empty
       };
-      console.log('payload', payload);
       onSearchCoupon(payload);
     },
   });
