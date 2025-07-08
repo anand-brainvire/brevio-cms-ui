@@ -21,8 +21,6 @@ interface BarChartCardProps {
   height?: number;
 }
 
-const defaultColors = ['#60A5FA', '#34D399', '#FBBF24', '#F472B6', '#A78BFA'];
-
 const BarChartCard: React.FC<BarChartCardProps> = ({
   title,
   data,
