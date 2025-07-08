@@ -1,110 +1,171 @@
 import { useTranslation } from 'react-i18next';
-import React from 'react';
-// import Highcharts from 'highcharts';
-// import HighchartsReact from 'highcharts-react-official';
-// import accessibility from 'highcharts/modules/accessibility';
-// import exporting from 'highcharts/modules/exporting';
-// import exportData from 'highcharts/modules/export-data';
-// import DatePicker from '@components/datapicker/datePicker';
-import { ProfileIcon } from '@components/icons/icons';
-// import { useQuery } from '@apollo/client';
-// import { FETCH_DASHBOARD_COUNT} from '@framework/graphql/queries/dashboard';
-// import { DashboardData } from '@type/dashboard';
-import BottomCard from './bottomCard';
-// accessibility(Highcharts);
-// exporting(Highcharts);
-// exportData(Highcharts);
-
+import React, { useEffect } from 'react';
+import {
+  BestSellerIcon,
+  DraftBookIcon,
+  PopularBookIcon,
+  PublishedBookIcon,
+  TotalBooksIcon,
+} from '@components/icons/icons';
+import TopCard from './topCards';
+import { useQuery } from '@apollo/client';
+import {
+  GET_AUTHOR_STATS,
+  GET_BOOK_STATS,
+  GET_CATEGORY_STATS,
+  GET_FREE_BOOKS,
+} from '@framework/graphql/queries/dashboard';
+import { AuthorStatItem, BookStats, CategoryStats } from '@type/dashboard';
+import BarChartCard from './charts';
+import { toast } from 'react-toastify';
+import mobileClient from '@framework/graphql/apolloMobileClient';
+import { Loader } from '@components/index';
 const Dashboard = () => {
-	const { t } = useTranslation();
-	// const { data: dashboardCount } = useQuery<DashboardData>(FETCH_DASHBOARD_COUNT);
-	// const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
-	// const [setChartData] = useState<ChartData[]>([]);
-	// const { data } = useQuery<UserCountData>(USER_COUNT_BY_YEAR, {
-	// 	variables: { year: selectedYear.toString() },
-	// });
+  const { refetch: bookStats, loading: bookStateLoader } = useQuery(
+    GET_BOOK_STATS,
+    {
+      fetchPolicy: 'network-only',
+    }
+  );
+  const { refetch: fetchCategoryStats, loading: categoryStateLoader } =
+    useQuery(GET_CATEGORY_STATS, {
+      fetchPolicy: 'network-only',
+      skip: true, // prevents it from running immediately
+    });
 
-	// useEffect(() => {
-	// 	if (data) {
-			// const dataArray = Object.entries(data?.userCountByYear?.data).map(([name, y]) => ({ name, y }));
-			// const filteredData = dataArray?.filter((item: { name: string }) => item.name !== '__typename');
-			// setChartData(filteredData);
-	// 	}
-	// }, [data, selectedYear]);
+  const { refetch: fetchAuthorStats, loading: authorStateLoader } = useQuery(
+    GET_AUTHOR_STATS,
+    {
+      fetchPolicy: 'network-only',
+      skip: true, // prevents it from running immediately
+    }
+  );
+  const { t } = useTranslation();
+  const [bookData, setBookData] = React.useState<BookStats>({} as BookStats);
+  const [categoryData, setCategoryData] = React.useState<CategoryStats>(
+    {} as CategoryStats
+  );
+  const [authorData, setAuthorData] = React.useState<AuthorStatItem[]>([]);
+//   const [freeBooks, setFreeBooks] = React.useState<AuthorStatItem[]>([]);
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [bookRes, categoryRes, authorRes, freeBooks] =
+          await Promise.allSettled([
+            bookStats(),
+            fetchCategoryStats(),
+            fetchAuthorStats(),
+            mobileClient.query({
+              query: GET_FREE_BOOKS,
+            }),
+          ]);
 
-	// const options = {
-	// 	chart: {
-	// 		type: 'column',
-	// 	},
-	// 	title: {
-	// 		align: 'center',
-	// 		text: `User Chart  ${selectedYear}`,
-	// 	},
-	// 	accessibility: {
-	// 		announceNewData: {
-	// 			enabled: true,
-	// 		},
-	// 	},
-	// 	xAxis: {
-	// 		type: 'category',
-	// 	},
-	// 	yAxis: {
-	// 		title: {
-	// 			text: 'Total User',
-	// 		},
-	// 	},
-	// 	legend: {
-	// 		enabled: false,
-	// 	},
-	// 	plotOptions: {
-	// 		series: {
-	// 			borderWidth: 0,
-	// 			dataLabels: {
-	// 				enabled: true,
-	// 				format: '{point.y}',
-	// 			},
-	// 		},
-	// 	},
-	// 	tooltip: {
-	// 		headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-	// 		pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}</b> User<br/>',
-	// 	},
-	// 	series: [
-	// 		{
-	// 			type: 'column',
-	// 			name: 'Users',
-	// 			colorByPoint: true,
-	// 			data: chartData,
-	// 		},
-	// 	],
-	// };
+        if (bookRes.status === 'fulfilled') {
+          const bookStatsData = bookRes.value?.data?.getBookStats?.data;
+          if (bookStatsData) {
+            setBookData(bookStatsData);
+          }
+        }
 
-	// const handleYearChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-	// 	const selectedDate = new Date(event.target.value);
-	// 	// const newYear = selectedDate.getFullYear();
-	// 	// setSelectedYear(newYear);
-	// };
-	return (
-		<div>
-			<div className='w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 lg:gap-x-30px gap-y-4 mb-4 [.show-menu~div_&]:grid-cols-1 [.show-menu~div_&]:md:grid-cols-2 [.show-menu~div_&]:lg:grid-cols-3'></div>
-			<div className='w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 lg:gap-x-30px [.show-menu~div_&]:grid-cols-1 [.show-menu~div_&]:md:grid-cols-2 [.show-menu~div_&]:lg:grid-cols-3'>
-				<BottomCard title={t(`${'Sub-Admin'}'s`)} value = {undefined}/>
-				<BottomCard title={t(`${'User'}'s`)} value = {undefined} />
-				<BottomCard title={t(`${'Enquiry'}'s`)} value={undefined} />
-			</div>
-			<div className='card-header flex-wrap gap-2'>
-				<div className='flex items-center'>
-					<span className='w-3.5 h-3.5 mr-2 text-md leading-4 inline-block svg-icon'>
-						<ProfileIcon />
-					</span>
-					{t('User Chart')}
-				</div>
-				<div className='btn-group flex gap-y-2 flex-wrap'>
-					{/* <DatePicker id='dashboard-date-picker' view={'year'} onChange={handleYearChange} value={new Date(selectedYear, 0)} max={new Date()} dateFormat='yy' /> */}
-				</div>
-			</div>
-			{/* <HighchartsReact highcharts={Highcharts} options={options} /> */}
-		</div>
-	);
+        if (categoryRes.status === 'fulfilled') {
+          const categoryStatsData =
+            categoryRes.value?.data?.getCategoryStats?.data;
+          if (categoryStatsData) {
+            setCategoryData(categoryStatsData);
+          }
+        }
+
+        if (authorRes.status === 'fulfilled') {
+          const authorStatsData = authorRes.value?.data?.getAuthorStats?.data;
+          if (authorStatsData) {
+            setAuthorData(authorStatsData);
+          }
+        }
+
+        if (freeBooks.status === 'fulfilled') {
+		  const freeBooksData = freeBooks.value?.data?.getFreeBooks?.data;
+		  if (freeBooksData) {
+			// setFreeBooks(freeBooksData);
+		  }
+        }
+      } catch {
+        toast.error(t('Something went wrong while fetching data'));
+      }
+    };
+    fetchData();
+  }, []);
+
+  return (
+    <div>
+      {(bookStateLoader || categoryStateLoader || authorStateLoader) && (
+        <Loader />
+      )}
+      {/* 🟦 Horizontal row of cards */}
+      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 w-full'>
+        <TopCard
+          label='Total Books'
+          value={bookData.totalBooks}
+          icon={<TotalBooksIcon />}
+        />
+        <TopCard
+          label='Total Books in Draft'
+          value={bookData.draftBookCount}
+          icon={<DraftBookIcon />}
+        />
+        <TopCard
+          label='Total Published Books'
+          value={bookData.publishedBookCount}
+          icon={<PublishedBookIcon />}
+        />
+        <TopCard
+          label='Total Best Seller Book'
+          value={bookData?.bestSellerBooks?.length}
+          icon={<BestSellerIcon />}
+        />
+        <TopCard
+          label='Total Popular Books'
+          value={bookData?.topPopularBooks?.length}
+          icon={<PopularBookIcon />}
+        />
+      </div>
+      <div className='mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
+        <BarChartCard
+          title='Top 10 Popular Books'
+          data={bookData.topPopularBooks}
+          xKey='title'
+          yKey='read_count'
+        />
+        <BarChartCard
+          title='Top 10 Best Seller Books'
+          data={bookData.bestSellerBooks}
+          xKey='title'
+          yKey='read_count'
+        />
+      </div>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
+        <BarChartCard
+          title='Most Read Categories'
+          data={categoryData.topReadCategories}
+          xKey='name'
+          yKey='read_count'
+        />
+        <BarChartCard
+          title='Categoriy wise No. of Books Published'
+          data={categoryData.categoryBooks}
+          xKey='name'
+          yKey='total_books'
+        />
+      </div>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
+        <BarChartCard
+          title='Top 10 Best Seller Authors'
+          data={authorData}
+          xKey='name'
+          yKey='read_count'
+        />
+      </div>
+    </div>
+  );
 };
 export default Dashboard;

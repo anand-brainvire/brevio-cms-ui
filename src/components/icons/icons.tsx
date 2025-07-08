@@ -653,7 +653,58 @@ const SubscriptionIcon = () => (
 	</svg>
 );
 
-const CopyIcon = () => (<svg
+const TotalBooksIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    className="w-10 h-10" // Adjust based on card size
+    fill="none"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    {/* Book outline */}
+    <path
+      d="M23,22H3a1,1,0,0,1-1-1V1A1,1,0,0,0,0,1V21a3,3,0,0,0,3,3H23a1,1,0,0,0,0-2Z"
+      stroke="#6D28D9" // Purple
+    />
+
+    {/* Bar 1 */}
+    <path d="M15,20V12" stroke="#22C55E" /> {/* Green */}
+    {/* Bar 2 */}
+    <path d="M7,20V12" stroke="#3B82F6" /> {/* Blue */}
+    {/* Bar 3 */}
+    <path d="M19,20V7" stroke="#F59E0B" /> {/* Yellow */}
+    {/* Bar 4 */}
+    <path d="M11,20V7" stroke="#EF4444" /> {/* Red */}
+  </svg>
+);
+
+const DraftBookIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="36"
+    height="36"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    className="text-yellow-500 w-12 h-12"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M4 4v16c0 .552.448 1 1 1h14a1 1 0 001-1V4M4 4h16M4 4h16M4 4h0"
+    />
+    <path
+      fill="currentColor"
+      d="M8 8h8v2H8V8zm0 4h6v2H8v-2z"
+    />
+  </svg>
+);
+
+const CopyIcon = () => (
+<svg
 	xmlns="http://www.w3.org/2000/svg"
 	xmlnsXlink="http://www.w3.org/1999/xlink"
 	version="1.1"
@@ -672,7 +723,75 @@ const CopyIcon = () => (<svg
 			d="M89.62,13.96v7.73h12.19h0.01v0.02c3.85,0.01,7.34,1.57,9.86,4.1c2.5,2.51,4.06,5.98,4.07,9.82h0.02v0.02 v73.27v0.01h-0.02c-0.01,3.84-1.57,7.33-4.1,9.86c-2.51,2.5-5.98,4.06-9.82,4.07v0.02h-0.02h-61.7H40.1v-0.02 c-3.84-0.01-7.34-1.57-9.86-4.1c-2.5-2.51-4.06-5.98-4.07-9.82h-0.02v-0.02V92.51H13.96h-0.01v-0.02c-3.84-0.01-7.34-1.57-9.86-4.1 c-2.5-2.51-4.06-5.98-4.07-9.82H0v-0.02V13.96v-0.01h0.02c0.01-3.85,1.58-7.34,4.1-9.86c2.51-2.5,5.98-4.06,9.82-4.07V0h0.02h61.7 h0.01v0.02c3.85,0.01,7.34,1.57,9.86,4.1c2.5,2.51,4.06,5.98,4.07,9.82h0.02V13.96L89.62,13.96z M79.04,21.69v-7.73v-0.02h0.02 c0-0.91-0.39-1.75-1.01-2.37c-0.61-0.61-1.46-1-2.37-1v0.02h-0.01h-61.7h-0.02v-0.02c-0.91,0-1.75,0.39-2.37,1.01 c-0.61,0.61-1,1.46-1,2.37h0.02v0.01v64.59v0.02h-0.02c0,0.91,0.39,1.75,1.01,2.37c0.61,0.61,1.46,1,2.37,1v-0.02h0.01h12.19V35.65 v-0.01h0.02c0.01-3.85,1.58-7.34,4.1-9.86c2.51-2.5,5.98-4.06,9.82-4.07v-0.02h0.02H79.04L79.04,21.69z M105.18,108.92V35.65v-0.02 h0.02c0-0.91-0.39-1.75-1.01-2.37c-0.61-0.61-1.46-1-2.37-1v0.02h-0.01h-61.7h-0.02v-0.02c-0.91,0-1.75,0.39-2.37,1.01 c-0.61,0.61-1,1.46-1,2.37h0.02v0.01v73.27v0.02h-0.02c0,0.91,0.39,1.75,1.01,2.37c0.61,0.61,1.46,1,2.37,1v-0.02h0.01h61.7h0.02 v0.02c0.91,0,1.75-0.39,2.37-1.01c0.61-0.61,1-1.46,1-2.37h-0.02V108.92L105.18,108.92z"
 		/>
 	</g>
-</svg>)
+</svg>
+)
+
+const PublishedBookIcon = () => (
+    <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    className="w-12 h-12 text-green-600"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M2 6.5V19a1 1 0 001 1c3.5-1.5 6.5-1.5 10 0a1 1 0 001-1V6.5" />
+    <path d="M22 6.5V19a1 1 0 01-1 1c-3.5-1.5-6.5-1.5-10 0a1 1 0 01-1-1V6.5" />
+    <path d="M2 6.5c3.5-1.5 6.5-1.5 10 0" />
+    <path d="M12 6.5c3.5-1.5 6.5-1.5 10 0" />
+  </svg>
+
+);
+
+const BestSellerIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="36"
+    height="36"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    className="text-red-500 w-12 h-12"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M4 4v16c0 .552.448 1 1 1h14a1 1 0 001-1V4M4 4h16"
+    />
+    <path
+      fill="currentColor"
+      d="M12 8l1.09 2.22L16 10.5l-2 1.94L14.18 16 12 14.5 9.82 16 10 12.44 8 10.5l2.91-.28L12 8z"
+    />
+  </svg>
+);
+
+const PopularBookIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="36"
+    height="36"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    className="text-blue-500 w-12 h-12"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M4 4v16c0 .552.448 1 1 1h14a1 1 0 001-1V4M4 4h16"
+    />
+    <path
+      fill="currentColor"
+      d="M12 9.75c-.73-1.11-2.21-1.5-3.28-.75-1.03.73-1.11 2.12-.21 3.02L12 16l3.49-4c.9-.9.82-2.29-.21-3.02-1.07-.75-2.55-.36-3.28.75z"
+    />
+  </svg>
+);
+
+
 export {
 	Listing,
 	BookIcon,
@@ -756,5 +875,10 @@ export {
 	PlanManagementIcon,
 	GoogleIcon,
 	SubscriptionIcon,
-	CopyIcon
+	CopyIcon,
+	TotalBooksIcon,
+	DraftBookIcon,
+	PublishedBookIcon,
+	BestSellerIcon,
+	PopularBookIcon,
 };
