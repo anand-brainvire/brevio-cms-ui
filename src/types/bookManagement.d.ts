@@ -1,9 +1,7 @@
 export type PaginationParamsCoupon = {
 	filter?: {
-		statusFilter?: {
-			status?: number | null | string;
-			isContentModified?: boolean | null;
-		};
+		// Wherever you define PaginationParamsCoupon['filter']:
+		statusFilter?: Array<{ status: string; isContentModified?: boolean }>;
 		search?: string | null;
 		categories?: string[] | null;
 	};
