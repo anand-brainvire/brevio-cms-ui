@@ -28,7 +28,6 @@ const BarChartCard: React.FC<BarChartCardProps> = ({
   data,
   xKey,
   yKey,
-  barColors = defaultColors,
   height = 300,
 }) => {
   if (!data || data.length === 0) {
