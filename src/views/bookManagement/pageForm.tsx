@@ -26,7 +26,7 @@ import {
 } from '@framework/graphql/mutations/bookManagement';
 import RefineText from '@components/popup/refineText';
 import { Loader } from '@components/index';
-
+import useValidation from '@src/hooks/validations';
 interface PageFormProps {
   index: number;
   isOpen: boolean;
@@ -68,6 +68,9 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
     const [showRefinePopup, setShowRefinePopup] = useState(false);
     const [refineData, setRefineData] = useState('');
     const [refineFieldKey, setRefineFieldKey] = useState('');
+    const { savePageValidationSchema } = useValidation();
+    const [isAudioErrorAcknowledged, setIsAudioErrorAcknowledged] =
+      useState(false);
     const [refinedInsightId, setRefinedInsightId] = useState<string | null>(
       null
     );
@@ -96,6 +99,8 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
       getValues: getFieldValues,
       reset: resetFieldArray,
       setValue,
+      formState: { errors },
+      trigger,
     } = useForm({
       defaultValues: {
         insights: initialData?.insights?.length
@@ -121,6 +126,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
         richText: initialData?.richText || '',
       },
       enableReinitialize: true,
+      validationSchema: savePageValidationSchema,
       onSubmit: () => {
         // No-op: form submission handled manually
       },
@@ -290,6 +296,11 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                 onChange={(val: string) =>
                   formik.setFieldValue('richText', val)
                 }
+                error={
+                  formik.errors.richText && formik.touched.richText
+                    ? formik.errors.richText
+                    : ''
+                }
               />
               {isEditable && (
                 <button
@@ -309,6 +320,11 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                 onChange={formik.handleChange}
                 label={t('keyPoint')}
                 value={formik.values.keyPoint}
+                error={
+                  formik.errors.keyPoint && formik.touched.keyPoint
+                    ? formik.errors.keyPoint
+                    : ''
+                }
               />
               {isEditable && (
                 <button
@@ -338,10 +354,10 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                       </span>
                       <input
                         {...register(`insights.${i}.value`, {
-                          required: true,
+                          required: 'Insight is required',
                         })}
                         placeholder={`Point ${i + 1}`}
-                        className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
+                        className='form-input w-3/4 border border-gray-300 rounded-md px-3 py-2'
                       />
                       {isEditable && (
                         <button
@@ -365,6 +381,11 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                           Refine
                         </button>
                       )}
+                      {errors?.insights?.[i]?.value && (
+                        <p className='text-red-500 text-sm mt-1'>
+                          {errors.insights[i].value.message}
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -383,9 +404,6 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
               <label className='block font-medium'>
                 {t('Audio')} <span className='error'>*</span>
               </label>
-              {audioError && (
-                <p className='text-red-500 text-sm mt-1'>{audioError}</p>
-              )}
               <div className='flex items-center gap-4 mb-4 flex-wrap'>
                 {isUploaded && uploadedAudioUrl ? (
                   <>
@@ -467,27 +485,45 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                   </>
                 )}
               </div>
-
+              {audioError && (
+                <p className='text-red-500 text-sm mt-1'>{audioError}</p>
+              )}
               <div className='flex justify-between items-center pt-4'>
                 {isEditable && (
                   <button
                     type='button'
                     className='btn btn-primary'
-                    onClick={() => {
+                    onClick={async () => {
+                      const isValid = await formik.validateForm();
+                      const isHookFormValid = await trigger();
+                      if (isValid.keyPoint || isValid.richText) {
+                        formik.setTouched({
+                          keyPoint: true,
+                          richText: true,
+                        });
+                      }
+
+                      if (Object.keys(isValid).length > 0 || !isHookFormValid) {
+                        formik.setTouched({ keyPoint: true, richText: true });
+                        return;
+                      }
                       const pageData = {
                         ...formik.values,
                         insights: getFieldValues().insights,
                       };
-                      const hasUnsyncedAudio =
-                        lastSyncedContentForAudio.trim() !==
-                        formik.values.richText.trim();
 
-                      if (hasUnsyncedAudio) {
+                      const hasUnsyncedAudio =
+                        isUploaded &&
+                        formik.values.richText.trim() !==
+                          lastSyncedContentForAudio.trim();
+
+                      if (hasUnsyncedAudio && !isAudioErrorAcknowledged) {
                         setAudioError(
                           'Page content has changed. Please regenerate or upload audio.'
                         );
+                        setIsAudioErrorAcknowledged(true);
+                        // return;
                       }
-                      setAudioError(null);
 
                       if (initialData?.uuid && onPageUpdate) {
                         onPageUpdate(initialData.uuid, pageData);

@@ -8,6 +8,8 @@ import {
 } from '@framework/graphql/mutations/bookManagement';
 import { GET_ALL_BOOK_PAGES } from '@framework/graphql/queries/bookManagement';
 import { toast } from 'react-toastify';
+import useValidation from '@src/hooks/validations';
+import { ValidationContext } from 'graphql';
 
 type GeneratedPage = {
   page_number: number;
@@ -41,7 +43,6 @@ const BookPages = ({
     skip: !bookUuid || generatedPages !== null,
     fetchPolicy: 'network-only',
   });
-
   useEffect(() => {
     const handleDeleteSavedPage = (e: any) => {
       const { uuid, index } = e.detail;
@@ -185,8 +186,8 @@ const BookPages = ({
 
   const handleSinglePageSave = async (_index: number, data: any) => {
     try {
+      
       const lang = 'en';
-
       const translationObj: any = {};
       Object.assign(translationObj, {
         ['lang_code']: lang,

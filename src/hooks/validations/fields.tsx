@@ -123,6 +123,8 @@ const useValidationFields = () => {
 	const AddAuthors = Yup.array().min(1, 'At least one author is required');
 	const whatsInside= Yup.string().required(translationFun('Please enter the what\'s inside'));
 	const aboutAuthor = Yup.string().required(translationFun('Please enter the about author'));
+	const keyPoint = Yup.string().required(translationFun('Please enter key point')).min(3, translationFun('Key point should not be less than 3 characters Please enter valid key point')).max(100, translationFun('Key point should not be greater than 100 characters'));
+	const richText = Yup.string().required(translationFun('Please enter page content')).min(10, translationFun('Rich text should not be less than 10 characters Please enter valid page content')).max(500, translationFun('page content should not be greater than 500 characters'));
 	return {
 		announcementType,
 		oldPassword,
@@ -215,6 +217,8 @@ const useValidationFields = () => {
 		whatsInside,
 		aboutAuthor,
 		AddAuthors,
+		keyPoint,
+		richText,
 	};
 };
 
