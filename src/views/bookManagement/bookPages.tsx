@@ -8,8 +8,6 @@ import {
 } from '@framework/graphql/mutations/bookManagement';
 import { GET_ALL_BOOK_PAGES } from '@framework/graphql/queries/bookManagement';
 import { toast } from 'react-toastify';
-import useValidation from '@src/hooks/validations';
-import { ValidationContext } from 'graphql';
 
 type GeneratedPage = {
   page_number: number;
