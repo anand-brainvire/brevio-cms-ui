@@ -383,7 +383,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                       )}
                       {errors?.insights?.[i]?.value && (
                         <p className='text-red-500 text-sm mt-1'>
-                          {errors.insights[i].value.message}
+                          {errors?.insights?.[i]?.value?.message}
                         </p>
                       )}
                     </div>
