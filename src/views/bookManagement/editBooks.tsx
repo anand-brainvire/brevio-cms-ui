@@ -4,11 +4,16 @@ import { useTranslation } from 'react-i18next';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TextInput from '@components/textinput/TextInput';
-import { Category, editBookInfo } from '@type/bookManagement';
-import { uploadFile, urlToFile, whiteSpaceRemover } from '@utils/helpers';
+import {
+  Category,
+  editBookInfo,
+  RefineCoverImageData,
+} from '@type/bookManagement';
+import { uploadFile, whiteSpaceRemover } from '@utils/helpers';
 import { useFormik } from 'formik';
 import BookPages from './bookPages';
 import { ValidationError } from 'yup';
+import ImageModel from '@views/imageModel';
 import {
   REFINE_ABOUT_AUTHOR,
   REFINE_ABOUT_BOOK,
@@ -76,15 +81,17 @@ const editBooks = (): ReactElement => {
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [showBookGeneratePopup, setShowBookGeneratePopup] = useState(false);
   const [generatedContent, setGeneratedContent] = useState(null);
+  const [isImageUploded, setIsImageUploded] = useState(false);
+  const [isImageFromRefine, setIsImageFromRefine] = useState(false);
+  const [base64Url, setBase64Url] = useState<RefineCoverImageData>();
+  const [uplodedImageUrl, setUplodedImageUrl] = useState<string>();
+  const [isImageModelShow, setIsImageModelShow] = useState<boolean>(false);
   const [selectedTab, setSelectedTab] = useState<'draft' | 'published'>(
     'draft'
   );
   const isEditable = selectedTab === 'draft';
 
-  const {
-    loading: loader,
-    refetch,
-  } = useQuery(FETCH_BOOK_BY_ID, {
+  const { loading: loader, refetch } = useQuery(FETCH_BOOK_BY_ID, {
     variables: { uuid: params.id },
     skip: !params.id,
     fetchPolicy: 'network-only',
@@ -148,10 +155,9 @@ const editBooks = (): ReactElement => {
       // Refetch latest data
       const { data } = await refetch();
       const book = data?.getBookById?.data;
-      if (!book)
-        {
-          return;
-        } 
+      if (!book) {
+        return;
+      }
 
       setIsFreeBook(!!book.is_free);
 
@@ -184,7 +190,10 @@ const editBooks = (): ReactElement => {
         translation?.learning_points?.map((point: string) => ({
           value: point,
         })) || [];
-
+      if (version.cover_image_url) {
+        setIsImageUploded(true);
+        setUplodedImageUrl(version.cover_image_url);
+      }
       formik.setValues({
         title: translation?.title || '',
         authorId,
@@ -492,10 +501,11 @@ const editBooks = (): ReactElement => {
   /*
   method to upload cover image
   */
-  const handleUploadCoverImage = async () => {
-    // const file = formik.values.coverImage;
+  const handleUploadCoverImage = async (file?: File) => {
     const bookUuid = params.id;
-    if (!bookUuid || !coverImageFile) {
+    const fileToUpload = file || coverImageFile;
+
+    if (!bookUuid || !fileToUpload) {
       return;
     }
     try {
@@ -503,7 +513,7 @@ const editBooks = (): ReactElement => {
         [
           {
             name: 'coverImage',
-            content: coverImageFile,
+            content: fileToUpload,
           },
         ],
         `cover-image?bookUuid=${bookUuid}`
@@ -528,37 +538,47 @@ const editBooks = (): ReactElement => {
 
       const data = res.data;
       if (data.refineCoverImage.meta.statusCode === 200) {
-        const imageUrl = data.refineCoverImage.data.refinedCoverImage;
+        let imageUrl = data.refineCoverImage.data[0].base64;
+        setBase64Url(data.refineCoverImage);
+        imageUrl = `data:${data.refineCoverImage.data[0].mimeType};base64,${imageUrl}`;
+        setIsImageFromRefine(true);
+        setIsImageModelShow(true);
+        setUplodedImageUrl(imageUrl);
         toast.success(data.refineCoverImage.meta.message);
-        handleImageFetch(imageUrl);
-        // const file = await urlToFile(imageUrl, 'generated-cover.png'); // ✅ await here
-        // formik.setFieldValue('coverImage', file);
       }
     } catch {
       return;
     }
   };
 
-  const handleImageFetch = async (imageURL: URL) => {
-    try {
-      const file = await urlToFile(imageURL, 'cover-image.jpg');
-      // Example usage with Formik
-      formik.setFieldValue('coverImage', file);
-    } catch (err) {
-      console.error('Error fetching image:', err);
+  const handleAcceptImage = () => {
+    if (base64Url) {
+      const file = base64ToFile(
+        base64Url.data[0].base64,
+        base64Url.data[0].mimeType,
+        `cover-image.${base64Url.data[0].extension}`
+      );
+      setCoverImageFile(file);
+      handleUploadCoverImage(file);
     }
+    setIsImageModelShow(false);
+    setIsImageFromRefine(false);
   };
 
-  /*
-   * Method to convert the u
-  rl into image  file
-   */
-  // const urlToFile = async (url: string, filename: string): Promise<File> => {
-  //   const response = await fetch(url);
-  //   const blob = await response.blob();
-  //   const contentType = blob.type || 'image/png';
-  //   return new File([blob], filename, { type: contentType });
-  // };
+  const base64ToFile = (
+    base64: string,
+    mimeType: string,
+    filename: string
+  ): File => {
+    const byteString = atob(base64); // decode base64 string
+    const byteArray = new Uint8Array(byteString.length);
+
+    for (let i = 0; i < byteString.length; i++) {
+      byteArray[i] = byteString.charCodeAt(i);
+    }
+    return new File([byteArray], filename, { type: mimeType });
+  };
+
 
   /**
    * Method to change the free book status
@@ -584,6 +604,10 @@ const editBooks = (): ReactElement => {
       return;
     }
   };
+
+  const openImageModel = useCallback(() => {
+    setIsImageModelShow(true);
+  }, []);
 
   /**
    * Method that refine the input text
@@ -968,44 +992,73 @@ const editBooks = (): ReactElement => {
                     )}
                   </div>
                 </div>
-                <div className='flex items-end gap-4 mb-4'>
-                  {/* Cover Image File Input */}
-                  <div className='w-2/3'>
-                    <TextInput
-                      type='file'
-                      id='coverImage'
-                      onBlur={OnBlur}
-                      placeholder={t('Cover')}
-                      name='coverImage'
-                      label={t('Cover')}
-                      error={getErrorSubAdmin('coverImage')}
-                      className='w-full' // fill the 2/3 parent width
-                      disabled={!isEditable}
-                      onChange={handleImageChange}
-                    />
+                <div>
+                  <label className='block mb-2 font-medium'>{t('Cover')}</label>
+                  <div className='flex items-center space-x-4 mb-4 ml-0'>
+                    {isImageUploded && uplodedImageUrl ? (
+                      <>
+                        <button
+                          type='button'
+                          className='btn btn-secondary whitespace-nowrap'
+                          onClick={openImageModel}
+                        >
+                          Preview
+                        </button>
+                        <button
+                          type='button'
+                          onClick={() => setIsImageUploded(false)}
+                          className='btn btn-secondary'
+                        >
+                          Upload new image
+                        </button>
+                        {isEditable && (
+                          <button
+                            type='button'
+                            className='btn btn-secondary whitespace-nowrap'
+                            onClick={handlGenerateImage}
+                          >
+                            Generate
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <div className='w-2/3'>
+                          <TextInput
+                            type='file'
+                            id='coverImage'
+                            onBlur={OnBlur}
+                            placeholder={t('Cover')}
+                            name='coverImage'
+                            error={getErrorSubAdmin('coverImage')}
+                            className='w-full'
+                            disabled={!isEditable}
+                            onChange={handleImageChange}
+                          />
+                        </div>
+
+                        {isEditable && (
+                          <div className='flex gap-2'>
+                            <button
+                              type='button'
+                              className='btn btn-secondary whitespace-nowrap'
+                              onClick={() => handleUploadCoverImage()}
+                            >
+                              Submit
+                            </button>
+                            <button
+                              type='button'
+                              className='btn btn-secondary whitespace-nowrap'
+                              onClick={handlGenerateImage}
+                            >
+                              Generate
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
-
-                  {/* Buttons aligned to input bottom */}
-                  {isEditable && (
-                    <div className='flex gap-2'>
-                      <button
-                        type='button'
-                        className='btn btn-secondary whitespace-nowrap'
-                        onClick={handleUploadCoverImage}
-                      >
-                        Submit
-                      </button>
-                      <button
-                        type='button'
-                        className='btn btn-secondary whitespace-nowrap'
-                        onClick={handlGenerateImage}
-                      >
-                        Generate
-                      </button>
-                    </div>
-                  )}
                 </div>
-
                 <div>
                   <label className='block mb-2 font-medium'>
                     {t('Learning Points')} <span className='error'>*</span>
@@ -1146,6 +1199,20 @@ const editBooks = (): ReactElement => {
             bookTitle={formik.values.title}
             categoryNames={getCategoryNames()}
             authorNames={getAuthorNames()}
+          />
+        )}
+        {isImageModelShow && uplodedImageUrl && (
+          <ImageModel
+            onClose={() => {
+              setIsImageModelShow(false);
+              setIsImageFromRefine(false);
+            }}
+            data={uplodedImageUrl}
+            show={isImageModelShow}
+            {...(isImageFromRefine && {
+              showAccept: true,
+              onAccept: handleAcceptImage,
+            })}
           />
         )}
       </div>

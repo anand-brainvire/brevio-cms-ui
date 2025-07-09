@@ -114,3 +114,15 @@ export type GetCouponRes = {
 	selected_users: string[];
 	value: number;
 };
+
+export type RefineCoverImageData = {
+  data: Array<{
+    base64: string;
+    mimeType: string;
+    extension: string;
+  }>;
+  meta: {
+    message: string;
+    statusCode: number;
+  };
+};

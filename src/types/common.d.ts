@@ -85,6 +85,9 @@ export type ImageDataProps = {
 	onClose: () => void;
 	data: string;
 	show?: boolean;
+	showAccept?: boolean; 
+	onAccept?: () => void;
+
 };
 export type TreeNode = {
 	id: number;
