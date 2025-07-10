@@ -7,6 +7,12 @@ steps:
         npm install
         echo "REACT_APP_API_GATEWAY_URL=${_REACT_APP_API_GATEWAY_URL}" > .env
         echo "REACT_APP_API_MOBILE_URL=${_REACT_APP_API_MOBILE_URL}" > .env
+
+                echo "Checking .env file..."
+        ls -la .env
+        echo "Contents of .env:"
+        cat .env
+        npm run build\
         npm run build
 
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
