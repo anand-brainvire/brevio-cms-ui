@@ -21,3 +21,5 @@ substitutions:
   _REACT_APP_API_GATEWAY_URL: https://bsstaging.brainvire.dev/cms/  # You can override this per trigger
   _REACT_APP_API_MOBILE_URL: https://bsstaging.brainvire.dev/backend/
 timeout: 6000s
+options:
+  logging: CLOUD_LOGGING_ONLY
