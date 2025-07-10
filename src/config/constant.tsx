@@ -759,7 +759,7 @@ export const TEMPLATE_TYPE: { [key: string]: string } = {
 export const IMAGE_BASE_URL = process.env.REACT_APP_API_BASENODE;
 export const UPLOAD_IMAGE_URL = process.env.REACT_APP_API_IMAGE_URL;
 export const REACT_APP_API_GATEWAY_URL = process.env.REACT_APP_API_GATEWAY_URL;
-console.log(REACT_APP_API_GATEWAY_URL);
+console.log("REACT_APP_API_GATEWAY_URL",REACT_APP_API_GATEWAY_URL);
 export const REACT_APP_ENCRYPTION_DECRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_DECRYPTION_KEY;
 export const NODE_ENV = process.env.NODE_ENV;
 export const REACT_APP_API_MOBILE_URL = process.env.REACT_APP_API_MOBILE_URL;
