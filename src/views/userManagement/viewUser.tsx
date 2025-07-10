@@ -15,12 +15,21 @@ import { getDateFromat } from '@utils/helpers';
 import { Loader } from '@components/index';
 import { toast } from 'react-toastify';
 import mobileClient from '@framework/graphql/apolloMobileClient';
+
+export interface MyStatistics {
+  summaries: number;
+  key_points: number;
+  percentile: number;
+  number_of_people_behind_you: number;
+  __typename: 'Statistics';
+}
+
 const ViewUser = () => {
   const { t } = useTranslation();
   const UserId = useParams();
   const [interestedCategories, setInterestedCategories] = useState([]);
   const [interestedGoals, setInterestedGoals] = useState([]);
-//   const [myStatistics, setMyStatistics] = useState([]);
+  const [myStatistics, setMyStatistics] = useState<MyStatistics>();
   const { data, refetch, loading } = useQuery(GET_USER_BY_ID, {
     variables: { uuid: UserId.id },
     skip: !UserId.id,
@@ -36,7 +45,7 @@ const ViewUser = () => {
       }
 
       try {
-        const [categoryResult, goalResult] =
+        const [categoryResult, goalResult, myStatistics] =
           await Promise.allSettled([
             mobileClient.query({
               query: GET_USER_INTERESTED_CATEGORIES,
@@ -78,11 +87,11 @@ const ViewUser = () => {
           toast.error('Failed to fetch interested goals');
         }
 
-        // if (myStatistics.status === 'fulfilled') {
-        //   setMyStatistics(myStatistics.value.data.getMyStatistics?.data || []);
-        // } else {
-        //   toast.error('Failed to fetch interested categories');
-        // }
+        if (myStatistics.status === 'fulfilled') {
+          setMyStatistics(myStatistics.value.data.getMyStatistics?.data || []);
+        } else {
+          toast.error('Failed to fetch interested categories');
+        }
       } catch {
         return;
       }
@@ -152,14 +161,27 @@ const ViewUser = () => {
                 : 'N/A'}
             </p>
           </div>
-		  <div className='flex pb-2 flex-col sm:flex-row'>
-            <p className='mr-3 font-bold flex-1'>{t('Interested Categories')}</p>
+          <div className='flex pb-2 flex-col sm:flex-row'>
+            <p className='mr-3 font-bold flex-1'>
+              {t('Interested Categories')}
+            </p>
             <p className='px-0 sm:px-3 flex-1'>
               {interestedCategories.length > 0
-                ? interestedCategories.map((categories: any) => categories.name).join(', ')
+                ? interestedCategories
+                    .map((categories: any) => categories.name)
+                    .join(', ')
                 : 'N/A'}
             </p>
           </div>
+          {myStatistics && (
+            <div className='flex pb-2 flex-col sm:flex-row'>
+              <p className='mr-3 font-bold flex-1'>{t('Reading Statistics')}</p>
+              <p className='px-0 sm:px-3 flex-1'>
+                {`Completed Summaries - ${myStatistics.summaries}, Key Points - ${myStatistics.key_points}`}
+              </p>
+            </div>
+          )}
+
           <div className='flex pb-2 flex-col sm:flex-row'>
             <p className='mr-3 font-bold flex-1'>{t('Registration Date')}</p>
             <p className='px-0 sm:px-3 flex-1'>
