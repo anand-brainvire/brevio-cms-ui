@@ -20,7 +20,7 @@ const ViewUser = () => {
   const UserId = useParams();
   const [interestedCategories, setInterestedCategories] = useState([]);
   const [interestedGoals, setInterestedGoals] = useState([]);
-  const [myStatistics, setMyStatistics] = useState([]);
+//   const [myStatistics, setMyStatistics] = useState([]);
   const { data, refetch, loading } = useQuery(GET_USER_BY_ID, {
     variables: { uuid: UserId.id },
     skip: !UserId.id,
@@ -36,7 +36,7 @@ const ViewUser = () => {
       }
 
       try {
-        const [categoryResult, goalResult, myStatistics] =
+        const [categoryResult, goalResult] =
           await Promise.allSettled([
             mobileClient.query({
               query: GET_USER_INTERESTED_CATEGORIES,
@@ -78,11 +78,11 @@ const ViewUser = () => {
           toast.error('Failed to fetch interested goals');
         }
 
-        if (myStatistics.status === 'fulfilled') {
-          setMyStatistics(myStatistics.value.data.getMyStatistics?.data || []);
-        } else {
-          toast.error('Failed to fetch interested categories');
-        }
+        // if (myStatistics.status === 'fulfilled') {
+        //   setMyStatistics(myStatistics.value.data.getMyStatistics?.data || []);
+        // } else {
+        //   toast.error('Failed to fetch interested categories');
+        // }
       } catch {
         return;
       }
