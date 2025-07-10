@@ -172,7 +172,7 @@ export const uploadFile = async (
       formData.append(fieldName, singleFormData.content);
     });
 
-    const url = `https://leadtechadminapi.node.brainvire.dev/api/upload/${path}`;
+    const url = `REACT_APP_API_IMAGE_UPLOAD_URL${path}`;
     const encryptedToken = localStorage.getItem('authToken') as string;
     const token = encryptedToken && DecryptionFunction(encryptedToken);
 

@@ -388,7 +388,7 @@ export const LANGUAGE_DROPDOWN_LIST = [
 	{ data: 'es', content: 'ES' },
 ];
 export const PROFILE_DROPDOWN_LIST = [
-	{ content: 'Profile', icon: User, data: 'profile', route: `/${ROUTES.app}/${ROUTES.profile}` },
+	{ content: 'PrREACT_APP_GOOGLE_MAPS_API_KEYofile', icon: User, data: 'profile', route: `/${ROUTES.app}/${ROUTES.profile}` },
 	{ content: 'Logout', icon: Lock, data: 'Logout' },
 ];
 export const ANNOUNCEMENT_RADIO_TYPE_LIST = [
@@ -762,6 +762,7 @@ export const REACT_APP_API_GATEWAY_URL = process.env.REACT_APP_API_GATEWAY_URL;
 export const REACT_APP_ENCRYPTION_DECRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_DECRYPTION_KEY;
 export const NODE_ENV = process.env.NODE_ENV;
 export const REACT_APP_API_MOBILE_URL = process.env.REACT_APP_API_MOBILE_URL;
+export const REACT_APP_API_IMAGE_UPLOAD_URL = process.env.REACT_APP_API_IMAGE_UPLOAD_URL;
 
 export const ACTIVE_FILE_TYPE: { [key: string]: string } = {
 	everything: 'everything',
