@@ -84,7 +84,9 @@ const useValidation = () => {
 		planPrice,
 		bookName,
 		addCategories,
-		AddAuthors
+		AddAuthors,
+		keyPoint,
+		richText,
 	} = useValidationFields();
 
 	const loginValidationSchema = Yup.object({
@@ -301,6 +303,11 @@ const useValidation = () => {
 		status: planStatus,
 	});
 
+	const savePageValidationSchema = Yup.object({
+		keyPoint: keyPoint,
+		richText: richText,
+	});
+
 	return {
 		loginValidationSchema,
 		changeProfileValidationSchema,
@@ -334,6 +341,7 @@ const useValidation = () => {
 		addNewFolderSchema,
 		qrCodeValidationSchema,
 		planManagementValidationSchema,
+		savePageValidationSchema,
 	};
 };
 

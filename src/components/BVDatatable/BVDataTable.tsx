@@ -442,30 +442,34 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 													descriptionHandler={descriptionHandler}
 												/>)}
 											{column.type === 'multilang' && (
-												<span>
-													{
-														// Always show 'en' for now
-														column.translationKey
-															? (
-																	row[column.fieldName]?.find?.(
-																		(tr: any) => tr.lang_code === 'en'
-																	)?.[column.translationKey] ||
-																	row[column.fieldName]?.[0]?.[column.translationKey] ||
-																	''
-																)
-															: ''
-													}
-												</span>
+													<TextCell
+														text={
+															column.translationKey
+																? (
+																		row[column.fieldName]?.find?.(
+																			(tr: any) => tr.lang_code === 'en'
+																		)?.[column.translationKey] ||
+																		row[column.fieldName]?.[0]?.[column.translationKey] ||
+																		''
+																  )
+																: ''
+														}
+														descriptionHandler={descriptionHandler}
+													/>
+
 											)}
 											{column.type === 'multipleText' && (
-												<span>
-													{Array.isArray(row[column.fieldName])
-														? row[column.fieldName]
-																.map((item: any) => item.name)
-																.filter(Boolean)
-																.join(', ')
-														: ''}
-												</span>
+												<TextCell
+													text={
+														Array.isArray(row[column.fieldName])
+															? row[column.fieldName]
+																	.map((item: any) => item.name)
+																	.filter(Boolean)
+																	.join(', ')
+															: ''
+													}
+													descriptionHandler={descriptionHandler}
+												/>
 											)}
 											{column.type === 'status' && (
 												<div className=' flex justify-center'>

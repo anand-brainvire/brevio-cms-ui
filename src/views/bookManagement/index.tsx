@@ -61,18 +61,26 @@ const bookManagaement = () => {
   }, [defaultCategoryId]);
 
   const COL_ARR_COUPONS = [
-    { name: t('Book Title'), sortable: true, fieldName: 'title', type: 'text' },
+    {
+      name: t('Book Title'),
+      sortable: true,
+      fieldName: 'title',
+      type: 'text',
+      headerCenter: true,
+    },
     {
       name: t('Category'),
       sortable: true,
       fieldName: 'categories',
       type: 'multipleText',
+      headerCenter: true,
     },
     {
       name: t('Book Author'),
       sortable: true,
       fieldName: 'authors',
       type: 'multipleText',
+      headerCenter: true,
     },
     {
       name: t('Cover Image'),

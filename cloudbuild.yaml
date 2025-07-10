@@ -1,12 +1,14 @@
 steps:
-  - name: node:20
+  - name: "gcr.io/cloud-builders/npm"
     entrypoint: bash
     args:
       - -c
       - |
         npm install
-        echo "REACT_APP_API_GATEWAY_URL=${_REACT_APP_API_GATEWAY_URL}" > .env
-        echo "REACT_APP_API_MOBILE_URL=${_REACT_APP_API_MOBILE_URL}" > .env
+        echo "REACT_APP_API_GATEWAY_URL=${_REACT_APP_API_GATEWAY_URL}" >> .env
+        echo "REACT_APP_API_MOBILE_URL=${_REACT_APP_API_MOBILE_URL}" >> .env
+
+
         npm run build
 
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk

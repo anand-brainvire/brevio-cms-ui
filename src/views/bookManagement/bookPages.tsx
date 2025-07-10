@@ -41,7 +41,6 @@ const BookPages = ({
     skip: !bookUuid || generatedPages !== null,
     fetchPolicy: 'network-only',
   });
-
   useEffect(() => {
     const handleDeleteSavedPage = (e: any) => {
       const { uuid, index } = e.detail;
@@ -185,8 +184,8 @@ const BookPages = ({
 
   const handleSinglePageSave = async (_index: number, data: any) => {
     try {
+      
       const lang = 'en';
-
       const translationObj: any = {};
       Object.assign(translationObj, {
         ['lang_code']: lang,

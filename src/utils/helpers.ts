@@ -1,4 +1,4 @@
-import { DATE_FORMAT, DOWLOAD_FILE_TYPE, IMAGE_BASE_URL, KEYS, ROUTES } from '@config/constant';
+import { DATE_FORMAT, DOWLOAD_FILE_TYPE, IMAGE_BASE_URL, KEYS, REACT_APP_API_IMAGE_UPLOAD_URL, ROUTES } from '@config/constant';
 import { MetaRes } from '@framework/graphql/graphql';
 import moment from 'moment';
 import { toast } from 'react-toastify';
@@ -172,7 +172,7 @@ export const uploadFile = async (
       formData.append(fieldName, singleFormData.content);
     });
 
-    const url = `https://leadtechadminapi.node.brainvire.dev/api/upload/${path}`;
+	const url = `${REACT_APP_API_IMAGE_UPLOAD_URL}${path}`;
     const encryptedToken = localStorage.getItem('authToken') as string;
     const token = encryptedToken && DecryptionFunction(encryptedToken);
 

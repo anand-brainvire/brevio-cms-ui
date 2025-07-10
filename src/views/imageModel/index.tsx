@@ -4,18 +4,33 @@ import { ImageDataProps } from '@type/common';
 import { BannerIcon, Cross } from '@components/icons/icons';
 import { useTranslation } from 'react-i18next';
 
-const ImageModel = ({ onClose, data, show }: ImageDataProps) => {
+const ImageModel = ({ onClose, data, show, showAccept, onAccept }: ImageDataProps) => {
 	const { t } = useTranslation();
+
 	useEffect(() => {
-		document.addEventListener('click', (event: globalThis.MouseEvent) => {
-			if ((event.target as HTMLElement)?.id === 'image-model' || (event.target as HTMLElement)?.id === 'image-model-child') {
+		const handleClick = (event: MouseEvent) => {
+			if (
+				(event.target as HTMLElement)?.id === 'image-model' ||
+				(event.target as HTMLElement)?.id === 'image-model-child'
+			) {
 				onClose();
 			}
-		});
+		};
+		document.addEventListener('click', handleClick);
+		return () => {
+			document.removeEventListener('click', handleClick);
+		};
 	}, [show]);
+
 	return (
-		<div id='image-model' tabIndex={-1} data-modal-show={true} aria-hidden='false' className={`${show ? '' : 'hidden'} model-container `}>
-			<div className={'model animate-fade-in'}>
+		<div
+			id='image-model'
+			tabIndex={-1}
+			data-modal-show={true}
+			aria-hidden='false'
+			className={`${show ? '' : 'hidden'} model-container`}
+		>
+			<div className='model animate-fade-in'>
 				{/* <!-- Modal content --> */}
 				<div id='image-model-child' className='model-content'>
 					<div className='model-header'>
@@ -31,8 +46,29 @@ const ImageModel = ({ onClose, data, show }: ImageDataProps) => {
 							</span>
 						</Button>
 					</div>
-					<div className='model-body flex justify-center'>
-						<img src={data} alt='Model Preview' height={300} width={300} />
+
+					<div className='model-body flex flex-col items-center space-y-4'>
+						<img
+							src={data}
+							alt='Model Preview'
+							className='rounded shadow-md'
+							style={{
+								height: showAccept ? 400 : 300,
+								width: showAccept ? 400 : 300,
+								objectFit: 'contain',
+							}}
+						/>
+
+						{showAccept && (
+							<div className='flex space-x-4 mt-4'>
+								<Button onClick={onAccept} className='btn btn-primary'>
+									{t('Accept')}
+								</Button>
+								<Button onClick={onClose} className='btn btn-secondary'>
+									{t('Close')}
+								</Button>
+							</div>
+						)}
 					</div>
 				</div>
 			</div>

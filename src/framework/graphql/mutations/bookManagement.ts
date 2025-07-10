@@ -166,14 +166,16 @@ export const PUBLISH_BOOK = gql`
 export const REFINE_COVER_IMAGE = gql`
 	${META_FRAGMENT}
 	mutation RefineCoverImage($uuid: ID!) {
-	refineCoverImage(uuid: $uuid) {
-		data {
-			refinedCoverImage
-		}
-		meta {
-			...MetaFragment
-		}
+  	refineCoverImage(uuid: $uuid) {
+    data {
+      mimeType
+      extension
+      base64
+    }
+    meta {
+	  ...MetaFragment
 	}
+  }
 }
 `;
 
