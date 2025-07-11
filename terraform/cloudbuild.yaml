@@ -11,18 +11,38 @@ steps:
         terraform apply -auto-approve
     dir: terraform
 
+
+
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        apt-get update && apt-get install -y jq
+        echo "Fetching all secrets with prefix '${_SECRET_NAME}'..."
+        secret_value=$(gcloud secrets versions access latest --secret="${_SECRET_NAME}" --format="json")
+        decoded_secret=$(echo "$secret_value" | jq -r '.payload.data' | base64 --decode)
+
+        echo "REACT_APP_API_GATEWAY_URL=$(echo "$decoded_secret" | jq -r '.REACT_APP_API_GATEWAY_URL')" >> .env
+        echo "REACT_APP_API_MOBILE_URL=$(echo "$decoded_secret" | jq -r '.REACT_APP_API_MOBILE_URL')" >> .env
+        echo "REACT_APP_ENCRYPTION_DECRYPTION_KEY=$(echo "$decoded_secret" | jq -r '.REACT_APP_ENCRYPTION_DECRYPTION_KEY')" >> .env
+        echo "REACT_APP_API_BASENODE=$(echo "$decoded_secret" | jq -r '.REACT_APP_API_BASENODE')" >> .env
+        echo "REACT_APP_GOOGLE_MAPS_API_KEY=$(echo "$decoded_secret" | jq -r '.REACT_APP_GOOGLE_MAPS_API_KEY')" >> .env
+        echo "REACT_APP_STRIPE_PUBLIC_KEY=$(echo "$decoded_secret" | jq -r '.REACT_APP_STRIPE_PUBLIC_KEY')" >> .env
+
+        echo "All secrets have been stored in .env file."
+
+    env:
+      - "SECRET_NAME=${_SECRET_NAME}"     
+
+#Create the production build
   - name: "gcr.io/cloud-builders/npm"
     entrypoint: bash
     args:
-      - -c
-      - | 
+      - "-c"
+      - |
+        export $(grep -v '^#' .env | xargs)
         npm install
-        echo "REACT_APP_API_GATEWAY_URL=${_REACT_APP_API_GATEWAY_URL}" >> .env
-        echo "REACT_APP_API_MOBILE_URL=${_REACT_APP_API_MOBILE_URL}" >> .env
-        echo "REACT_APP_ENCRYPTION_DECRYPTION_KEY=${_REACT_APP_ENCRYPTION_DECRYPTION_KEY}" >> .env
-        echo "REACT_APP_API_BASENODE=${_REACT_APP_API_BASENODE}" >> .env 
-        echo "REACT_APP_GOOGLE_MAPS_API_KEY=${_REACT_APP_GOOGLE_MAPS_API_KEY}" >> .env
-        echo "REACT_APP_STRIPE_PUBLIC_KEY=${_REACT_APP_STRIPE_PUBLIC_KEY}" >> .env
         npm run build
 
 
@@ -36,14 +56,6 @@ steps:
         gsutil web set -m index.html -e index.html gs://${_PROJECT_ID}-${_ENVIRONMENT}-cms-ui
         gsutil iam ch allUsers:objectViewer gs://${_PROJECT_ID}-${_ENVIRONMENT}-cms-ui
 
-
-substitutions:
-  _REACT_APP_API_GATEWAY_URL: https://bsstaging.brainvire.dev/cms/graphql  # You can override this per trigger
-  _REACT_APP_API_MOBILE_URL: https://bsstaging.brainvire.dev/backend/graphql
-  _REACT_APP_ENCRYPTION_DECRYPTION_KEY: XXXXXXX
-  _REACT_APP_API_BASENODE: XXXXXXX
-  _REACT_APP_GOOGLE_MAPS_API_KEY: XXXXXXX
-  _REACT_APP_STRIPE_PUBLIC_KEY: XXXXXXX
 
 timeout: 6000s
 options:
