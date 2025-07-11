@@ -139,52 +139,33 @@ const ViewUser = () => {
         </Button>
       </div>
       <div className='card-body'>
-        <div className='grid grid-cols-1 md:grid-cols-2'>
-          <div className='flex pb-2 flex-col sm:flex-row'>
+        <div className='mb-6'>
+          <a
+            href={`mailto:${user?.email}`}
+            className='text-xl font-bold text-black hover:underline break-all'
+          >
+            {user?.email}
+          </a>
+        </div>
+        <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
+          <div className='flex pb-2 flex-col bg-gray-100 rounded-lg p-4 gap-4 text-center'>
             <p className='mr-3 font-bold flex-1'>
               {t('Number of Books Completed')}
             </p>
-            <p className='px-0 sm:px-3 flex-1'>{user?.books_completed || 0}</p>
+            <p className='px-0 sm:px-3 flex-1 text-xl'>
+              {user?.books_completed || 0}
+            </p>
           </div>
-          <div className='flex pb-2 flex-col sm:flex-row'>
+          <div className='flex pb-2 flex-col bg-gray-100 rounded-lg p-4 gap-4 text-center'>
             <p className='mr-3 font-bold flex-1'>{t('Daily Goal')}</p>
-            <p className='px-0 sm:px-3 flex-1'>
+            <p className='px-0 sm:px-3 flex-1 text-xl'>
               {user?.daily_goal_minutes || 0}
               {' Min'}
             </p>
           </div>
-          <div className='flex pb-2 flex-col sm:flex-row'>
-            <p className='mr-3 font-bold flex-1'>{t('Interested Goals')}</p>
-            <p className='px-0 sm:px-3 flex-1'>
-              {interestedGoals.length > 0
-                ? interestedGoals.map((goal: any) => goal.title).join(', ')
-                : 'N/A'}
-            </p>
-          </div>
-          <div className='flex pb-2 flex-col sm:flex-row'>
-            <p className='mr-3 font-bold flex-1'>
-              {t('Interested Categories')}
-            </p>
-            <p className='px-0 sm:px-3 flex-1'>
-              {interestedCategories.length > 0
-                ? interestedCategories
-                    .map((categories: any) => categories.name)
-                    .join(', ')
-                : 'N/A'}
-            </p>
-          </div>
-          {myStatistics && (
-            <div className='flex pb-2 flex-col sm:flex-row'>
-              <p className='mr-3 font-bold flex-1'>{t('Reading Statistics')}</p>
-              <p className='px-0 sm:px-3 flex-1'>
-                {`Completed Summaries - ${myStatistics.summaries}, Key Points - ${myStatistics.key_points}`}
-              </p>
-            </div>
-          )}
-
-          <div className='flex pb-2 flex-col sm:flex-row'>
+          <div className='flex pb-2 flex-col bg-gray-100 rounded-lg p-4 gap-4 text-center'>
             <p className='mr-3 font-bold flex-1'>{t('Registration Date')}</p>
-            <p className='px-0 sm:px-3 flex-1'>
+            <p className='px-0 sm:px-3 flex-1 text-xl'>
               {user?.created_at
                 ? getDateFromat(
                     typeof user.created_at === 'string' &&
@@ -196,14 +177,35 @@ const ViewUser = () => {
                 : ''}
             </p>
           </div>
-          <div className='flex pb-2 flex-col sm:flex-row'>
-            <p className='mr-3 font-bold flex-1'>{t('Email')}</p>
-            <a
-              href={`mailto:${user?.email}`}
-              className='px-0 sm:px-3 flex-1 font-medium text-primary hover:underline cursor-pointer break-all'
-            >
-              {user?.email}
-            </a>
+        </div>
+        <div className='mt-8 w-full border border-gray-200 rounded-lg divide-y'>
+          <div className='flex gap-6 px-4 py-3 bg-gray-50 font-semibold text-gray-700'>
+            <span className='w-60'>{t('Interested Goals')}</span>
+            <span className='text-left'>
+              {interestedGoals.length > 0
+                ? interestedGoals.map((goal: any) => goal.title).join(', ')
+                : 'N/A'}
+            </span>
+          </div>
+          <div className='flex gap-6 px-4 py-3'>
+            <span className='w-60 font-semibold text-gray-700'>
+              {t('Interested Categories')}
+            </span>
+            <span className='text-left'>
+              {interestedCategories.length > 0
+                ? interestedCategories.map((cat: any) => cat.name).join(', ')
+                : 'N/A'}
+            </span>
+          </div>
+          <div className='flex gap-6 px-4 py-3 bg-gray-50'>
+            <span className='w-60 font-semibold text-gray-700'>
+              {t('Reading Statistics')}
+            </span>
+            <span className='text-left'>
+              {myStatistics
+                ? `Completed Summaries - ${myStatistics.summaries}, Key Points - ${myStatistics.key_points}`
+                : 'N/A'}
+            </span>
           </div>
         </div>
       </div>

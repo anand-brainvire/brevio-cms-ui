@@ -388,7 +388,7 @@ export const LANGUAGE_DROPDOWN_LIST = [
 	{ data: 'es', content: 'ES' },
 ];
 export const PROFILE_DROPDOWN_LIST = [
-	{ content: 'PrREACT_APP_GOOGLE_MAPS_API_KEYofile', icon: User, data: 'profile', route: `/${ROUTES.app}/${ROUTES.profile}` },
+	{ content: 'Profile', icon: User, data: 'profile', route: `/${ROUTES.app}/${ROUTES.profile}` },
 	{ content: 'Logout', icon: Lock, data: 'Logout' },
 ];
 export const ANNOUNCEMENT_RADIO_TYPE_LIST = [
