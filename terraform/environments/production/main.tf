@@ -21,13 +21,13 @@ provider "google-beta" {
 
 #TO enable API's in Google cloud 
 module "project_services" {
-  source       = "../modules/projects_services"
+  source       = "../../modules/projects_services"
   project_id   = var.project_id
   service_list = var.service_list
 }
 
 module "cms_ui_bucket" {
-  source = "../modules/bucket"
+  source = "../../modules/bucket"
   project_id                     = var.project_id
   region                         = var.region
   environment                    = var.environment
