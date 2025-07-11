@@ -40,26 +40,76 @@ export const GET_USER_BY_ID = gql`
 	${META_FRAGMENT}
 	query GetUserById($uuid: ID!) {
 		getUserById(uuid: $uuid) {
-    		data {
-    			uuid
-    			email
-    			first_name
-    			last_name
-    			middle_name
-    			role_id
-    			role
-    			is_active
-    			created_at
-    			updated_at
-    			last_login_at
-    			last_login_ip
-    		}
+		data {
+			uuid
+			email
+			first_name
+			last_name
+			is_active
+			created_at
+			is_subscribed
+			daily_goal_minutes
+			books_completed
+			signed_up_at
+			current_streak_count
+		}
 			meta {
 				...MetaFragment
 			}
 		}
 	}
 `;
+
+export const GET_USER_INTERESTED_CATEGORIES = gql`
+	${META_FRAGMENT}
+	query GetUserInterestedCategories {
+	getUserInterestedCategories {
+		categories {
+			uuid
+			slug
+			name
+		}
+		meta {
+			...MetaFragment
+		}
+	}
+}
+`;
+
+export const GET_USER_INTERESTED_GOALS = gql`
+	${META_FRAGMENT}
+	query GetUserInterestedGoals {
+	getUserInterestedGoals {
+		goals {
+			uuid
+			key
+			title
+			emoji
+		}
+		meta {
+			...MetaFragment
+		}
+	}
+}
+`;
+
+export const GET_MY_STATISTICS = gql`
+	${META_FRAGMENT}
+	query GetMyStatistics($guestUserId: String) {
+  	getMyStatistics(guest_user_id: $guestUserId) {
+	data {
+		summaries
+		key_points
+		percentile
+		number_of_people_behind_you	
+	}
+    meta {
+		...MetaFragment
+	}
+	}
+}
+`;
+
 export const GET_USERS_LIST = gql`
 	${META_FRAGMENT}
 	query GetUsers {

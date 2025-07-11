@@ -39,13 +39,13 @@ const UserManagement = (): ReactElement => {
 
 	const COL_ARR_USER_MNGT = [
 		// { name: t('First Name'), sortable: true, type: 'text', fieldName: 'first_name' },
-		{ name: t('Email'), sortable: true, type: 'text', fieldName: 'email' },
-		{ name: t('Registration At'), sortable: true, type: 'date', fieldName: 'created_at' },
-		// { name: t('Last Updated At'), sortable: true, type: 'date', fieldName: 'updated_at' },
-		{ name: t('Status'), sortable: true, type: 'status', fieldName: 'is_active' },
-		// { name: t('Gender'), sortable: true, type: 'badge', fieldName: 'gender', conversationValue: UserGenderEnum },
-		// { name: t('Date of Birth'), sortable: true, type: 'date', fieldName: 'date_of_birth' },
-		// { name: t('Phone Number'), sortable: true, type: 'text', fieldName: 'phone_no' },
+		{ name: t('Email'), sortable: true, type: 'text', fieldName: 'email',headerCenter: true },
+		{ name: t('Subscription status'), sortable: true, type: 'status', fieldName: 'is_subscribed', headerCenter: true },
+		{ name: t('Current streak count'), sortable: false, type: 'number', fieldName: 'current_streak_count',headerCenter: true },
+		{ name: t('Book completed'), sortable: false, type: 'number', fieldName: 'books_completed',headerCenter: true },
+		{ name: t('Daily goal'), sortable: false, type: 'number', fieldName: 'daily_goal_minutes',headerCenter: true },
+		{ name: t('Registration At'), sortable: false, type: 'date', fieldName: 'signed_up_at',headerCenter: true },
+		{ name: t('Status'), sortable: true, type: 'status', fieldName: 'is_active', headerCenter: true },
 
 	] as IColumnsProps[];
 	const [userObj, setUserObj] = useState<UserData>({} as UserData);
