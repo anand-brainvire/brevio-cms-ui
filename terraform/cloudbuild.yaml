@@ -32,9 +32,9 @@ steps:
     args:
       - "-c"
       - |
-        gsutil rsync -R build gs://${var.project_id}-${var.environment}-cms-ui
-        gsutil web set -m index.html -e index.html gs://${var.project_id}-${var.environment}-cms-ui
-        gsutil iam ch allUsers:objectViewer gs://${var.project_id}-${var.environment}-cms-ui
+        gsutil rsync -R build gs://${_PROJECT_ID}-${_ENVIRONMENT}-cms-ui
+        gsutil web set -m index.html -e index.html gs://${_PROJECT_ID}-${_ENVIRONMENT}-cms-ui
+        gsutil iam ch allUsers:objectViewer gs://${_PROJECT_ID}-${_ENVIRONMENT}-cms-ui
 
 
 substitutions:
