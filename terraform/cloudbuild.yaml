@@ -1,0 +1,50 @@
+steps:
+  - name: 'gcr.io/${_PROJECT_ID}/terraform'  # Make sure this image exists in GCR or use an official Terraform image
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        cd environments/${_ENVIRONMENT}
+        # terraform init
+        # terraform destroy -auto-approve
+        terraform init
+        terraform apply -auto-approve
+    dir: terraform
+
+  - name: "gcr.io/cloud-builders/npm"
+    entrypoint: bash
+    args:
+      - -c
+      - | 
+        npm install
+        echo "REACT_APP_API_GATEWAY_URL=${_REACT_APP_API_GATEWAY_URL}" >> .env
+        echo "REACT_APP_API_MOBILE_URL=${_REACT_APP_API_MOBILE_URL}" >> .env
+        echo "REACT_APP_ENCRYPTION_DECRYPTION_KEY=${_REACT_APP_ENCRYPTION_DECRYPTION_KEY}" >> .env
+        echo "REACT_APP_API_BASENODE=${_REACT_APP_API_BASENODE}" >> .env 
+        echo "REACT_APP_GOOGLE_MAPS_API_KEY=${_REACT_APP_GOOGLE_MAPS_API_KEY}" >> .env
+        echo "REACT_APP_STRIPE_PUBLIC_KEY=${_REACT_APP_STRIPE_PUBLIC_KEY}" >> .env
+        npm run build
+
+
+  # 4. Deploy to Google Cloud Storage
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        gsutil rsync -R build gs://${var.project_id}-${var.environment}-cms-ui
+        gsutil web set -m index.html -e index.html gs://${var.project_id}-${var.environment}-cms-ui
+        gsutil iam ch allUsers:objectViewer gs://${var.project_id}-${var.environment}-cms-ui
+
+
+substitutions:
+  _REACT_APP_API_GATEWAY_URL: https://bsstaging.brainvire.dev/cms/graphql  # You can override this per trigger
+  _REACT_APP_API_MOBILE_URL: https://bsstaging.brainvire.dev/backend/graphql
+  _REACT_APP_ENCRYPTION_DECRYPTION_KEY: XXXXXXX
+  _REACT_APP_API_BASENODE: XXXXXXX
+  _REACT_APP_GOOGLE_MAPS_API_KEY: XXXXXXX
+  _REACT_APP_STRIPE_PUBLIC_KEY: XXXXXXX
+
+timeout: 6000s
+options:
+  logging: CLOUD_LOGGING_ONLY
