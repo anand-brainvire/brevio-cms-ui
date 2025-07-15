@@ -27,6 +27,11 @@ export const CREATE_BOOK = gql`
 	${META_FRAGMENT}
 	mutation CreateBook($bookData: [BookInputType]) {
 	createBook(book_data: $bookData) {
+		data {
+    	  uuid
+    	  created_at
+    	  updated_at
+    	}
 		meta {
 			...MetaFragment
 		}
@@ -183,7 +188,12 @@ export const CREATE_BOOK_PAGE = gql`
 	${META_FRAGMENT}
 	mutation CreateBookPage($bookId: String!, $translations: [BookPageTranslationInput!]!, $insights: [BookPageInsightInput!]!) {
   	createBookPage(book_id: $bookId, translations: $translations, insights: $insights) {
-    	meta {
+    	data {
+    		uuid
+    		created_at
+    		updated_at
+    	}
+		meta {
 				...MetaFragment
 			}
 		}

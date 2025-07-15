@@ -158,7 +158,7 @@ export const uuid = (): string => {
 export const uploadFile = async (
   data: { name: string; content: File | string }[],
   path: string
-): Promise<string | undefined> => {
+) => {
   try {
     const formData = new FormData();
 
@@ -186,7 +186,7 @@ export const uploadFile = async (
     if (response) {
         const data = await response.json();
         toast.success(data.meta.message);
-		return data.data.url;
+		return data;
     } else {
       toast.error('Failed to upload file');
 	  return;

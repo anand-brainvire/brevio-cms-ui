@@ -289,6 +289,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 					}
 				})
 				.catch(() => {
+					setIsDeletePopup(false);
 					return setLoadingState(false);
 				});
 		}

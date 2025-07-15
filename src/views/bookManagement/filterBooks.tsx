@@ -23,7 +23,7 @@ const FilterBooks = ({
   const { t } = useTranslation();
 
   const { data, refetch: fetchAllCategories } = useQuery(FETCH_CATEGORY, {
-    variables: { isAll: IS_ALL },
+    variables: { isAll: IS_ALL, isActive: true },
   });
   const [categoryDroData, setCategoryDroData] = useState([]);
   // const [isInitialRedirected, setIsInitialRedirected] = useState(false);
@@ -140,7 +140,7 @@ const FilterBooks = ({
             <div>
               <TextInput
                 id='search'
-                placeholder={t('Search by Book Title,Author')}
+                placeholder={t('Search by Book Title or Author')}
                 name='search'
                 type='text'
                 onChange={formik.handleChange}

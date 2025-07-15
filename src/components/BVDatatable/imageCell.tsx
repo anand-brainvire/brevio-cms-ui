@@ -6,6 +6,9 @@ const ImageCell: React.FC<IImageCell> = ({ column, row, openImageModel }) => {
         // ? row?.[column.fieldName]
         // : `${IMAGE_BASE_URL}${row?.[column.fieldName]?.original_file}`;
     const imageUrl = (row?.[column.fieldName]);
+    if (!imageUrl) {
+        return <span>No Image</span>;
+    }
     return (
         <button
             title={column?.fieldName}

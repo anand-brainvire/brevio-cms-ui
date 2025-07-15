@@ -671,3 +671,7 @@ meter {
 .bs-media-no-data {
 	@apply flex justify-center py-2.5;
 }
+
+.jodit-status-bar-link {
+  display: none !important;
+}
