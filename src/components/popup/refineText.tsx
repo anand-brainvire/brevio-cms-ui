@@ -51,14 +51,19 @@ const RefineText = ({
           </div>
 
           <div className='model-body'>
-            <div className='mb-4 max-h-[200px] overflow-auto text-sm whitespace-pre-line border p-3 rounded bg-gray-100'>
-              {refinedText}
-            </div>
+            <div
+              className='mb-4 max-h-[200px] overflow-auto text-sm whitespace-pre-line border p-3 rounded bg-gray-100'
+              dangerouslySetInnerHTML={{ __html: refinedText }}
+            />
           </div>
 
           <div className='model-footer'>
             <Button className='btn-primary' onClick={onAccept} label='Accept' />
-            <Button className='btn-secondary' onClick={onCancel} label='Cancel' />
+            <Button
+              className='btn-secondary'
+              onClick={onCancel}
+              label='Cancel'
+            />
           </div>
         </div>
       </div>

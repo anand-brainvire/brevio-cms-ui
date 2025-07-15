@@ -36,8 +36,8 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 	const { data, refetch } = useQuery(GET_ROLES_DATA, { variables: { ...filterData }, fetchPolicy: 'network-only' });
 
 	const COL_ARR_ROLE = [
-		{ name: t('Title'), sortable: true, fieldName: 'role_name', type: 'text' },
-		{ name: t('Status'), sortable: true, fieldName: 'is_active', type: 'status', headerCenter: 'true' },
+	  { name: t('Title'), sortable: true, fieldName: 'role_name', type: 'text', headerCenter: true },
+	  { name: t('Status'), sortable: true, fieldName: 'is_active', type: 'status', headerCenter: true },
 	] as IColumnsProps[];
 
 	/**
@@ -105,7 +105,7 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 					{t('Role List')}
 				</div>
 				<div className='w-6/12 pl-4	'>
-					<TextInput type='text' id='table-search' value={filterData.search} placeholder={t('Search...')} onChange={onSearchRole} />
+					<TextInput type='text' id='table-search' value={filterData.search} placeholder={t('Search by Title')} onChange={onSearchRole} />
 				</div>
 				<RoleBaseGuard permissions={[PERMISSION_LIST.Role.AddAccess]}>
 					<div>

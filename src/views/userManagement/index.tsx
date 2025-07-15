@@ -12,7 +12,7 @@ import { PERMISSION_LIST } from '@config/permission';
 import useSaveFilterData from '@src/hooks/useSaveFilterData';
 import BVDataTable from '@components/BVDatatable/BVDataTable';
 import { IColumnsProps, IListData } from '@components/BVDatatable/DataTable';
-import { ProfileIcon } from '@components/icons/icons';
+import { MultipleProfileIcon } from '@components/icons/icons';
 import { DEFAULT_LIMIT, DEFAULT_PAGE, sortBy, sortOrder, ROUTES } from '@config/constant';
 import { UserData } from '@framework/graphql/graphql';
 import { DELETE_USER, CHANGE_USER_STATUS} from '@framework/graphql/mutations/user';
@@ -59,10 +59,7 @@ const UserManagement = (): ReactElement => {
 		const updatedFilterData = {
 			...filterData,
 			search: values.search,
-			// email: values.email,
-			// status: parseInt(values.status),
-			// gender: parseInt(values.gender),
-			// phoneNo: values.phoneNo,
+			isActive: values.isActive,
 			page: DEFAULT_PAGE,
 		};
 		setFilterData(updatedFilterData);
@@ -139,7 +136,7 @@ const UserManagement = (): ReactElement => {
 				<div className='card-header '>
 					<div className='flex items-center'>
 						<span className='w-3.5 h-3.5 mr-2 text-md leading-sm inline-block svg-icon'>
-							<ProfileIcon />
+							<MultipleProfileIcon />
 						</span>
 						{t('User List')}
 					</div>

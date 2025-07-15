@@ -27,16 +27,14 @@ const BookPages = ({
   status,
   generatedPages = null,
 }: BookPagesProps) => {
-  const [pages, setPages] = useState<{ isOpen: boolean; initialData?: any }[]>(
-    []
-  );
-
+  const [pages, setPages] = useState<{ initialData?: any }[]>([]);
+  const [openPages, setOpenPages] = useState<Set<number>>(new Set([0]));
   const pageRefs = useRef<PageFormRef[]>([]);
   const [createBookPage] = useMutation(CREATE_BOOK_PAGE);
   const [updateBookPage] = useMutation(UPDATE_BOOK_PAGE);
   const [deleteBookPage] = useMutation(DELETE_BOOK_PAGE);
   const isEditable = status === 'draft';
-  const { data, refetch } = useQuery(GET_ALL_BOOK_PAGES, {
+  const { data } = useQuery(GET_ALL_BOOK_PAGES, {
     variables: { bookId: bookUuid },
     skip: !bookUuid || generatedPages !== null,
     fetchPolicy: 'network-only',
@@ -96,12 +94,24 @@ const BookPages = ({
       return;
     }
 
-    const version = data.getAllBookPages.data.find(
-      (v: any) => v.version_status === status
-    );
+    let version;
 
+    if (status === 'draft') {
+      version = data.getAllBookPages.data.find(
+        (v: any) => v.version_status === 'draft'
+      );
+    } else if (status === 'published') {
+      version =
+        data.getAllBookPages.data.find(
+          (v: any) => v.version_status === 'published'
+        ) ||
+        data.getAllBookPages.data.find(
+          (v: any) => v.version_status === 'unpublished'
+        );
+    }
     if (!version?.pages?.length) {
-      setPages([{ isOpen: true }]);
+      setPages([{}]);
+      setOpenPages(new Set([0])); // open first page
       return;
     }
 
@@ -136,24 +146,32 @@ const BookPages = ({
       });
 
       return {
-        isOpen: true,
         initialData: initialDataObj,
       };
     });
 
     setPages(transformedPages);
+    setOpenPages(new Set([0]));
   }, [data, status]);
 
   const handleAddPage = () => {
-    setPages((prev) => [...prev, { isOpen: true }]);
+    setPages((prev) => {
+      const newPages = [...prev, {}];
+      setOpenPages(new Set([newPages.length - 1]));
+      return newPages;
+    });
   };
 
   const togglePage = (index: number) => {
-    setPages((prev) =>
-      prev.map((page, i) =>
-        i === index ? { ...page, isOpen: !page.isOpen } : page
-      )
-    );
+    setOpenPages((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(index)) {
+        newSet.delete(index); // close the page
+      } else {
+        newSet.add(index); // open the page
+      }
+      return newSet;
+    });
   };
 
   const RemoveUnsavedPage = (index: number) => {
@@ -184,7 +202,6 @@ const BookPages = ({
 
   const handleSinglePageSave = async (_index: number, data: any) => {
     try {
-      
       const lang = 'en';
       const translationObj: any = {};
       Object.assign(translationObj, {
@@ -213,15 +230,30 @@ const BookPages = ({
         ['insights']: insightObjs,
       };
       const response = await createBookPage({ variables });
-        if (response?.data?.createBookPage?.meta?.statusCode !== 201) {
-          toast.success(response?.data?.createBookPage?.meta?.message);
-        } else {
-          toast.error(
-            response?.data?.createBookPage?.meta?.message ||
-              'Failed to save page'
-          );
-        }  
-      await refetch();
+      if (response?.data?.createBookPage?.meta?.statusCode !== 201) {
+        const uuid = response?.data?.createBookPage.data.uuid;
+        setPages((prev) =>
+          prev.map((page, i) => {
+            if (i === _index) {
+              return {
+                ...page,
+                initialData: {
+                  ...(page.initialData || {}),
+                  uuid, // ✅ add the saved uuid
+                },
+              };
+            }
+            return page;
+          })
+        );
+
+        toast.success(response?.data?.createBookPage?.meta?.message);
+      } else {
+        toast.error(
+          response?.data?.createBookPage?.meta?.message || 'Failed to save page'
+        );
+      }
+      // await refetch();
     } catch {
       return;
     }
@@ -285,7 +317,7 @@ const BookPages = ({
           <div key={index} className='relative border mb-6 rounded shadow'>
             <PageForm
               index={index}
-              isOpen={page.isOpen}
+              isOpen={openPages.has(index)}
               toggle={() => togglePage(index)}
               ref={(el) => {
                 if (el) {
@@ -299,6 +331,7 @@ const BookPages = ({
               }
               initialData={page.initialData}
               isEditable={isEditable}
+              isSaved={!!page.initialData?.uuid}
             />
           </div>
         ))}

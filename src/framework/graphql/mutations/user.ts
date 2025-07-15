@@ -57,13 +57,13 @@ export const USER_RESET_PASSWORD = gql`
 
 export const CHANGE_USER_STATUS = gql`
 	${META_FRAGMENT}
-	mutation ChangeUserStatus($changeUserStatusId: UUID, $status: Int) {
-		changeUserStatus(uuid: $changeUserStatusId, status: $status) {
-			meta {
-				...MetaFragment
-			}
+	mutation ToggleUserStatus($uuid: ID!) {
+  	toggleUserStatus(uuid: $uuid) {
+		meta {
+			...MetaFragment
 		}
-	}
+  }
+}
 `;
 
 export const DELETE_USER = gql`

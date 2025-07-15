@@ -1,7 +1,7 @@
 import React from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 // import { BannerIcon, ClipBoardIcon, Document, Email, Gift, Lock, PhoneCall, ProfileIcon, Question, SettingsSliders, User, ArrowRight, Marker, TimerIcon, SuggestionIcon, UserReportIcon, Star, Megaphone, QrCodeIcon, GeoLocationIcon, PlanManagementIcon, SubscriptionIcon } from '@components/icons/icons';
-import { BookIcon, Listing,Lock, ProfileIcon, User } from '@components/icons/icons';
+import { AuthorIcon, BookIcon, Listing,Lock, MultipleProfileIcon, ProfileIcon, User } from '@components/icons/icons';
 
 import { uuid } from '@utils/helpers';
 import { PERMISSION_LIST } from '@config/permission';
@@ -140,6 +140,12 @@ export const STATUS_DRP = [
 	{ name: 'Active', key: '1' },
 	{ name: 'Inactive', key: '0' },
 ];
+
+export  const STATUS_OPTION = [
+    { key: true, name: 'Active' },
+    { key: false, name: 'Inactive' },
+  ];
+
 export const STATUS_RADIO = [
 	{ name: 'Active', value: '1', key: uuid() },
 	{ name: 'Inactive', value: '0', key: uuid() },
@@ -377,7 +383,7 @@ export const CK_EDITOR_CONFIGURATION = {
 
 	toolbarButtonSize: 'large',
 	uploader: { insertImageAsBase64URI: true },
-	buttons: 'bold,italic,underline,strikethrough,eraser,ul,ol,font,fontsize,paragraph,lineHeight,superscript,subscript,spellcheck,cut,copy,paste,selectall,hr,table,link,indent,outdent,brush,undo,redo,source,align,image',
+	buttons: 'bold,italic,underline,strikethrough,eraser,ul,ol,font,fontsize,paragraph,lineHeight,superscript,subscript,spellcheck,cut,copy,paste,selectall,hr,table,link,indent,outdent,brush,undo,redo,source,align',
 	disablePlugins: 'inline-popup,image-properties',
 };
 
@@ -482,7 +488,7 @@ export const SIDEBAR_NAVLINKS: sidebarNavlinksArray[] = [
 	{
 		to: `/${ROUTES.app}/${ROUTES.user}/${ROUTES.list}`,
 		text: 'User Management',
-		icon: <ProfileIcon />,
+		icon: <MultipleProfileIcon />,
 		redirectPage: RedirectPages.user,
 		childRoutes: [],
 		permissions: [PERMISSION_LIST.UserManagement.ListAccess],
@@ -506,7 +512,7 @@ export const SIDEBAR_NAVLINKS: sidebarNavlinksArray[] = [
 	{
 		to: `/${ROUTES.app}/${ROUTES.author}/${ROUTES.list}`,
 		text: 'Author Management',
-		icon: <ProfileIcon />,
+		icon: <AuthorIcon />,
 		redirectPage: RedirectPages.author,
 		childRoutes: [],
 		permissions: [PERMISSION_LIST.Author.ListAccess],
@@ -759,7 +765,6 @@ export const TEMPLATE_TYPE: { [key: string]: string } = {
 export const IMAGE_BASE_URL = process.env.REACT_APP_API_BASENODE;
 export const UPLOAD_IMAGE_URL = process.env.REACT_APP_API_IMAGE_URL;
 export const REACT_APP_API_GATEWAY_URL = process.env.REACT_APP_API_GATEWAY_URL;
-console.log('REACT_APP_API_GATEWAY_URL',REACT_APP_API_GATEWAY_URL);
 export const REACT_APP_ENCRYPTION_DECRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_DECRYPTION_KEY;
 export const NODE_ENV = process.env.NODE_ENV;
 export const REACT_APP_API_MOBILE_URL = process.env.REACT_APP_API_MOBILE_URL;

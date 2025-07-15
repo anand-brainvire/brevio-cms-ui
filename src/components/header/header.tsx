@@ -112,7 +112,7 @@ const Header = ({ onClick, logoutConformation, toggleHeaderImage }: HeaderProps)
 						</Link>
 					</li>
 				</ul> */}
-				<ul className='flex flex-1 items-center justify-end ml-auto'>
+				<ul className='flex lg:flex-1 items-center justify-end ml-auto'>
 					<li className='relative cursor-pointer px-4 '>
 						{/* <Link to='#' className='text-sm text-gray-600 uppercase' id='model-lan' onClick={languageHandler}>
 							{i18n.language.split('-')[0]}

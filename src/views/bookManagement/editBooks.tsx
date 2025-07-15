@@ -1,7 +1,13 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { Loader } from '@components/index';
 import { useTranslation } from 'react-i18next';
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import React, {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TextInput from '@components/textinput/TextInput';
 import {
@@ -45,6 +51,7 @@ import useValidation from '@src/hooks/validations';
 const editBooks = (): ReactElement => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const params = useParams();
   const [updateBookInfo, { loading: updateLoader }] =
     useMutation(UPDATE_BOOK_INFO);
@@ -70,7 +77,7 @@ const editBooks = (): ReactElement => {
     useMutation(BOOK_PUBLISH_STATUS);
 
   const { data, refetch: fetchAllCategories } = useQuery(FETCH_CATEGORY, {
-    variables: { isAll: IS_ALL },
+    variables: { isAll: IS_ALL, isActive: true },
   });
   const [categoryDroData, setCategoryDroData] = useState<Category[]>([]);
   const [showRefinePopup, setShowRefinePopup] = useState(false);
@@ -85,10 +92,13 @@ const editBooks = (): ReactElement => {
   const [isImageFromRefine, setIsImageFromRefine] = useState(false);
   const [base64Url, setBase64Url] = useState<RefineCoverImageData>();
   const [uplodedImageUrl, setUplodedImageUrl] = useState<string>();
+  const [originalCoverImageUrl, setOriginalCoverImageUrl] = useState<string>();
   const [isImageModelShow, setIsImageModelShow] = useState<boolean>(false);
+  const [isPublished, setIsPublished] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'draft' | 'published'>(
     'draft'
   );
+  const [hasOnlyOneDraftVersion, setHasOnlyOneDraftVersion] = useState(false);
   const isEditable = selectedTab === 'draft';
 
   const { loading: loader, refetch } = useQuery(FETCH_BOOK_BY_ID, {
@@ -116,6 +126,7 @@ const editBooks = (): ReactElement => {
     variables: {
       limit: 75,
       offset: 0,
+      isActive: true,
     },
     onCompleted: (res) => {
       const rawAuthors = res?.getAllAuthors?.data?.authors || [];
@@ -125,6 +136,7 @@ const editBooks = (): ReactElement => {
     },
   });
   const { addBookInfoValidationSchema } = useValidation();
+  const { publishBookValidationSchema } = useValidation();
   const initialValues: editBookInfo = {
     title: '',
     categoryId: [],
@@ -148,6 +160,17 @@ const editBooks = (): ReactElement => {
   };
 
   useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue =
+        'If you have unsaved changes, please save your progress before refreshing this page.';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
+  useEffect(() => {
     const fetchAndSetData = async () => {
       if (!params.id) {
         return;
@@ -158,10 +181,24 @@ const editBooks = (): ReactElement => {
       if (!book) {
         return;
       }
-
+      setIsPublished(book.is_published);
       setIsFreeBook(!!book.is_free);
 
-      const version = book.versions?.find((v: any) => v.status === selectedTab);
+      // const version = book.versions?.find((v: any) => v.status === selectedTab);
+      let version;
+      if (selectedTab === 'draft') {
+        version = book.versions?.find((v: any) => v.status === 'draft');
+      } else if (selectedTab === 'published') {
+        version =
+          book.versions?.find((v: any) => v.status === 'published') ||
+          book.versions?.find((v: any) => v.status === 'unpublished');
+      }
+
+      const hasOnlyOneDraftVersion =
+        book?.versions?.length === 1 && book.versions[0]?.status === 'draft';
+      if (hasOnlyOneDraftVersion) {
+        setHasOnlyOneDraftVersion(true);
+      }
       if (!version) {
         formik.setValues({
           title: '',
@@ -257,7 +294,7 @@ const editBooks = (): ReactElement => {
 
   const formik = useFormik({
     initialValues,
-    // validationSchema: addBookInfoValidationSchema,
+    validationSchema: addBookInfoValidationSchema,
     onSubmit: async (values) => {
       await UpdateBookInfoFunction(values);
     },
@@ -355,6 +392,7 @@ const editBooks = (): ReactElement => {
   Method to unpublish the book
   */
   const handleUnpublishBook = () => {
+    setIsPublished(!isPublished);
     unpublishBook({
       variables: {
         uuid: params.id,
@@ -398,8 +436,8 @@ const editBooks = (): ReactElement => {
       // Only validate title, categoryId, authorId
       const partial = addBookInfoValidationSchema.pick([
         'title',
-        'categoryId',
-        'authorId',
+        'whatsInside',
+        'aboutAuthor',
       ]);
       await partial.validate(formik.values, { abortEarly: false });
       setShowConfirmPopup(true);
@@ -421,13 +459,25 @@ const editBooks = (): ReactElement => {
   Method to publish the book
   */
   const handlePublishBook = async () => {
-    // Get latest values from Formik and RHF
     const values = formik.values;
     const rhfLearningPoints = getValues('learningPoints');
     // Sync RHF learning points to Formik
     const learningPoints = rhfLearningPoints.map((lp) => lp.value);
 
+    const payloadToValidate = {
+      title: values.title,
+      categoryId: values.categoryId,
+      authorId: values.authorId,
+      whatsInside: values.whatsInside,
+      aboutAuthor: values.aboutAuthor,
+      coverImage: values.coverImage,
+    };
+
     try {
+      await publishBookValidationSchema.validate(payloadToValidate, {
+        abortEarly: false,
+      });
+
       const bookDataObj = {};
       Object.assign(bookDataObj, {
         title: values.title,
@@ -449,13 +499,28 @@ const editBooks = (): ReactElement => {
 
       if (data?.publishBook?.meta?.statusCode === 201) {
         toast.success(t('Book published successfully'));
+        setHasOnlyOneDraftVersion(false);
         refetch();
       } else {
         toast.error(
           data?.publishBook?.meta?.message || t('Failed to publish book')
         );
       }
-    } catch {
+    } catch (error: any) {
+      if (error?.name === 'ValidationError' && error?.inner?.length) {
+        const formikErrors: any = {};
+
+        error.inner.forEach((err: any) => {
+          if (err.path) {
+            formikErrors[err.path] = err.message;
+            formik.setFieldTouched(err.path, true, false); // still call this
+          }
+        });
+
+        formik.setErrors(formikErrors);
+      }
+
+      toast.error(t('Please fix validation errors before publishing.'));
       return;
     }
   };
@@ -463,8 +528,8 @@ const editBooks = (): ReactElement => {
   /*
   method to validate cover image
   */
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.currentTarget.files?.[0];
+  const handleImageChange = () => {
+    const file = fileInputRef.current?.files?.[0];
     if (!file) {
       return;
     }
@@ -484,6 +549,7 @@ const editBooks = (): ReactElement => {
       } else {
         setCoverImageFile(file);
         formik.setFieldValue('coverImage', file);
+        handleUploadCoverImage(file);
       }
 
       URL.revokeObjectURL(objectUrl);
@@ -508,8 +574,9 @@ const editBooks = (): ReactElement => {
     if (!bookUuid || !fileToUpload) {
       return;
     }
+
     try {
-      await uploadFile(
+      const response = await uploadFile(
         [
           {
             name: 'coverImage',
@@ -519,9 +586,14 @@ const editBooks = (): ReactElement => {
         `cover-image?bookUuid=${bookUuid}`
       );
 
-      toast.success('Cover image uploaded successfully');
+      const statusCode = response?.meta?.statusCode;
+      if (statusCode === 200 || statusCode === 201) {
+        const uploadedImageUrl = response?.data?.images?.[0]?.url;
+        setOriginalCoverImageUrl(uploadedImageUrl);
+        setUplodedImageUrl(uploadedImageUrl);
+      }
     } catch {
-      toast.error('Failed to upload cover image');
+      toast.error('Something went wrong while uploading cover image');
     }
   };
 
@@ -578,7 +650,6 @@ const editBooks = (): ReactElement => {
     }
     return new File([byteArray], filename, { type: mimeType });
   };
-
 
   /**
    * Method to change the free book status
@@ -710,7 +781,7 @@ const editBooks = (): ReactElement => {
 
   const handleSave = () => {
     const rhfLearningPoints = getValues('learningPoints');
-    formik.setFieldValue('learningPoints', rhfLearningPoints, false);
+    formik.setFieldValue('learningPoints', rhfLearningPoints, true);
     formik.handleSubmit();
   };
 
@@ -733,7 +804,68 @@ const editBooks = (): ReactElement => {
           <div className='card-body'>
             <div className='flex items-center justify-between w-full mb-4'>
               <h2 className='text-xl font-semibold'>Book Information</h2>
+              {/* Right side: Status badge + Free Book checkbox */}
+              <div className='flex items-center gap-6'>
+                {/* Status display */}
+                <div className='flex items-center text-sm'>
+                  <span className='text-gray-700 mr-1'>{t('Status')}:</span>
+                  {selectedTab === 'draft' ? (
+                    <span className='bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
+                      {t('Draft')}
+                    </span>
+                  ) : isPublished ? (
+                    <span className='bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
+                      {t('Published')}
+                    </span>
+                  ) : (
+                    <span className='bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
+                      {t('Unpublished')}
+                    </span>
+                  )}
+                </div>
 
+                {/* Free Book Checkbox */}
+                <label className='flex items-center gap-2 text-sm text-gray-700'>
+                  <input
+                    type='checkbox'
+                    checked={isFreeBook}
+                    onChange={handleFreeBookStatus}
+                    className='form-checkbox h-5 w-5 text-primary'
+                  />
+                  {t('Mark as free')}
+                </label>
+              </div>
+            </div>
+
+            <div className='flex items-center justify-between w-full mb-4'>
+              {/* Left side: Draft | Publish buttons */}
+              <div className='flex border border-gray-300 rounded-tl-lg rounded-tr-lg overflow-hidden w-fit'>
+                <button
+                  type='button'
+                  onClick={() => setSelectedTab('draft')}
+                  className={`px-8 py-4 text-sm font-medium rounded-none ${
+                    selectedTab === 'draft'
+                      ? 'bg-primary text-white'
+                      : 'bg-white text-gray-600'
+                  }`}
+                >
+                  Draft
+                </button>
+
+                {!hasOnlyOneDraftVersion && (
+                  <button
+                    type='button'
+                    onClick={() => setSelectedTab('published')}
+                    className={`px-8 py-4 text-sm font-medium rounded-none ${
+                      selectedTab === 'published'
+                        ? 'bg-primary text-white'
+                        : 'bg-white text-gray-600'
+                    }`}
+                  >
+                    Published
+                  </button>
+                )}
+              </div>
               <div className='flex gap-2'>
                 {isEditable ? (
                   <>
@@ -761,78 +893,17 @@ const editBooks = (): ReactElement => {
                     >
                       {t('Restore to Draft')}
                     </button>
-                    <button
-                      type='button'
-                      className='btn btn-primary'
-                      onClick={handleUnpublishBook}
-                    >
-                      {t('Unpublish')}
-                    </button>
+                    {isPublished && (
+                      <button
+                        type='button'
+                        className='btn btn-primary'
+                        onClick={handleUnpublishBook}
+                      >
+                        {t('Unpublish')}
+                      </button>
+                    )}
                   </>
                 )}
-              </div>
-            </div>
-
-            <div className='flex items-center justify-between w-full mb-4'>
-              {/* Left side: Draft | Publish buttons */}
-              <div className='flex border border-gray-300 rounded-tl-lg rounded-tr-lg overflow-hidden w-fit'>
-                <button
-                  type='button'
-                  onClick={() => setSelectedTab('draft')}
-                  className={`px-8 py-4 text-sm font-medium rounded-none ${
-                    selectedTab === 'draft'
-                      ? 'bg-primary text-white'
-                      : 'bg-white text-gray-600'
-                  }`}
-                >
-                  Draft
-                </button>
-
-                {/* {isPublished && ( */}
-                <button
-                  type='button'
-                  onClick={() => setSelectedTab('published')}
-                  className={`px-8 py-4 text-sm font-medium rounded-none ${
-                    selectedTab === 'published'
-                      ? 'bg-primary text-white'
-                      : 'bg-white text-gray-600'
-                  }`}
-                >
-                  Published
-                </button>
-                {/* )} */}
-              </div>
-
-              {/* Right side: Status badge + Free Book checkbox */}
-              <div className='flex items-center gap-6'>
-                {/* Status display */}
-                <div className='flex items-center text-sm'>
-                  <span className='text-gray-700 mr-1'>{t('Status')}:</span>
-                  {selectedTab === 'published' ? (
-                    <span className='bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
-                      {t('Published')}
-                    </span>
-                  ) : (
-                    // ) : selectedTab === 'unpublished' ? (
-                    //   <span className='bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
-                    //     {t('Unpublished')}
-                    //   </span>
-                    <span className='bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
-                      {t('Draft')}
-                    </span>
-                  )}
-                </div>
-
-                {/* Free Book Checkbox */}
-                <label className='flex items-center gap-2 text-sm text-gray-700'>
-                  <input
-                    type='checkbox'
-                    checked={isFreeBook}
-                    onChange={handleFreeBookStatus}
-                    className='form-checkbox h-5 w-5 text-primary'
-                  />
-                  {t('Mark as free')}
-                </label>
               </div>
             </div>
 
@@ -900,7 +971,7 @@ const editBooks = (): ReactElement => {
                     maxSelectedLabels={6}
                     disabled={!isEditable}
                     virtualScrollerOptions={{
-                      itemSize: 40,
+                      itemSize: 75,
                       lazy: true,
                       showLoader: true,
                       loading: authorLoading,
@@ -931,7 +1002,7 @@ const editBooks = (): ReactElement => {
                     htmlFor='whatsInside'
                     className='block mb-2 font-medium'
                   >
-                    {t('Whats Inside (About)')}
+                    {t('Whas\'s Inside (About)')}
                   </label>
                   <div className='flex gap-2 items'>
                     <div className='w-full'>
@@ -994,16 +1065,16 @@ const editBooks = (): ReactElement => {
                 </div>
                 <div>
                   <label className='block mb-2 font-medium'>{t('Cover')}</label>
-                  <div className='flex items-center space-x-4 mb-4 ml-0'>
+                  <div className='flex items-end space-x-4 mb-4 ml-0'>
                     {isImageUploded && uplodedImageUrl ? (
                       <>
-                        <button
-                          type='button'
-                          className='btn btn-secondary whitespace-nowrap'
+                        <img
+                          src={uplodedImageUrl}
+                          alt='Cover Thumbnail'
                           onClick={openImageModel}
-                        >
-                          Preview
-                        </button>
+                          className='w-[50px] h-[75.03px] object-cover cursor-pointer border border-gray-300 rounded-sm'
+                          title='Click to preview'
+                        />
                         <button
                           type='button'
                           onClick={() => setIsImageUploded(false)}
@@ -1028,12 +1099,12 @@ const editBooks = (): ReactElement => {
                             type='file'
                             id='coverImage'
                             onBlur={OnBlur}
+                            inputRef={fileInputRef}
                             placeholder={t('Cover')}
                             name='coverImage'
                             error={getErrorSubAdmin('coverImage')}
                             className='w-full'
                             disabled={!isEditable}
-                            onChange={handleImageChange}
                           />
                         </div>
 
@@ -1042,7 +1113,7 @@ const editBooks = (): ReactElement => {
                             <button
                               type='button'
                               className='btn btn-secondary whitespace-nowrap'
-                              onClick={() => handleUploadCoverImage()}
+                              onClick={() => handleImageChange()}
                             >
                               Submit
                             </button>
@@ -1061,32 +1132,50 @@ const editBooks = (): ReactElement => {
                 </div>
                 <div>
                   <label className='block mb-2 font-medium'>
-                    {t('Learning Points')} <span className='error'>*</span>
+                    {t('Learning Points')}
                   </label>
 
                   {fields.map((field, index) => (
-                    <div
-                      key={field.id || index}
-                      className='flex items-center gap-2 mb-2'
-                    >
-                      <input
-                        {...register(`learningPoints.${index}.value`)}
-                        defaultValue={field.value}
-                        placeholder={`Point ${index + 1}`}
-                        className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
-                        disabled={!isEditable}
-                      />
-                      {isEditable && (
-                        <button
-                          type='button'
-                          onClick={() => remove(index)}
-                          className=''
-                        >
-                          <span className='mr-1 w-2.5 h-2.5 text-black inline-block svg-icon'>
-                            <Cross />
-                          </span>
-                        </button>
-                      )}
+                    <div key={field.id || index} className='flex flex-col mb-2'>
+                      <div className='flex items-center gap-2'>
+                        <input
+                          {...register(`learningPoints.${index}.value`)}
+                          defaultValue={field.value}
+                          placeholder={`Point ${index + 1}`}
+                          className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
+                          disabled={!isEditable}
+                        />
+
+                        {isEditable && (
+                          <button
+                            type='button'
+                            onClick={() => remove(index)}
+                            className=''
+                          >
+                            <span className='mr-1 w-2.5 h-2.5 text-black inline-block svg-icon'>
+                              <Cross />
+                            </span>
+                          </button>
+                        )}
+                      </div>
+
+                      {formik.errors.learningPoints &&
+                        Array.isArray(formik.errors.learningPoints) &&
+                        (
+                          formik.errors.learningPoints as Array<{
+                            value?: string;
+                          }>
+                        )[index]?.value && (
+                          <div className='text-danger text-sm mt-1 ml-1'>
+                            {
+                              (
+                                formik.errors.learningPoints as Array<{
+                                  value?: string;
+                                }>
+                              )[index]?.value
+                            }
+                          </div>
+                        )}
                     </div>
                   ))}
 
@@ -1184,7 +1273,7 @@ const editBooks = (): ReactElement => {
         {showConfirmPopup && (
           <RefineText
             refinedText={t(
-              'All the current pages of this book will be deleted. Are you sure you want to proceed?'
+              'All the current pages in the draft mode of this book will be deleted. Are you sure you want to proceed?'
             )}
             fieldLabel={t('Confirm Book Regeneration').toString()}
             onAccept={deleteDraftPages}
@@ -1206,6 +1295,9 @@ const editBooks = (): ReactElement => {
             onClose={() => {
               setIsImageModelShow(false);
               setIsImageFromRefine(false);
+              if (isImageFromRefine) {
+                setUplodedImageUrl(originalCoverImageUrl);
+              }
             }}
             data={uplodedImageUrl}
             show={isImageModelShow}

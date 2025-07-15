@@ -85,6 +85,12 @@ const useValidation = () => {
 		bookName,
 		addCategories,
 		AddAuthors,
+		whatsInsidePublish,
+		aboutAuthorPublish,
+		coverImage,
+		whatsInside,
+		aboutAuthor,
+		learningPoints,
 		keyPoint,
 		richText,
 	} = useValidationFields();
@@ -225,8 +231,21 @@ const useValidation = () => {
 
 	const addBookInfoValidationSchema = Yup.object({
 		title: bookName,
+		whatsInside: whatsInside,
+		aboutAuthor: aboutAuthor,
+		learningPoints: learningPoints,
+		// categoryId: addCategories,
+		// authorId: AddAuthors
+	});
+
+	const publishBookValidationSchema = Yup.object({
+		title: bookName,
 		categoryId: addCategories,
-		authorId: AddAuthors
+		authorId: AddAuthors,
+		whatsInside: whatsInsidePublish,
+		aboutAuthor: aboutAuthorPublish,
+		coverImage: coverImage,
+
 	});
 	
 	const forgotPasswordValidationSchema = Yup.object({
@@ -331,6 +350,7 @@ const useValidation = () => {
 		addCoupenValidationSchema,
 		addBookValidationSchema,
 		addBookInfoValidationSchema,
+		publishBookValidationSchema,
 		forgotPasswordValidationSchema,
 		resetPasswordValidationSchema,
 		usermValidationSchema,
