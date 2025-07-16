@@ -15,6 +15,7 @@ export const FETCH_BOOKS = gql`
     			version_uuid
     			title
     			cover_image_url
+				cover_image_url_view
     			slug
     			status
     			authors {

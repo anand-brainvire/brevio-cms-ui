@@ -39,7 +39,7 @@ const FilterSubAdmin = ({ onSearchSubAdmin, filterData }: SubAdminProps): ReactE
                     <div className='card-grid-filter'>
                         <TextInput
                             id={'search'}
-                            placeholder={t('Search')}
+                            placeholder={t('Search by First Name, Last Name, or Email ID')}
                             name='search'
                             type='text'
                             onChange={formik.handleChange}

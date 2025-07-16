@@ -225,7 +225,7 @@ const AddEditCategory = (): ReactElement => {
 								/>
 							</div>
 							<div>
-								<TextArea required={true} id='description' onChange={formik.handleChange} value={formik.values.description} onBlur={OnBlurFaq} label={t('Description')} error={getErrorFaq('description')} placeholder={''} />
+								<TextArea id='description' onChange={formik.handleChange} value={formik.values.description} onBlur={OnBlurFaq} label={t('Description')} error={getErrorFaq('description')} placeholder={''} />
 							</div>
 							<RadioButton id={'status'} required={true} checked={formik.values.status} onChange={formik.handleChange} name={'status'} radioOptions={STATUS_RADIO} label={t('Status')} />
 						</div>

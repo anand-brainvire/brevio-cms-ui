@@ -41,6 +41,7 @@ interface PageFormProps {
     audioFemale?: string;
     insights: { key: string; value: string }[];
   };
+  isSaved?: boolean;
   onPageSave: (data: any) => void;
   onPageUpdate?: (uuid: string, data: any) => void;
   isEditable: boolean;
@@ -61,6 +62,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
       onPageUpdate,
       initialData,
       isEditable,
+      isSaved,
     },
     ref
   ) => {
@@ -258,7 +260,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
           [{ name: 'pageAudio', content: audioFile }],
           path
         );
-        setUploadedAudioUrl(audioUrl);
+        setUploadedAudioUrl(audioUrl?.data?.url);
         setIsUploaded(true);
         setLastSyncedContentForAudio(formik.values.richText);
         setAudioError(null);
@@ -284,14 +286,18 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
 
         {isOpen && (
           <>
-            {refineKeyPointsLoader ||
+            {(refineKeyPointsLoader ||
               refineInsightLoader ||
               refinePageContentLoader ||
-              (generateAudioLoader && Loader)}
+              generateAudioLoader) && <Loader />}
             <form className='p-4 space-y-6'>
+              <label className='block mb-2 font-medium'>
+                {t('Rich Text Editor with Preview')}{' '}
+                <span className='error'>*</span>
+              </label>
               <CKEditorComponent
                 id={`rich-text-editor-${index}`}
-                label='Rich Text Editor with Preview'
+                label=''
                 required
                 value={formik.values.richText}
                 onChange={(val: string) =>
@@ -312,6 +318,9 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                   Refine
                 </button>
               )}
+              <label className='block mb-2 font-medium'>
+                {t('Key Point')} <span className='error'>*</span>
+              </label>
               <TextInput
                 id={`keyPoint-${index}`}
                 onBlur={handleBlur}
@@ -319,13 +328,14 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                 placeholder={t('Key Point')}
                 name='keyPoint'
                 onChange={formik.handleChange}
-                label={t('keyPoint')}
+                // label={t('Key Point')}
                 value={formik.values.keyPoint}
                 error={
                   formik.errors.keyPoint && formik.touched.keyPoint
                     ? formik.errors.keyPoint
                     : ''
                 }
+                disabled={!isEditable}
               />
               {isEditable && (
                 <button
@@ -338,55 +348,77 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
               )}
               <div>
                 <label className='block mb-2 font-medium'>
-                  {t('Insights')} <span className='error'>*</span>
+                  {t('Insights')}
                 </label>
                 <div className='space-y-2'>
                   {fields.map((field, i) => (
-                    <div key={field.id} className='flex items-center gap-2'>
-                      <span
-                        className='min-w-[110px] text-gray-600 font-mono text-sm cursor-pointer hover:text-primary'
-                        onClick={() => {
-                          const key = `##INSIGHT_${i + 1}##`;
-                          navigator.clipboard.writeText(key);
-                          toast.success('Copied to clipboard');
-                        }}
-                      >
-                        {`##INSIGHT_${i + 1}##`}
-                      </span>
-                      <input
-                        {...register(`insights.${i}.value`, {
-                          required: 'Insight is required',
-                        })}
-                        placeholder={`Point ${i + 1}`}
-                        className='form-input w-3/4 border border-gray-300 rounded-md px-3 py-2'
-                      />
-                      {isEditable && (
-                        <button
-                          type='button'
-                          onClick={() => remove(i)}
-                          className=''
+                    <div key={field.id} className='flex flex-col gap-1'>
+                      <div className='flex items-center gap-5'>
+                        {/* Clipboard key */}
+                        <span
+                          className='min-w-[110px] text-gray-600 font-mono text-sm cursor-pointer hover:text-primary'
+                          onClick={() => {
+                            const key = `##INSIGHT_${i + 1}##`;
+                            navigator.clipboard.writeText(key);
+                            toast.success('Copied to clipboard');
+                          }}
                         >
-                          <span className='mr-1 w-2.5 h-2.5 text-black inline-block svg-icon'>
-                            <Cross />
-                          </span>
-                        </button>
-                      )}
-                      {isEditable && (
-                        <button
-                          type='button'
-                          className='btn btn-secondary h-fit mt-1'
-                          onClick={() =>
-                            handleRefineClick('insights', field.id)
-                          }
-                        >
-                          Refine
-                        </button>
-                      )}
-                      {errors?.insights?.[i]?.value && (
-                        <p className='text-red-500 text-sm mt-1'>
-                          {errors?.insights?.[i]?.value?.message}
-                        </p>
-                      )}
+                          {`##INSIGHT_${i + 1}##`}
+                        </span>
+
+                        {/* Input */}
+                        <input
+                          {...register(`insights.${i}.value`, {
+                            validate: (value) => {
+                              if (!value || value.trim() === '') {
+                                return 'Insight should not be empty. You should either remove the insight or add content.';
+                              }
+                              if (value.length > 120) {
+                                return 'Insight should not be greater than 120 characters';
+                              }
+                              return true;
+                            },
+                          })}
+                          placeholder={`Insight ${i + 1}`}
+                          className='form-input w-3/4 border border-gray-300 rounded-md px-3 py-2'
+                          disabled={!isEditable}
+                        />
+
+                        {/* Refine button */}
+                        {isEditable && (
+                          <button
+                            type='button'
+                            className='btn btn-secondary h-fit mt-1'
+                            onClick={() =>
+                              handleRefineClick('insights', field.id)
+                            }
+                          >
+                            Refine
+                          </button>
+                        )}
+
+                        {/* Remove (Cross) button */}
+                        {isEditable && i === fields.length - 1 && (
+                          <button
+                            type='button'
+                            onClick={() => remove(i)}
+                            className=''
+                          >
+                            <span className='mr-1 w-2.5 h-2.5 text-black inline-block svg-icon'>
+                              <Cross />
+                            </span>
+                          </button>
+                        )}
+                      </div>
+
+                      {/* 🔽 Validation error shown after all buttons */}
+                      {errors?.insights &&
+                        Array.isArray(errors.insights) &&
+                        errors.insights[i]?.value && (
+                          <p className='text-red-500 text-sm'>
+                            {errors.insights[i]?.value?.message}
+                          </p>
+                        )}
                     </div>
                   ))}
                 </div>
@@ -445,11 +477,10 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                         accept='audio/*'
                         id={`audio-${index}`}
                         onBlur={handleBlur}
-                        required
                         placeholder={t('Audio')}
                         name='audio'
                         onChange={handleAudioChange}
-                        // label={t('Audio')}
+                        disabled={!isEditable}
                       />
                     </div>
 
@@ -513,6 +544,28 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                         insights: getFieldValues().insights,
                       };
 
+                      const missingInsightKeys: string[] = [];
+                      pageData.insights.forEach((_, idx) => {
+                        const key = `##INSIGHT_${idx + 1}##`;
+                        if (!pageData.richText.includes(key)) {
+                          missingInsightKeys.push(key);
+                        }
+                      });
+
+                      if (missingInsightKeys.length > 0) {
+                        const errorMsg = `${missingInsightKeys.join(', ')} ${
+                          missingInsightKeys.length > 1 ? 'are' : 'is'
+                        } missing in Page Content`;
+
+                        toast.error(errorMsg);
+                        formik.setFieldError('richText', errorMsg);
+                        formik.setTouched({
+                          ...formik.touched,
+                          richText: true,
+                        });                      
+                        return;
+                      }
+
                       const hasUnsyncedAudio =
                         isUploaded &&
                         formik.values.richText.trim() !==
@@ -533,9 +586,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                       }
                     }}
                   >
-                    {initialData?.uuid
-                      ? `Update Page ${index + 1}`
-                      : `Save Page ${index + 1}`}
+                    {isSaved ? `Update Page ${index + 1}` : `Save Page ${index + 1}`}
                   </button>
                 )}
 

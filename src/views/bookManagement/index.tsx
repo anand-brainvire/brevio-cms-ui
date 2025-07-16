@@ -85,7 +85,7 @@ const bookManagaement = () => {
     {
       name: t('Cover Image'),
       sortable: false,
-      fieldName: 'cover_image_url',
+      fieldName: 'cover_image_url_view',
       type: 'image',
       headerCenter: true,
     },
@@ -101,6 +101,7 @@ const bookManagaement = () => {
       sortable: true,
       fieldName: 'start_date',
       type: 'date',
+      headerCenter: true,
     },
   ] as IColumnsProps[];
 

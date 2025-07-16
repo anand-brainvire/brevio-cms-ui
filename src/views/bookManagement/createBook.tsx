@@ -11,13 +11,15 @@ import useValidation from '@src/hooks/validations';
 import WithTranslateFormErrors from '@components/customHooks/useTranslationFormErrors';
 import { Loader } from '@components/index';
 import { BookInputType } from '@type/bookManagement';
-
+import { ROUTES } from '@config/constant';
+import { useNavigate } from 'react-router-dom';
 interface AddBookModalProps {
 	isVisible: boolean;
     onSubmitBook: () => void;
 }
 
 const CreateBook = ({ isVisible, onSubmitBook }: AddBookModalProps) => {
+	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const [createBook, { loading }] = useMutation(CREATE_BOOK); // define mutation
 	const { addBookValidationSchema } = useValidation(); // create book validation schema
@@ -43,8 +45,9 @@ const CreateBook = ({ isVisible, onSubmitBook }: AddBookModalProps) => {
 			const { data } = res;
 			if (data?.createBook?.meta?.statusCode === 200 || data?.createBook?.meta?.statusCode === 201) {
 				toast.success(data.createBook.meta.message);
+				navigate(`/${ROUTES.app}/${ROUTES.manageBooks}/edit/${data?.createBook?.data?.uuid}`);
                 formik.resetForm();
-                onSubmitBook();
+                // onSubmitBook();
 			}
 		})
 		.catch(() => {

@@ -6,12 +6,14 @@ import { DELETE_AUTHOR, GROUP_DELETE_BANNER, STATUS_CHANGE } from '@framework/gr
 import { authorPagination, FilterAuthorProps, ColArrType } from '@type/banner';
 import FilterBanner from '@views/Author/filteredData';
 import { useTranslation } from 'react-i18next';
-import { BannerIcon, PlusCircle } from '@components/icons/icons';
+import { AuthorIcon, PlusCircle } from '@components/icons/icons';
 import Button from '@components/button/button';
 import RoleBaseGuard from '@components/roleGuard';
 import { PERMISSION_LIST } from '@config/permission';
 import useSaveFilterData from '@src/hooks/useSaveFilterData';
 import BVDataTable from '@components/BVDatatable/BVDataTable';
+import filterServiceProps from '@components/filter/filter';
+
 
 function Author() {
 	const { t } = useTranslation();
@@ -36,7 +38,8 @@ function Author() {
 			fieldName: 'author_translations',
 			type: 'multilang',
 			translationKey: 'name',
-			sortKey: 'name'	
+			sortKey: 'name',
+			headerCenter: true
 		},
 		{
 			name: t('Status'),
@@ -50,6 +53,7 @@ function Author() {
 			sortable: true,
 			fieldName: 'updated_at',
 			type: 'date',
+			// headerCenter: true,
 		},
 	] as ColArrType[];
 	/**
@@ -64,6 +68,8 @@ function Author() {
 				offset: ((DEFAULT_PAGE ?? filterData.page) - 1) * filterData.limit,
 			};
 			setFilterData(updatedFilterData);
+			filterServiceProps.saveState('filterBanner', JSON.stringify(updatedFilterData));
+
 		},
 		[filterData]
 	);
@@ -81,9 +87,9 @@ function Author() {
 				<div className='card-header '>
 					<div className='flex items-center'>
 						<span className='w-3.5 h-3.5 mr-2 inline-block svg-icon'>
-							<BannerIcon />
+							<AuthorIcon />
 						</span>
-						{t('Banner List')}
+						{t('Author List')}
 					</div>
 					<div>
 						<RoleBaseGuard permissions={[PERMISSION_LIST.Author.AddAccess]}>

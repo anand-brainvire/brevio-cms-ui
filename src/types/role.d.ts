@@ -44,6 +44,7 @@ export type PaginationParams = {
 	sortBy: string;
 	sortOrder: string;
 	search: string;
+	isActive?: boolean | null;
 };
 
 export type RoleProps = {

@@ -150,13 +150,7 @@ const Dashboard = () => {
           icon={<PopularBookIcon />}
         />
       </div>
-      <div className='mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
-        <BarChartCard
-          title='Top 10 Popular Books'
-          data={bookData.topPopularBooks}
-          xKey='title'
-          yKey='read_count'
-        />
+      <div className='mt-6 grid grid-cols-1 md:grid-cols-1 gap-4 mb-4'>
         <BarChartCard
           title='Top 10 Best Seller Books'
           data={bookData.bestSellerBooks}
@@ -164,26 +158,37 @@ const Dashboard = () => {
           yKey='read_count'
         />
       </div>
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
+      <div className='grid grid-cols-1 md:grid-cols-1 gap-4 mb-4'>
+        <BarChartCard
+          title='Top 10 Popular Books'
+          data={bookData.topPopularBooks}
+          xKey='title'
+          yKey='read_count'
+        />
+      </div>
+      <div className='grid grid-cols-1 md:grid-cols-1 gap-4 mb-4'>
         <BarChartCard
           title='Most Read Categories'
           data={categoryData.topReadCategories}
           xKey='name'
           yKey='read_count'
         />
-        <BarChartCard
-          title='Categoriy wise No. of Books Published'
-          data={categoryData.categoryBooks}
-          xKey='name'
-          yKey='total_books'
-        />
       </div>
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
+      <div className='grid grid-cols-1 md:grid-cols-1 gap-4 mb-4'>
         <BarChartCard
           title='Top 10 Best Seller Authors'
           data={authorData}
           xKey='name'
           yKey='read_count'
+        />
+      </div>
+      <div className='grid grid-cols-1 md:grid-cols-1 gap-4 mb-4'>
+        <BarChartCard
+          title='Categoriy wise No. of Books Published'
+          data={categoryData.categoryBooks}
+          xKey='name'
+          yKey='total_books'
+          responsive={true}
         />
       </div>
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 item-start'>

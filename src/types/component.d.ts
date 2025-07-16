@@ -40,6 +40,7 @@ export type TextInputProps = {
 	btnShowHide?: boolean;
 	autoComplete?: string;
 	accept?: string;
+	inputRef?: React.RefObject<HTMLInputElement>;
 };
 export type TextAreaInputProps = {
 	id?: string;
