@@ -47,6 +47,7 @@ import RefineText from '@components/popup/refineText';
 import { GET_AUTHOR } from '@framework/graphql/queries/author';
 import GenerateBookConfirmPopup from '@components/popup/generateBook';
 import useValidation from '@src/hooks/validations';
+import GeneratedBookPreviewModal from './generatedBookPreviewModal';
 
 const editBooks = (): ReactElement => {
   const { t } = useTranslation();
@@ -95,6 +96,12 @@ const editBooks = (): ReactElement => {
   const [originalCoverImageUrl, setOriginalCoverImageUrl] = useState<string>();
   const [isImageModelShow, setIsImageModelShow] = useState<boolean>(false);
   const [isPublished, setIsPublished] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [replacePages,setReplacePages] = useState(false);
+  const [generatedBookContent, setGeneratedBookContent] = useState<any>();
+  const [showGeneratedPreviewModal, setShowGeneratedPreviewModal] =
+    useState(false);
+  const [bookVersionStatus, setBookVersionStatus] = useState('');
   const [selectedTab, setSelectedTab] = useState<'draft' | 'published'>(
     'draft'
   );
@@ -196,6 +203,14 @@ const editBooks = (): ReactElement => {
 
       const hasOnlyOneDraftVersion =
         book?.versions?.length === 1 && book.versions[0]?.status === 'draft';
+      const otherVersion = book.versions?.find(
+        (v: any) => v.status === 'published' || v.status === 'unpublished'
+      );
+      if (otherVersion?.status) {
+        setBookVersionStatus(otherVersion.status);
+      } else {
+        setBookVersionStatus('draft');
+      }
       if (hasOnlyOneDraftVersion) {
         setHasOnlyOneDraftVersion(true);
       }
@@ -322,6 +337,7 @@ const editBooks = (): ReactElement => {
   */
 
   const handleGenerateNewBookApi = async (pageCount?: number) => {
+    setShowBookGeneratePopup(false);
     try {
       const generateRes = await generateNewBook({
         variables: {
@@ -338,23 +354,22 @@ const editBooks = (): ReactElement => {
         toast.success(generateRes.data.generateBookContent.meta.message);
         const d = generateRes.data.generateBookContent.data;
         const pages = generateRes.data.generateBookContent.data.pages;
+        setGeneratedBookContent(d);
+        setShowGeneratedPreviewModal(true);
         setGeneratedContent(pages);
-        formik.setValues({
-          title: d.title,
-          categoryId: d.categories.map((c: any) => c.uuid),
-          authorId: d.authors.map((a: any) => a.uuid),
-          whatsInside: d.about_book,
-          aboutAuthor: d.about_authors,
-          coverImage: d.cover_image_url,
-          learningPoints: d.learning_points.map((pt: string) => ({
-            value: pt,
-          })),
-        });
-
-        remove();
-        d.learning_points.forEach((pt: string) => append({ value: pt }));
-
-        setShowBookGeneratePopup(false);
+        // formik.setValues({
+        //   title: d.title,
+        //   categoryId: d.categories.map((c: any) => c.uuid),
+        //   authorId: d.authors.map((a: any) => a.uuid),
+        //   whatsInside: d.about_book,
+        //   aboutAuthor: d.about_authors,
+        //   coverImage: d.cover_image_url,
+        //   learningPoints: d.learning_points.map((pt: string) => ({
+        //     value: pt,
+        //   })),
+        // });
+        // remove();
+        // d.learning_points.forEach((pt: string) => append({ value: pt }));
       } else {
         toast.error(t('Failed to generate new book'));
       }
@@ -374,12 +389,25 @@ const editBooks = (): ReactElement => {
           bookUuid: params.id,
         },
       });
-
       const statusCode = res?.data?.deleteDraftBookPages?.meta?.statusCode;
       if (statusCode === 200) {
         toast.success(t('Draft pages deleted successfully'));
         setShowConfirmPopup(false);
-        setShowBookGeneratePopup(true); // show input popup after delete success
+        setReplacePages(true);
+          const d = generatedBookContent
+          formik.setValues({
+            title: d.title,
+            categoryId: d.categories.map((c: any) => c.uuid),
+            authorId: d.authors.map((a: any) => a.uuid),
+            whatsInside: d.about_book,
+            aboutAuthor: d.about_authors,
+            coverImage: d.cover_image_url,
+            learningPoints: d.learning_points.map((pt: string) => ({
+              value: pt,
+            })),
+          });
+          remove();
+          d.learning_points.forEach((pt: string) => append({ value: pt }));
       } else {
         toast.error(t('Failed to delete draft pages'));
       }
@@ -440,7 +468,7 @@ const editBooks = (): ReactElement => {
         'aboutAuthor',
       ]);
       await partial.validate(formik.values, { abortEarly: false });
-      setShowConfirmPopup(true);
+      setShowBookGeneratePopup(true);
     } catch (err: any) {
       if (err instanceof ValidationError) {
         const fieldErrors: Record<string, string> = {};
@@ -528,40 +556,61 @@ const editBooks = (): ReactElement => {
   /*
   method to validate cover image
   */
+  // const handleImageChange = () => {
+  //   const file = fileInputRef.current?.files?.[0];
+  //   if (!file) {
+  //     return;
+  //   }
+  //   const img = new Image();
+  //   const objectUrl = URL.createObjectURL(file);
+
+  //   img.onload = () => {
+  //     const width = img.width;
+  //     const height = img.height;
+  //     const ratio = width / height;
+  //     const isRatioValid = Math.abs(ratio - 2 / 3) < 0.01;
+
+  //     if (!isRatioValid) {
+  //       toast.error('Image must be in 2:3 aspect ratio (e.g. 600x900)');
+  //       formik.setFieldError('coverImage', 'Invalid aspect ratio');
+  //       formik.setFieldValue('coverImage', null);
+  //     } else {
+  //       setCoverImageFile(file);
+  //       formik.setFieldValue('coverImage', file);
+  //       handleUploadCoverImage(file);
+  //     }
+
+  //     URL.revokeObjectURL(objectUrl);
+  //   };
+
+  //   img.onerror = () => {
+  //     toast.error('Invalid image file');
+  //     formik.setFieldValue('coverImage', null);
+  //     URL.revokeObjectURL(objectUrl);
+  //   };
+
+  //   img.src = objectUrl;
+  // };
+
   const handleImageChange = () => {
     const file = fileInputRef.current?.files?.[0];
     if (!file) {
       return;
     }
-    const img = new Image();
-    const objectUrl = URL.createObjectURL(file);
 
-    img.onload = () => {
-      const width = img.width;
-      const height = img.height;
-      const ratio = width / height;
-      const isRatioValid = Math.abs(ratio - 2 / 3) < 0.01;
+    const isPng =
+      file.type === 'image/png' || file.name.toLowerCase().endsWith('.png');
 
-      if (!isRatioValid) {
-        toast.error('Image must be in 2:3 aspect ratio (e.g. 600x900)');
-        formik.setFieldError('coverImage', 'Invalid aspect ratio');
-        formik.setFieldValue('coverImage', null);
-      } else {
-        setCoverImageFile(file);
-        formik.setFieldValue('coverImage', file);
-        handleUploadCoverImage(file);
-      }
-
-      URL.revokeObjectURL(objectUrl);
-    };
-
-    img.onerror = () => {
-      toast.error('Invalid image file');
+    if (!isPng) {
+      toast.error('Only PNG images are allowed');
+      formik.setFieldError('coverImage', 'Only PNG images are allowed');
       formik.setFieldValue('coverImage', null);
-      URL.revokeObjectURL(objectUrl);
-    };
+      return;
+    }
 
-    img.src = objectUrl;
+    setCoverImageFile(file);
+    formik.setFieldValue('coverImage', file);
+    handleUploadCoverImage(file);
   };
 
   /*
@@ -576,6 +625,7 @@ const editBooks = (): ReactElement => {
     }
 
     try {
+      setIsUploading(true);
       const response = await uploadFile(
         [
           {
@@ -591,8 +641,11 @@ const editBooks = (): ReactElement => {
         const uploadedImageUrl = response?.data?.images?.[0]?.url;
         setOriginalCoverImageUrl(uploadedImageUrl);
         setUplodedImageUrl(uploadedImageUrl);
+        setIsUploading(false);
       }
+      setIsUploading(false);
     } catch {
+      setIsUploading(false);
       toast.error('Something went wrong while uploading cover image');
     }
   };
@@ -799,7 +852,8 @@ const editBooks = (): ReactElement => {
           generateNewBookLoader ||
           deleteDraftBookPagesLoader ||
           restoreToDraftLoader ||
-          unpublishBookLoader) && <Loader />}
+          unpublishBookLoader ||
+          isUploading) && <Loader />}
         <form onSubmit={formik.handleSubmit}>
           <div className='card-body'>
             <div className='flex items-center justify-between w-full mb-4'>
@@ -809,15 +863,17 @@ const editBooks = (): ReactElement => {
                 {/* Status display */}
                 <div className='flex items-center text-sm'>
                   <span className='text-gray-700 mr-1'>{t('Status')}:</span>
-                  {selectedTab === 'draft' ? (
+                  {bookVersionStatus === 'draft' && (
                     <span className='bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
                       {t('Draft')}
                     </span>
-                  ) : isPublished ? (
+                  )}
+                  {bookVersionStatus === 'published' && (
                     <span className='bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
                       {t('Published')}
                     </span>
-                  ) : (
+                  )}
+                  {bookVersionStatus === 'unpublished' && (
                     <span className='bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
                       {t('Unpublished')}
                     </span>
@@ -893,13 +949,23 @@ const editBooks = (): ReactElement => {
                     >
                       {t('Restore to Draft')}
                     </button>
-                    {isPublished && (
+                    {bookVersionStatus?.toLowerCase() === 'published' && (
                       <button
                         type='button'
                         className='btn btn-primary'
                         onClick={handleUnpublishBook}
                       >
                         {t('Unpublish')}
+                      </button>
+                    )}
+
+                    {bookVersionStatus?.toLowerCase() === 'unpublished' && (
+                      <button
+                        type='button'
+                        className='btn btn-primary'
+                        onClick={handleUnpublishBook}
+                      >
+                        {t('Republish')}
                       </button>
                     )}
                   </>
@@ -910,7 +976,7 @@ const editBooks = (): ReactElement => {
             <div className='border p-4 mt-[-1px]'>
               <div className='card-title-container'>
                 <p>
-                  {t('Fields marked with')}
+                  {t('Fields marked with')} <span className='error'>*</span>{' '}
                   {t('are mandatory.')}
                 </p>
               </div>
@@ -1075,6 +1141,7 @@ const editBooks = (): ReactElement => {
                           className='w-[50px] h-[75.03px] object-cover cursor-pointer border border-gray-300 rounded-sm'
                           title='Click to preview'
                         />
+                      {isEditable && (
                         <button
                           type='button'
                           onClick={() => setIsImageUploded(false)}
@@ -1082,6 +1149,7 @@ const editBooks = (): ReactElement => {
                         >
                           Upload new image
                         </button>
+                      )}
                         {isEditable && (
                           <button
                             type='button'
@@ -1105,18 +1173,19 @@ const editBooks = (): ReactElement => {
                             error={getErrorSubAdmin('coverImage')}
                             className='w-full'
                             disabled={!isEditable}
+                            onChange={() => handleImageChange()}
                           />
                         </div>
 
                         {isEditable && (
                           <div className='flex gap-2'>
-                            <button
+                            {/* <button
                               type='button'
                               className='btn btn-secondary whitespace-nowrap'
                               onClick={() => handleImageChange()}
                             >
                               Submit
-                            </button>
+                            </button> */}
                             <button
                               type='button'
                               className='btn btn-secondary whitespace-nowrap'
@@ -1214,16 +1283,14 @@ const editBooks = (): ReactElement => {
                 </span>
               </Button>
             )}
-
-            <Button
-              className='btn-secondary'
-              label={t('Cancel')}
-              onClick={onCancelEditBookInfo}
-            >
-              <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
-                <Cross />
-              </span>
-            </Button>
+              {isEditable && (
+                <Button className='btn-secondary' onClick={onCancelEditBookInfo}>
+                  <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
+                    <Cross />
+                  </span>
+                  {t('Cancel')}
+                </Button>
+              )}
           </div>
         </form>
         {showRefinePopup && refineFieldKey && (
@@ -1284,7 +1351,7 @@ const editBooks = (): ReactElement => {
           <GenerateBookConfirmPopup
             show={showBookGeneratePopup}
             onClose={() => setShowBookGeneratePopup(false)}
-            onConfirm={handleGenerateNewBookApi} // pass pageCount from popup
+            onConfirm={handleGenerateNewBookApi}
             bookTitle={formik.values.title}
             categoryNames={getCategoryNames()}
             authorNames={getAuthorNames()}
@@ -1307,12 +1374,23 @@ const editBooks = (): ReactElement => {
             })}
           />
         )}
+        {showGeneratedPreviewModal && (
+        <GeneratedBookPreviewModal
+          isOpen={showGeneratedPreviewModal}
+          onClose={() => setShowGeneratedPreviewModal(false)}
+          onAccept={() => {
+            setShowGeneratedPreviewModal(false);
+            setShowConfirmPopup(true);
+          }}
+          bookContent={generatedBookContent}
+        />
+        )}
       </div>
       {params.id && (
         <BookPages
           bookUuid={params.id}
           status={selectedTab}
-          generatedPages={generatedContent}
+          generatedPages={replacePages ? generatedContent : undefined}
         />
       )}
     </>

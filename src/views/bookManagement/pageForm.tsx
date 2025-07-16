@@ -72,6 +72,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
     const [refineData, setRefineData] = useState('');
     const [refineFieldKey, setRefineFieldKey] = useState('');
     const { savePageValidationSchema } = useValidation();
+    const [isUploading, setIsUploading] = useState(false);
     const [isAudioErrorAcknowledged, setIsAudioErrorAcknowledged] =
       useState(false);
     const [refinedInsightId, setRefinedInsightId] = useState<string | null>(
@@ -255,6 +256,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
         return toast.error('No file selected');
       }
       try {
+        setIsUploading(true);
         const path = `page-audio?bookUuid=${params.id}&bookPagePageUuid=${initialData?.uuid}&langCode=en`;
         const audioUrl = await uploadFile(
           [{ name: 'pageAudio', content: audioFile }],
@@ -266,7 +268,10 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
         setAudioError(null);
       } catch {
         return;
+      } finally {
+        setIsUploading(false);
       }
+
     };
 
     const handleAudioRemove = () => {
@@ -289,7 +294,8 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
             {(refineKeyPointsLoader ||
               refineInsightLoader ||
               refinePageContentLoader ||
-              generateAudioLoader) && <Loader />}
+              generateAudioLoader ||
+              isUploading) && <Loader />}
             <form className='p-4 space-y-6'>
               <label className='block mb-2 font-medium'>
                 {t('Rich Text Editor with Preview')}{' '}
@@ -573,7 +579,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
 
                       if (hasUnsyncedAudio && !isAudioErrorAcknowledged) {
                         setAudioError(
-                          'Page content has changed. Please regenerate or upload audio.'
+                          'Page content has changed. Please regenerate or upload new audio.'
                         );
                         setIsAudioErrorAcknowledged(true);
                         // return;

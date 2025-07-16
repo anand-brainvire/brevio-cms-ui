@@ -14,7 +14,6 @@ import TextInput from '@components/textinput/TextInput';
 import filterServiceProps from '@components/filter/filter';
 import RoleBaseGuard from '@components/roleGuard';
 import { PERMISSION_LIST } from '@config/permission';
-import useSaveFilterData from '@src/hooks/useSaveFilterData';
 import BVDataTable from '@components/BVDatatable/BVDataTable';
 import { IColumnsProps, IListData } from '@components/BVDatatable/DataTable';
 
@@ -23,16 +22,14 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 	const [roleObj, setRoleObj] = useState<RoleDataArr | null>({} as RoleDataArr);
 	const { t } = useTranslation();
 	const [isRoleEditable, setIsRoleEditable] = useState<boolean>(false);
-	const { localFilterData } = useSaveFilterData();
-	const [filterData, setFilterData] = useState<PaginationParams>(
-		localFilterData('filterRuleSets') ?? {
-			limit: DEFAULT_LIMIT,
-			offset: ((DEFAULT_PAGE ?? DEFAULT_PAGE) - 1) * DEFAULT_LIMIT,
-			sortBy: sortBy,
-			sortOrder: sortOrder,
-			search: '',
-		}
-	);
+	const [filterData, setFilterData] = useState<PaginationParams>({
+	  limit: DEFAULT_LIMIT,
+	  page: DEFAULT_PAGE,
+	  offset: (DEFAULT_PAGE - 1) * DEFAULT_LIMIT,
+	  sortBy: sortBy,
+	  sortOrder: sortOrder,
+	  search: '',
+	});
 	const { data, refetch } = useQuery(GET_ROLES_DATA, { variables: { ...filterData }, fetchPolicy: 'network-only' });
 
 	const COL_ARR_ROLE = [

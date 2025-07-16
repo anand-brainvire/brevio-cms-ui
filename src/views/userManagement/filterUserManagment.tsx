@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback } from 'react';
+import React, { ReactElement, useCallback, useEffect } from 'react';
 import { useFormik } from 'formik';
 import Button from '@components/button/button';
 import { useTranslation } from 'react-i18next';
@@ -63,11 +63,20 @@ const FilterUserManagement = ({
 
     const resetPayload: any = {
       search: '',
-      isActive: null, // ✅ manually set this even though formik value is ''
+      isActive: null,
     };
 
     onSearchUser(resetPayload);
   }, []);
+
+  useEffect(() => {
+	formik.resetForm();
+	const resetPayload: any = {
+      search: '',
+      isActive: null,
+    };
+	onSearchUser(resetPayload)
+  },[])
 
   return (
     <div className='card'>

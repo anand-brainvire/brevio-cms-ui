@@ -5,11 +5,8 @@ import { Refresh, Search } from '@components/icons/icons';
 import TextInput from '@components/textinput/TextInput';
 import { useTranslation } from 'react-i18next';
 import { BannerProps, FilterAuthorProps } from '@type/banner';
-// import { AccesibilityNames, STATUS_DRP } from '@config/constant';
-// import DropDown from '@components/dropdown/dropDown';
-import filterServiceProps from '@components/filter/filter';
 
-const FilterBanner = ({ onSearchAuthor, filterData }: BannerProps) => {
+const FilterBanner = ({ onSearchAuthor }: BannerProps) => {
 	const { t } = useTranslation();
 
 	const initialValues: FilterAuthorProps = {
@@ -25,10 +22,9 @@ const FilterBanner = ({ onSearchAuthor, filterData }: BannerProps) => {
 	 * Method that sets filters data in local storage
 	 */
 	useEffect(() => {
-		const savedFilterDataJSONUser = filterServiceProps.getState('filterBanner', JSON.stringify(filterData));
-		const savedFilterData = JSON.parse(savedFilterDataJSONUser);
-		formik.setValues(savedFilterData || initialValues);
-	}, [filterData]);
+		formik.resetForm();
+		onSearchAuthor(initialValues);
+	}, []);
 
 	const onReset = useCallback(() => {
 		formik.resetForm();

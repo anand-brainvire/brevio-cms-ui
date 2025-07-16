@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Button from '@components/button/button';
 import { Cross } from '@components/icons/icons';
-
 type Props = {
   show: boolean;
   onClose: () => void;
@@ -20,6 +19,7 @@ const GenerateBookConfirmPopup = ({
   authorNames,
 }: Props) => {
   const [pageCount, setPageCount] = useState<number | ''>('');
+  const [error, setError] = useState('');
 
   // Handle outside click to close popup
   useEffect(() => {
@@ -38,9 +38,16 @@ const GenerateBookConfirmPopup = ({
   }, [onClose]);
 
   const handleConfirm = () => {
-    if (pageCount && Number(pageCount) > 0) {
-      onConfirm(Number(pageCount));
+    if (pageCount === '' || pageCount <= 0) {
+      setError('Page count is required and must be greater than 0.');
+      return;
     }
+    if (pageCount > 20) {
+      setError('Page count must not exceed 20');
+      return;
+    }
+    setError('');
+    onConfirm(pageCount);
   };
 
   if (!show) {
@@ -82,14 +89,20 @@ const GenerateBookConfirmPopup = ({
               <input
                 type='number'
                 min={1}
-                className='form-input w-full border border-gray-300 rounded px-3 py-2'
+                className={`form-input w-15 border rounded px-3 py-2 ${
+                  error ? 'border-red-500' : 'border-gray-300'
+                }`}
                 value={pageCount}
-                onChange={(e) =>
-                  setPageCount(
-                    e.target.value === '' ? '' : parseInt(e.target.value)
-                  )
-                }
+                onChange={(e) => {
+                  const val =
+                    e.target.value === '' ? '' : parseInt(e.target.value);
+                  setPageCount(val);
+                  if (val !== '' && val > 0 && val <= 20) {
+                    setError('');
+                  }
+                }}
               />
+              {error && <p className='text-sm text-red-500 mt-1'>{error}</p>}
             </div>
 
             <div className='text-sm text-gray-700 bg-gray-50 border p-3 rounded space-y-2'>

@@ -8,7 +8,6 @@ import TextInput from '@components/textinput/TextInput';
 import filterServiceProps from '@components/filter/filter';
 import RoleBaseGuard from '@components/roleGuard';
 import { PERMISSION_LIST } from '@config/permission';
-import useSaveFilterData from '@src/hooks/useSaveFilterData';
 import BVDataTable from '@components/BVDatatable/BVDataTable';
 import { Listing, PlusCircle, Refresh, Search } from '@components/icons/icons';
 import {
@@ -27,10 +26,9 @@ import DropDown from '@components/dropdown/dropDown';
 
 const categoryManagement = (): ReactElement => {
   const { t } = useTranslation();
-  const { localFilterData } = useSaveFilterData();
   const navigate = useNavigate();
 
-  const initialFilter = localFilterData('filterFaqmangment') ?? {
+  const initialFilter = {
     limit: DEFAULT_LIMIT,
     offset: 0,
     sortBy: 'created_at',
