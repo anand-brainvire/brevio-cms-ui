@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "booksummeries-prod-terraform-state"
+    bucket = "book-app-459606-production-terraform-state"
     prefix = "cmsui"
   }
 }
