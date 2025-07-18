@@ -149,7 +149,7 @@ const bookManagaement = () => {
 
   return (
     <div>
-      <FilterBooks onSearchCoupon={onSearchCoupon} filterData={filterData} />
+      <FilterBooks onSearchCoupon={onSearchCoupon} filterData={filterData} defaultCategoryId={defaultCategoryId}/>
       <div className='card-table'>
         <div className='card-header'>
           <div className='flex items-center'>

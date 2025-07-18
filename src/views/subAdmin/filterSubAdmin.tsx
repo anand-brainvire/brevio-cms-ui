@@ -5,20 +5,13 @@ import { Refresh, Search } from '@components/icons/icons';
 import TextInput from '@components/textinput/TextInput';
 import { useTranslation } from 'react-i18next';
 import { SubAdminProps } from '@type/subAdmin';
-import filterServiceProps from '@components/filter/filter';
 
-const FilterSubAdmin = ({ onSearchSubAdmin, filterData }: SubAdminProps): ReactElement => {
+const FilterSubAdmin = ({ onSearchSubAdmin }: SubAdminProps): ReactElement => {
     const { t } = useTranslation();
 
     const initialValues = {
         search: '',
     };
-
-    useEffect(() => {
-        const savedFilterDataJSONUser = filterServiceProps.getState('filtersubadmin', JSON.stringify(filterData));
-        const savedFilterData = JSON.parse(savedFilterDataJSONUser);
-        formik.setValues(savedFilterData || initialValues);
-    }, [filterData]);
 
     const formik = useFormik({
         initialValues,
@@ -31,6 +24,11 @@ const FilterSubAdmin = ({ onSearchSubAdmin, filterData }: SubAdminProps): ReactE
         formik.resetForm();
         onSearchSubAdmin(initialValues);
     }, []);
+
+    useEffect(() => {
+        formik.resetForm();
+        onSearchSubAdmin(initialValues);
+    },[])
 
     return (
         <div className='card'>

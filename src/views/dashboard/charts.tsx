@@ -52,9 +52,9 @@ const BarChartCard: React.FC<BarChartCardProps> = ({
 }) => {
   if (!data || data.length === 0) {
     return (
-      <div className='w-full max-w-3xl mx-auto bg-white rounded-xl shadow p-4 text-center text-gray-500'>
+      <div className='w-full bg-white rounded-xl shadow p-4 text-center text-gray-500'>
         <h2 className='text-xl font-semibold text-gray-800 mb-2'>{title}</h2>
-        <p>No data available</p>
+        <p className='py-4 text-lg'>No data available</p>
       </div>
     );
   }

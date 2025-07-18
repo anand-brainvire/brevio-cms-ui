@@ -10,7 +10,6 @@ import {
   FilterCouponsProps,
   PaginationParamsCoupon,
 } from '@type/bookManagement';
-import filterServiceProps from '@components/filter/filter';
 import { MultiSelect } from 'primereact/multiselect';
 import { useQuery } from '@apollo/client';
 import { FETCH_CATEGORY } from '@framework/graphql/queries/category';
@@ -18,7 +17,7 @@ import i18n from '@src/i18n';
 
 const FilterBooks = ({
   onSearchCoupon,
-  filterData,
+  defaultCategoryId,
 }: CouponsManagementProps) => {
   const { t } = useTranslation();
 
@@ -29,6 +28,7 @@ const FilterBooks = ({
   // const [isInitialRedirected, setIsInitialRedirected] = useState(false);
   const initialValues: FilterCouponsProps = {
     search: '',
+    categoryId: defaultCategoryId? [defaultCategoryId] : [],
   };
 
   const formik = useFormik({
@@ -123,13 +123,8 @@ const FilterBooks = ({
   }, []);
 
   useEffect(() => {
-    const savedFilterDataJSONUser = filterServiceProps.getState(
-      'filterCoupon',
-      JSON.stringify(filterData)
-    );
-    const savedFilterData = JSON.parse(savedFilterDataJSONUser);
-
-    formik.setValues(savedFilterData || initialValues);
+    formik.resetForm();
+    onSearchCoupon(initialValues);
   }, []);
 
   return (

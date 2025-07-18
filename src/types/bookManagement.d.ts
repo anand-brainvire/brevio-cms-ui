@@ -75,7 +75,7 @@ export type CouponColArrType = {
 	fildName: string;
 };
 export type CouponsManagementProps = {
-	defaultCategoryId?: string
+	defaultCategoryId?: string | null;
 	onSearchCoupon: (values: FilterCouponsProps) => void;
 	filterData: PaginationParamsCoupon;
 };
