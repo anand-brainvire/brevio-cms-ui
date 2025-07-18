@@ -2,6 +2,7 @@ export type UserProps = {
 	onSearchUser: (value: FilterUserProps) => void;
 	clearSelectionUserMng: () => void;
 	filterData: PaginationParams
+	onLimitChange: (newLimit: number) => void;
 };
 
 export type FilterUserProps = {

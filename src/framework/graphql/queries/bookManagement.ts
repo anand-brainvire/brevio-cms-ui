@@ -123,6 +123,7 @@ export const GET_ALL_BOOK_PAGES = gql`
 						audio_female
 						total_minutes
 						total_seconds
+						regenerate_audio
 					}
 					insights {
 						uuid

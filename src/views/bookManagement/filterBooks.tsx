@@ -1,7 +1,7 @@
 import Button from '@components/button/button';
 import { Refresh, Search } from '@components/icons/icons';
 import TextInput from '@components/textinput/TextInput';
-import { BOOK_STATUS_DRP, IS_ALL } from '@config/constant';
+import { BOOK_STATUS_DRP, DEFAULT_LIMIT, IS_ALL } from '@config/constant';
 import { useFormik } from 'formik';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,13 +14,16 @@ import { MultiSelect } from 'primereact/multiselect';
 import { useQuery } from '@apollo/client';
 import { FETCH_CATEGORY } from '@framework/graphql/queries/category';
 import i18n from '@src/i18n';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const FilterBooks = ({
   onSearchCoupon,
   defaultCategoryId,
+  onLimitChange,
 }: CouponsManagementProps) => {
   const { t } = useTranslation();
-
+  const navigate = useNavigate();
+  const location = useLocation();
   const { data, refetch: fetchAllCategories } = useQuery(FETCH_CATEGORY, {
     variables: { isAll: IS_ALL, isActive: true },
   });
@@ -117,10 +120,24 @@ const FilterBooks = ({
       setCategoryDroData(tempDataArr);
     }
   }, [data]);
+
   const onReset = useCallback(() => {
-    formik.resetForm();
-    onSearchCoupon(initialValues);
-  }, []);
+    onLimitChange(DEFAULT_LIMIT);
+    formik.setValues({
+      ...initialValues,
+      categoryId: [],
+    });
+    onSearchCoupon({
+      ...initialValues,
+      categoryId: [],
+    });
+    const params = new URLSearchParams(location.search);
+    params.delete('categoryId');
+    navigate({
+      pathname: location.pathname,
+      search: params.toString(),
+    });
+  }, [location, navigate, onLimitChange, onSearchCoupon]);
 
   useEffect(() => {
     formik.resetForm();

@@ -21,7 +21,7 @@ import ImageCell from './imageCell';
 import TextCell from './textCell';
 import BadgeCell from './badgeCell';
 
-const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteMutation, updateStatusMutation, sessionFilterName, updatedFilterData, actionWisePermissions, defaultActions, actionData, extraActions, statusKey, idKey, multipleDeleteApiId, rowRefData }: IBVDataTablesProps): ReactElement => {
+const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteMutation, updateStatusMutation, sessionFilterName, updatedFilterData, actionWisePermissions, defaultActions, actionData, extraActions, statusKey, idKey, multipleDeleteApiId, rowRefData, onLimitChange, limit }: IBVDataTablesProps): ReactElement => {
 	const { localFilterData } = useSaveFilterData();
 	const navigate = useNavigate();
 	const { t } = useTranslation();
@@ -132,7 +132,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 		(sortFieldName: string) => {
 			const updatedFilterData = {
 				...filterData,
-				page: DEFAULT_PAGE,
+				page: filterData.page,
 				sortBy: sortFieldName,
 				sortOrder: filterData.sortOrder === 'asc' ? 'desc' : 'asc',
 			};
@@ -281,19 +281,33 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 					const data = res?.data;
 					const firstLevelKey = Object.keys(data);
 					if (data?.[`${firstLevelKey}`]?.meta?.statusCode === 200) {
-						setLoadingState(false);
 						toast.success(data?.[`${firstLevelKey}`]?.meta?.message);
-						setIsDeletePopup(false);
-						setSingleDeleteId('');
-						onClose(false);
-					}
+						const isLastItem = listData.length === 1;
+						const isLastPage = filterData.page === Math.ceil(totalRecords / filterData.limit);
+						const shouldGoToFirstPage = isLastItem && isLastPage;
+						const newPage = shouldGoToFirstPage ? DEFAULT_PAGE : filterData.page;
+						setFilterData({
+							...filterData,
+							page: newPage,
+							offset: (newPage - 1) * filterData.limit,
+						});
+						filterServiceProps.saveState(sessionFilterName, JSON.stringify({
+							...filterData,
+							page: newPage,
+							offset: (newPage - 1) * filterData.limit,
+						}));
+							setLoadingState(false);
+							setIsDeletePopup(false);
+							setSingleDeleteId('');
+							onClose(false);
+						}
 				})
 				.catch(() => {
 					setIsDeletePopup(false);
 					return setLoadingState(false);
 				});
 		}
-	}, [isDeletePopup, singleDeleteId, loadingState]);
+	}, [isDeletePopup, singleDeleteId, filterData, loadingState]);
 
 	const statusPopup = useCallback(
 		(id: string, status: string | number) => {
@@ -377,10 +391,19 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 				<div className='flex items-center space-x-2 justify-between w-full'>
 					<div>
 						<span className='table-select-dropdown-label'>{t('Show')}</span>
-						<select aria-label={AccesibilityNames.Entries} className='table-select-dropdown' onChange={(e) => handlePageCountChange(e.target.value)} value={filterData.limit}>
-							{SHOW_PAGE_COUNT_ARR?.map((item: number) => {
-								return <option key={item}>{item}</option>;
-							})}
+						<select
+							aria-label={AccesibilityNames.Entries}
+							className='table-select-dropdown'
+							onChange={(e) => {
+								handlePageCountChange(e.target.value); // existing local logic
+								if (onLimitChange) {
+								onLimitChange(Number(e.target.value)); // update parent state
+								}
+							}}    value={limit}
+							>
+							{SHOW_PAGE_COUNT_ARR?.map((item: number) => (
+								<option key={item}>{item}</option>
+							))}
 						</select>
 						<span className='table-select-dropdown-label'>{t('entries')}</span>
 					</div>

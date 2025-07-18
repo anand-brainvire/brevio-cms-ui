@@ -22,7 +22,7 @@ import RadioButton from '@components/radiobutton/radioButton';
 
 const AddEditSubdmin = (): ReactElement => {
 	const { t } = useTranslation();
-	const { refetch: roles, loading } = useQuery(GET_ROLES_DATALIST, { variables: { isAll: IS_ALL }, fetchPolicy: 'network-only' });
+	const { refetch: roles, loading } = useQuery(GET_ROLES_DATALIST, { variables: { isAll: IS_ALL, isActive: true }, fetchPolicy: 'network-only' });
 	const [roleDrpData, setRoleDrpData] = useState<DropdownOptionType[]>([]);
 	const [createSubAdmin, { loading: createLoader }] = useMutation(CREATE_SUBADMIN);
 	const [updateSubAdmin, { loading: updateLoader }] = useMutation(UPDATE_SUBADMIN);

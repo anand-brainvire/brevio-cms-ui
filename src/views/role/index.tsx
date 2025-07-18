@@ -21,6 +21,7 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 	const [isRoleModelShow, setIsRoleModelShow] = useState<boolean>(false);
 	const [roleObj, setRoleObj] = useState<RoleDataArr | null>({} as RoleDataArr);
 	const { t } = useTranslation();
+	const [limit, setLimit] = useState(DEFAULT_LIMIT);
 	const [isRoleEditable, setIsRoleEditable] = useState<boolean>(false);
 	const [filterData, setFilterData] = useState<PaginationParams>({
 	  limit: DEFAULT_LIMIT,
@@ -44,6 +45,11 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 		setIsRoleModelShow(false);
 		setRoleObj(null);
 	}, []);
+
+	const handleLimitChange = (newLimit:number) => {
+	  setLimit(newLimit);
+	  setFilterData((prev) => ({ ...prev, limit: newLimit, page: 1 }));
+	};
 
 	/**
 	 * Method used for refetch data and close model after submit
@@ -80,10 +86,11 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 			...filterData,
 			search: e.target.value,
 			offset: ((DEFAULT_PAGE ?? filterData.page) - 1) * filterData.limit,
+			limit:limit
 		};
 		setFilterData(updatedFilterData);
 		filterServiceProps.saveState('filterRuleSets', JSON.stringify(updatedFilterData));
-	}, []);
+	}, [limit,filterData]);
 
 	const handleRowRef = useCallback(
 		(data: IListData) => {
@@ -116,6 +123,8 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 			</div>
 			<div className='card-body'>
 				<BVDataTable
+					limit={limit}
+    				onLimitChange={handleLimitChange}
 					defaultActions={['delete', 'change_status']}
 					columns={COL_ARR_ROLE}
 					queryName={GET_ROLES_DATA}

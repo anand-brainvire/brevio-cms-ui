@@ -26,6 +26,7 @@ export const GET_USER = gql`
 				books_completed
 				signed_up_at
 				current_streak_count
+				is_trial
 			}
 				count
 			}

@@ -39,7 +39,7 @@ const categoryManagement = (): ReactElement => {
   };
 
   const [filterData, setFilterData] = useState<PaginationParams>(initialFilter);
-
+  const [limit, setLimit] = useState(DEFAULT_LIMIT);
   const [tempFilter, setTempFilter] = useState({
     search: initialFilter.search || '',
     isActive:
@@ -84,6 +84,11 @@ const categoryManagement = (): ReactElement => {
     },
   ] as ColArrType[];
 
+  const handleLimitChange = (newLimit:number) => {
+	  setLimit(newLimit);
+	  setFilterData((prev) => ({ ...prev, limit: newLimit, page: 1 }));
+	};
+
   const onSearchInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setTempFilter((prev) => ({ ...prev, search: e.target.value }));
@@ -110,6 +115,7 @@ const categoryManagement = (): ReactElement => {
           : null,
       page: DEFAULT_PAGE,
       offset: 0,
+			limit:limit
     };
 
     setFilterData(updatedFilter);
@@ -117,7 +123,7 @@ const categoryManagement = (): ReactElement => {
       'filterFaqmangment',
       JSON.stringify(updatedFilter)
     );
-  }, [tempFilter, filterData]);
+  }, [tempFilter, filterData, limit]);
 
   const onResetButtonClick = useCallback(() => {
     const resetFilter: PaginationParams = {
@@ -126,7 +132,9 @@ const categoryManagement = (): ReactElement => {
       isActive: null,
       page: DEFAULT_PAGE,
       offset: 0,
+      limit: DEFAULT_LIMIT
     };
+    handleLimitChange(DEFAULT_LIMIT);
     setTempFilter({
       search: '',
       isActive: '',
@@ -222,6 +230,8 @@ const categoryManagement = (): ReactElement => {
         </div>
         <div className='card-body'>
           <BVDataTable
+            limit={limit}
+    				onLimitChange={handleLimitChange}
             defaultActions={[
               'edit',
               'delete',

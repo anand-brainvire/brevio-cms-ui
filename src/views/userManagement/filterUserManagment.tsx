@@ -6,12 +6,13 @@ import { FilterUserProps, UserProps } from '@type/user';
 import { Refresh, Search } from '@components/icons/icons';
 import TextInput from '@components/textinput/TextInput';
 // import filterServiceProps from '@components/filter/filter';
-import { STATUS_DRP } from '@config/constant';
+import { DEFAULT_LIMIT, STATUS_DRP } from '@config/constant';
 import DropDown from '@components/dropdown/dropDown';
 
 const FilterUserManagement = ({
   onSearchUser,
   clearSelectionUserMng,
+  onLimitChange,
 }: UserProps): ReactElement => {
   const { t } = useTranslation();
 
@@ -59,8 +60,8 @@ const FilterUserManagement = ({
    * method that reset filter data
    */
   const onReset = useCallback(() => {
+    onLimitChange(DEFAULT_LIMIT);
     formik.resetForm();
-
     const resetPayload: any = {
       search: '',
       isActive: null,

@@ -142,6 +142,7 @@ const BookPages = ({
         ['richText']: translation?.html_content || '',
         ['audioMale']: translation?.audio_male || null,
         ['audioFemale']: translation?.audio_female || null,
+        ['regenerateAudio']: translation?.regenerate_audio,
         ['insights']: insightsArray,
       });
 

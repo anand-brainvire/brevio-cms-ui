@@ -4,6 +4,7 @@ import { translationFun } from '@utils/helpers';
 
 const useCommanValidationFields = () => {
 	const password = Yup.string().required(translationFun('Please enter password')).matches(PASSWORD_REGEX, translationFun('Password must contain 1 lower case, 1 upper case, 1 number, 1 special character ( @  $ % ^ & #) & minimum 8 characters')).min(8, translationFun('Password should not be less than 8 characters')).max(20, translationFun('Password should not be greater than 20 characters'));
+	const passwordLogin = Yup.string().required(translationFun('Please enter password'));
 	const confirmPasswordcomman = Yup.string()
 		.required(translationFun('Please enter confirm password'))
 		.oneOf([Yup.ref('password'), null], translationFun('Confirm Password should match with password'))
@@ -25,6 +26,7 @@ const useCommanValidationFields = () => {
 
 	return {
 		password,
+		passwordLogin,
 		email,
 		firstName,
 		lastName,

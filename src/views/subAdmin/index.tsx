@@ -23,6 +23,7 @@ const SubAdmin = (): ReactElement => {
 	const [subAdminObj, setSubAdminObj] = useState<SubAdminDataArr>({} as SubAdminDataArr);
 	const [isChangePasswordModel, setIsChangePasswordModel] = useState<boolean>(false);
 	const { localFilterData } = useSaveFilterData();
+	const [limit, setLimit] = useState(DEFAULT_LIMIT);
 	const [filterData, setFilterData] = useState<PaginationParams>(
 		localFilterData('filtersubadmin') ?? {
 			limit: DEFAULT_LIMIT,
@@ -44,6 +45,11 @@ const SubAdmin = (): ReactElement => {
 		{ name: t('Status'), sortable: true, fieldName: 'is_active', type: 'status', headerCenter: true },
 	] as ColArrType[];
 
+	const handleLimitChange = (newLimit:number) => {
+	  setLimit(newLimit);
+	  setFilterData((prev) => ({ ...prev, limit: newLimit, page: 1 }));
+	};
+
 	/**
 	 *
 	 * @param values Method used for set filter data
@@ -54,10 +60,11 @@ const SubAdmin = (): ReactElement => {
         	search: values.search.trim(),
 			page: DEFAULT_PAGE,
 			offset: ((DEFAULT_PAGE ?? filterData.page) - 1) * filterData.limit,
+			limit:limit
 		};
 		setFilterData(updatedFilterData);
 		filterServiceProps.saveState('filtersubadmin', JSON.stringify(updatedFilterData));
-	}, [filterData]);
+	}, [limit,filterData]);
 
 	/**
 	 * Method used for close model
@@ -92,7 +99,7 @@ const SubAdmin = (): ReactElement => {
 
 	return (
 		<div>
-			<FilterSubAdmin onSearchSubAdmin={onSearchSubAdmin} filterData={filterData} />
+			<FilterSubAdmin onLimitChange={handleLimitChange} onSearchSubAdmin={onSearchSubAdmin} filterData={filterData} />
 			<div className='card-table'>
 				<div className='card-header'>
 					<div className='flex items-center'>
@@ -113,6 +120,8 @@ const SubAdmin = (): ReactElement => {
 				</div>
 				<div className='card-body'>
 					<BVDataTable
+						limit={limit}
+    					onLimitChange={handleLimitChange}
 						defaultActions={['edit', 'delete', 'change_status', 'multiple_delete']}
 						columns={COL_ARR_SUB_ADMIN}
 						queryName={GET_SUBADMIN}

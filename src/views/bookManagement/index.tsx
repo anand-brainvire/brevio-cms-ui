@@ -37,6 +37,7 @@ const bookManagaement = () => {
     queryParams.get('categoryId')
   );
   const [isBookModalOpen, setBookModalOpen] = useState(false);
+  const [limit, setLimit] = useState(DEFAULT_LIMIT);
   const [filterData, setFilterData] = useState<PaginationParamsCoupon>(
     localFilterData('filterCoupon') || {
       limit: DEFAULT_LIMIT,
@@ -59,6 +60,12 @@ const bookManagaement = () => {
       });
     }
   }, [defaultCategoryId]);
+	
+  const handleLimitChange = (newLimit:number) => {
+	  setLimit(newLimit);
+	  setFilterData((prev) => ({ ...prev, limit: newLimit, page: 1 }));
+	};
+
 
   const COL_ARR_COUPONS = [
     {
@@ -116,6 +123,7 @@ const bookManagaement = () => {
       setFilterData({
         ...filterData,
         filter: values.filter,
+			  limit:limit
       });
       filterServiceProps.saveState(
         'filterCoupon',
@@ -125,7 +133,7 @@ const bookManagaement = () => {
         })
       );
     },
-    [filterData]
+    [limit,filterData]
   );
 
   /**
@@ -149,7 +157,7 @@ const bookManagaement = () => {
 
   return (
     <div>
-      <FilterBooks onSearchCoupon={onSearchCoupon} filterData={filterData} defaultCategoryId={defaultCategoryId}/>
+      <FilterBooks onLimitChange={handleLimitChange} onSearchCoupon={onSearchCoupon} filterData={filterData} defaultCategoryId={defaultCategoryId}/>
       <div className='card-table'>
         <div className='card-header'>
           <div className='flex items-center'>
@@ -175,6 +183,8 @@ const bookManagaement = () => {
         </div>
         <div className='card-body'>
           <BVDataTable
+            limit={limit}
+    				onLimitChange={handleLimitChange}
             defaultActions={[
               'edit',
               'delete',

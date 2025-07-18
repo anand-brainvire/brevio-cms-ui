@@ -202,7 +202,7 @@ const Dashboard = () => {
         <div>
           <List
             books={recentlyAddedBooks}
-            fieldsToDisplay={['title', 'categories']}
+            fieldsToDisplay={['title', 'categories', 'publishedDate']}
             title='List of Recently Added Books'
           />
         </div>

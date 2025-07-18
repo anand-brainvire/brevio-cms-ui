@@ -63,6 +63,8 @@ export interface IBVDataTablesProps {
 	statusChangeApiId?: string;
 	statusChangeApiKeyTitle?: string;
 	rowRefData?: (data: IListData) => void;
+	limit?: number;
+    onLimitChange?: (newLimit: number) => void;
 }
 
 export interface IImageCell {

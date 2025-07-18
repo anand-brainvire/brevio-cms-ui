@@ -97,7 +97,8 @@ const editBooks = (): ReactElement => {
   const [isImageModelShow, setIsImageModelShow] = useState<boolean>(false);
   const [isPublished, setIsPublished] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [replacePages,setReplacePages] = useState(false);
+  const [replacePages, setReplacePages] = useState(false);
+  const [shouldTriggerFileClick, setShouldTriggerFileClick] = useState(false);
   const [generatedBookContent, setGeneratedBookContent] = useState<any>();
   const [showGeneratedPreviewModal, setShowGeneratedPreviewModal] =
     useState(false);
@@ -261,7 +262,7 @@ const editBooks = (): ReactElement => {
     };
 
     fetchAndSetData();
-  }, [selectedTab, params.id, i18n.language]);
+  }, [selectedTab, params.id, i18n.language, bookVersionStatus]);
 
   const { register, control, reset, getValues } = useForm({
     defaultValues: {
@@ -394,20 +395,20 @@ const editBooks = (): ReactElement => {
         toast.success(t('Draft pages deleted successfully'));
         setShowConfirmPopup(false);
         setReplacePages(true);
-          const d = generatedBookContent
-          formik.setValues({
-            title: d.title,
-            categoryId: d.categories.map((c: any) => c.uuid),
-            authorId: d.authors.map((a: any) => a.uuid),
-            whatsInside: d.about_book,
-            aboutAuthor: d.about_authors,
-            coverImage: d.cover_image_url,
-            learningPoints: d.learning_points.map((pt: string) => ({
-              value: pt,
-            })),
-          });
-          remove();
-          d.learning_points.forEach((pt: string) => append({ value: pt }));
+        const d = generatedBookContent;
+        formik.setValues({
+          title: d.title,
+          categoryId: d.categories.map((c: any) => c.uuid),
+          authorId: d.authors.map((a: any) => a.uuid),
+          whatsInside: d.about_book,
+          aboutAuthor: d.about_authors,
+          coverImage: d.cover_image_url,
+          learningPoints: d.learning_points.map((pt: string) => ({
+            value: pt,
+          })),
+        });
+        remove();
+        d.learning_points.forEach((pt: string) => append({ value: pt }));
       } else {
         toast.error(t('Failed to delete draft pages'));
       }
@@ -421,6 +422,11 @@ const editBooks = (): ReactElement => {
   */
   const handleUnpublishBook = () => {
     setIsPublished(!isPublished);
+    if (bookVersionStatus === 'published'){
+      setBookVersionStatus('unpublished');
+    } else {
+      setBookVersionStatus('published');
+    }
     unpublishBook({
       variables: {
         uuid: params.id,
@@ -641,6 +647,7 @@ const editBooks = (): ReactElement => {
         const uploadedImageUrl = response?.data?.images?.[0]?.url;
         setOriginalCoverImageUrl(uploadedImageUrl);
         setUplodedImageUrl(uploadedImageUrl);
+        setIsImageUploded(true);
         setIsUploading(false);
       }
       setIsUploading(false);
@@ -732,6 +739,18 @@ const editBooks = (): ReactElement => {
   const openImageModel = useCallback(() => {
     setIsImageModelShow(true);
   }, []);
+
+  const handleUploadNewImage = () => {
+    setIsImageUploded(false);
+    setShouldTriggerFileClick(true);
+  };
+
+  useEffect(() => {
+    if (!isImageUploded && shouldTriggerFileClick) {
+      fileInputRef?.current?.click();
+      setShouldTriggerFileClick(false); // reset
+    }
+  }, [isImageUploded, shouldTriggerFileClick]);
 
   /**
    * Method that refine the input text
@@ -1141,15 +1160,16 @@ const editBooks = (): ReactElement => {
                           className='w-[50px] h-[75.03px] object-cover cursor-pointer border border-gray-300 rounded-sm'
                           title='Click to preview'
                         />
-                      {isEditable && (
-                        <button
-                          type='button'
-                          onClick={() => setIsImageUploded(false)}
-                          className='btn btn-secondary'
-                        >
-                          Upload new image
-                        </button>
-                      )}
+                        {isEditable && (
+                          <button
+                            type='button'
+                            onClick={handleUploadNewImage}
+                            className='btn btn-secondary'
+                          >
+                            Upload new image
+                          </button>
+                        )}
+
                         {isEditable && (
                           <button
                             type='button'
@@ -1283,14 +1303,14 @@ const editBooks = (): ReactElement => {
                 </span>
               </Button>
             )}
-              {isEditable && (
-                <Button className='btn-secondary' onClick={onCancelEditBookInfo}>
-                  <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
-                    <Cross />
-                  </span>
-                  {t('Cancel')}
-                </Button>
-              )}
+            {isEditable && (
+              <Button className='btn-secondary' onClick={onCancelEditBookInfo}>
+                <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
+                  <Cross />
+                </span>
+                {t('Cancel')}
+              </Button>
+            )}
           </div>
         </form>
         {showRefinePopup && refineFieldKey && (
@@ -1375,15 +1395,15 @@ const editBooks = (): ReactElement => {
           />
         )}
         {showGeneratedPreviewModal && (
-        <GeneratedBookPreviewModal
-          isOpen={showGeneratedPreviewModal}
-          onClose={() => setShowGeneratedPreviewModal(false)}
-          onAccept={() => {
-            setShowGeneratedPreviewModal(false);
-            setShowConfirmPopup(true);
-          }}
-          bookContent={generatedBookContent}
-        />
+          <GeneratedBookPreviewModal
+            isOpen={showGeneratedPreviewModal}
+            onClose={() => setShowGeneratedPreviewModal(false)}
+            onAccept={() => {
+              setShowGeneratedPreviewModal(false);
+              setShowConfirmPopup(true);
+            }}
+            bookContent={generatedBookContent}
+          />
         )}
       </div>
       {params.id && (

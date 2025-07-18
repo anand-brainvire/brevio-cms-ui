@@ -78,6 +78,7 @@ export type CouponsManagementProps = {
 	defaultCategoryId?: string | null;
 	onSearchCoupon: (values: FilterCouponsProps) => void;
 	filterData: PaginationParamsCoupon;
+	onLimitChange: (newLimit: number) => void;
 };
 export type FilterCouponsProps = {
 	search: string;

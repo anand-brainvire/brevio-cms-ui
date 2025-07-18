@@ -19,6 +19,7 @@ function Author() {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const { localFilterData } = useSaveFilterData();
+	const [limit, setLimit] = useState(DEFAULT_LIMIT);
 	const [filterData, setFilterData] = useState<authorPagination>(
 		localFilterData('filterBanner') ?? {
 			page: DEFAULT_PAGE,
@@ -56,6 +57,12 @@ function Author() {
 			// headerCenter: true,
 		},
 	] as ColArrType[];
+	
+	const handleLimitChange = (newLimit:number) => {
+		setLimit(newLimit);
+		setFilterData((prev) => ({ ...prev, limit: newLimit, page: 1 }));
+	};
+
 	/**
 	 * handle's search
 	 */
@@ -66,12 +73,13 @@ function Author() {
 				search: values.search.trim(),
 				page: DEFAULT_PAGE,
 				offset: ((DEFAULT_PAGE ?? filterData.page) - 1) * filterData.limit,
+				limit:limit
 			};
 			setFilterData(updatedFilterData);
 			filterServiceProps.saveState('filterBanner', JSON.stringify(updatedFilterData));
 
 		},
-		[filterData]
+		[limit,filterData]
 	);
 	/**
 	 * Method that redirects to add page
@@ -82,7 +90,7 @@ function Author() {
 
 	return (
 		<div>
-			<FilterBanner onSearchAuthor={onSearchAuthor} filterData={filterData} />
+			<FilterBanner onLimitChange={handleLimitChange} onSearchAuthor={onSearchAuthor} filterData={filterData} />
 			<div className='card-table'>
 				<div className='card-header '>
 					<div className='flex items-center'>
@@ -103,6 +111,8 @@ function Author() {
 				</div>
 				<div className='card-body'>
 					<BVDataTable
+						limit={limit}
+    					onLimitChange={handleLimitChange}
 						defaultActions={['edit', 'delete', 'change_status', 'multiple_delete']}
 						columns={COL_ARR}
 						queryName={GET_AUTHOR}

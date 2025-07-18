@@ -17,7 +17,7 @@ const Login = React.lazy(() => import('@views/login'));
 function App() {
 	return (
 		<>
-			<ToastContainer pauseOnHover={false} />
+			<ToastContainer pauseOnHover={true} />
 
 			<Suspense>
 				<Routes>

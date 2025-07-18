@@ -5,6 +5,7 @@ export type FilterSubadminProps = {
 export type SubAdminProps = {
 	onSearchSubAdmin: (value: FilterSubadminProps) => void;
 	filterData: PaginationParams;
+	onLimitChange: (newLimit: number) => void;
 };
 
 export type ColArrType = {

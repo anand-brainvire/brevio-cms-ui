@@ -4,7 +4,7 @@ import useValidationFields from '@src/hooks/validations/fields';
 import { validationProps } from '@src/types/common';
 
 const useValidation = () => {
-	const { email, password, firstName, lastName, status, endDate, startDate, address, title, contactNo, confirmPasswordcomman } = useCommanValidationFields();
+	const { email, passwordLogin, password, firstName, lastName, status, endDate, startDate, address, title, contactNo, confirmPasswordcomman } = useCommanValidationFields();
 	const {
 		abuseThreshold,
 		categorSuggestion,
@@ -97,7 +97,7 @@ const useValidation = () => {
 
 	const loginValidationSchema = Yup.object({
 		email: email,
-		password: password,
+		password: passwordLogin,
 	});
 	const suadminpasswordValidationSchema = Yup.object({
 		newPassword: newPassword,

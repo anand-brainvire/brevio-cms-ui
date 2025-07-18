@@ -68,8 +68,8 @@ export const CHANGE_USER_STATUS = gql`
 
 export const DELETE_USER = gql`
 	${META_FRAGMENT}
-	mutation DeleteUser($deleteUserId: UUID) {
-		deleteUser(uuid: $deleteUserId) {
+	mutation DeleteMobileUser($uuid: ID!) {
+		deleteMobileUser(uuid: $uuid) {
 			meta {
 				...MetaFragment
 			}
