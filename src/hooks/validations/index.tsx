@@ -88,9 +88,9 @@ const useValidation = () => {
 		whatsInsidePublish,
 		aboutAuthorPublish,
 		coverImage,
-		whatsInside,
-		aboutAuthor,
-		learningPoints,
+		// whatsInside,
+		// aboutAuthor,
+		// learningPoints,
 		keyPoint,
 		richText,
 	} = useValidationFields();
@@ -226,16 +226,16 @@ const useValidation = () => {
 	});
 
 	const addBookValidationSchema = Yup.object({
-		bookName: bookName
+		title: bookName
 	});
 
 	const addBookInfoValidationSchema = Yup.object({
 		title: bookName,
-		whatsInside: whatsInside,
-		aboutAuthor: aboutAuthor,
-		learningPoints: learningPoints,
-		// categoryId: addCategories,
-		// authorId: AddAuthors
+		// whatsInside: whatsInside,
+		// aboutAuthor: aboutAuthor,
+		// learningPoints: learningPoints,
+		categoryId: addCategories,
+		authorId: AddAuthors
 	});
 
 	const publishBookValidationSchema = Yup.object({

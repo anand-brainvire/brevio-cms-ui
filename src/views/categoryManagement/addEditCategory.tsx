@@ -30,6 +30,7 @@ import {
 const AddEditCategory = (): ReactElement => {
   const { t } = useTranslation();
   const { data, refetch: fetchAllGoals } = useQuery(FETCH_GOALS, {
+    // variables: { isAll: IS_ALL, sortBy: 'title', sortOrder: 'asc'},
     variables: { isAll: IS_ALL },
   });
   const [goalDroData, setGoalDroData] = useState<DropdownOptionType[]>([]);

@@ -8,11 +8,12 @@ export type PaginationParamsCoupon = {
 	limit: number;
 	offset: number;
 	sortBy: string;
-	sortOrder: string;
+	sortOrder: string;	
+	page?: number;
 };
 
 export type BookInputType = {
-	bookName: string;
+	title: string;
 }
 export type Insight = {
   value: string;

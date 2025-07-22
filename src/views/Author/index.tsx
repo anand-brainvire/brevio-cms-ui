@@ -54,7 +54,7 @@ function Author() {
 			sortable: true,
 			fieldName: 'updated_at',
 			type: 'date',
-			// headerCenter: true,
+			headerCenter: true,
 		},
 	] as ColArrType[];
 	

@@ -13,6 +13,7 @@ export type ColArrType = {
 	sortable: boolean;
 	fieldName: string;
 	type: 'image' | 'text' | 'date' | 'status' | 'action';
+	headerCenter?: boolean
 };
 
 export type PaginationParams = {

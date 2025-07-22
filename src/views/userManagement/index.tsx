@@ -49,7 +49,7 @@ const UserManagement = (): ReactElement => {
 		{ name: t('Subscription status'), sortable: true, type: 'subscriptionStatus', fieldName: 'is_subscribed', headerCenter: true },
 		{ name: t('Current streak count'), sortable: false, type: 'number', fieldName: 'current_streak_count',headerCenter: true },
 		{ name: t('Books completed'), sortable: true, type: 'number', fieldName: 'books_completed',headerCenter: true },
-		{ name: t('Daily goal'), sortable: false, type: 'number', fieldName: 'daily_goal_minutes',headerCenter: true },
+		{ name: t('Daily goal (In minutes)'), sortable: false, type: 'number', fieldName: 'daily_goal_minutes',headerCenter: true },
 		{ name: t('Registration At'), sortable: false, type: 'date', fieldName: 'signed_up_at',headerCenter: true },
 		{ name: t('Status'), sortable: true, type: 'status', fieldName: 'is_active', headerCenter: true },
 

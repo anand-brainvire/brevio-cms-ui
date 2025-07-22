@@ -33,7 +33,7 @@ const RolePermissions = () => {
 	const [selectedKeys, setSelectedKeys] = useState<TreeCheckboxSelectionKeys>({ '46d61fe6-c2bb-4218-84e9-ac00016d5c64': { checked: true, partialChecked: false } });
 	const { t } = useTranslation();
 	const { data } = useQuery(GET_PERMISSIONS);
-	const { data: roleData, refetch: refetchRoleData } = useQuery(GET_ROLES_DATALIST, { variables: { isAll: IS_ALL }, fetchPolicy: 'network-only' });
+	const { data: roleData, refetch: refetchRoleData } = useQuery(GET_ROLES_DATALIST, { variables: { isAll: IS_ALL, sortOrder: 'asc', sortBy: 'role_name' }, fetchPolicy: 'network-only' });
 	const { refetch: getRolePermissionListById } = useQuery(FETCH_ROLE_PERMISSIONS_BY_ID, { skip: true, fetchPolicy: 'network-only' });
 	const [createRolePermissions, { loading: createLoader }] = useMutation(CREARTE_ROLE_PERMISSIONS);
 	const [roleDrpData, setRoleDrpData] = useState<DropdownOptionType[]>([]);

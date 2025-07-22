@@ -25,7 +25,7 @@ const FilterBooks = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { data, refetch: fetchAllCategories } = useQuery(FETCH_CATEGORY, {
-    variables: { isAll: IS_ALL, isActive: true, sortOrder: 'asc', sortBy: 'name'},
+    variables: { isAll: IS_ALL, sortOrder: 'asc', sortBy: 'name'},
   });
   const [categoryDroData, setCategoryDroData] = useState([]);
   // const [isInitialRedirected, setIsInitialRedirected] = useState(false);
@@ -123,6 +123,7 @@ const FilterBooks = ({
 
   const onReset = useCallback(() => {
     onLimitChange(DEFAULT_LIMIT);
+    formik.resetForm();
     formik.setValues({
       ...initialValues,
       categoryId: [],

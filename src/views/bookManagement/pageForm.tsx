@@ -317,33 +317,6 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
               isUploading) && <Loader />}
             <form className='p-4 space-y-6'>
               <label className='block mb-2 font-medium'>
-                {t('Rich Text Editor with Preview')}{' '}
-                <span className='error'>*</span>
-              </label>
-              <CKEditorComponent
-                id={`rich-text-editor-${index}`}
-                label=''
-                required
-                value={formik.values.richText}
-                onChange={(val: string) =>
-                  formik.setFieldValue('richText', val)
-                }
-                error={
-                  formik.errors.richText && formik.touched.richText
-                    ? formik.errors.richText
-                    : ''
-                }
-              />
-              {isEditable && isSaved && (
-                <button
-                  type='button'
-                  className='btn btn-secondary h-fit mt-1'
-                  onClick={() => handleRefineClick('richText')}
-                >
-                  Refine
-                </button>
-              )}
-              <label className='block mb-2 font-medium'>
                 {t('Key Point')} <span className='error'>*</span>
               </label>
               <TextInput
@@ -367,6 +340,33 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                   type='button'
                   className='btn btn-secondary h-fit mt-1'
                   onClick={() => handleRefineClick('keyPoint')}
+                >
+                  Refine
+                </button>
+              )}
+              <label className='block mb-2 font-medium'>
+                {t('Rich Text Editor with Preview')}{' '}
+                <span className='error'>*</span>
+              </label>
+              <CKEditorComponent
+                id={`rich-text-editor-${index}`}
+                label=''
+                required
+                value={formik.values.richText}
+                onChange={(val: string) =>
+                  formik.setFieldValue('richText', val)
+                }
+                error={
+                  formik.errors.richText && formik.touched.richText
+                    ? formik.errors.richText
+                    : ''
+                }
+              />
+              {isEditable && isSaved && (
+                <button
+                  type='button'
+                  className='btn btn-secondary h-fit mt-1'
+                  onClick={() => handleRefineClick('richText')}
                 >
                   Refine
                 </button>

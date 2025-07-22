@@ -78,7 +78,7 @@ const editBooks = (): ReactElement => {
     useMutation(BOOK_PUBLISH_STATUS);
 
   const { data, refetch: fetchAllCategories } = useQuery(FETCH_CATEGORY, {
-    variables: { isAll: IS_ALL, isActive: true },
+    variables: { isAll: IS_ALL, isActive: true, sortBy: 'name', sortOrder: 'asc'},
   });
   const [categoryDroData, setCategoryDroData] = useState<Category[]>([]);
   const [showRefinePopup, setShowRefinePopup] = useState(false);
@@ -137,6 +137,8 @@ const editBooks = (): ReactElement => {
       limit: 100,
       offset: 0,
       isActive: true,
+      sortBy: 'name',
+      sortOrder: 'asc'
     },
     onCompleted: (res) => {
       const rawAuthors = res?.getAllAuthors?.data?.authors || [];
@@ -147,6 +149,7 @@ const editBooks = (): ReactElement => {
   });
   const { addBookInfoValidationSchema } = useValidation();
   const { publishBookValidationSchema } = useValidation();
+  const { addBookValidationSchema } = useValidation();
   const initialValues: editBookInfo = {
     title: '',
     categoryId: [],
@@ -313,7 +316,7 @@ const editBooks = (): ReactElement => {
 
   const formik = useFormik({
     initialValues,
-    validationSchema: addBookInfoValidationSchema,
+    validationSchema: addBookValidationSchema,
     onSubmit: async (values) => {
       await UpdateBookInfoFunction(values);
     },
@@ -473,8 +476,8 @@ const editBooks = (): ReactElement => {
       // Only validate title, categoryId, authorId
       const partial = addBookInfoValidationSchema.pick([
         'title',
-        'whatsInside',
-        'aboutAuthor',
+        'authorId',
+        'categoryId',
       ]);
       await partial.validate(formik.values, { abortEarly: false });
       setShowBookGeneratePopup(true);
@@ -978,7 +981,7 @@ const editBooks = (): ReactElement => {
                       className='btn btn-primary'
                       onClick={handleGenerateNewBook}
                     >
-                      {t('Generate New Book')}
+                      {t('Generate Book Details')}
                     </button>
                     <button
                       type='button'
