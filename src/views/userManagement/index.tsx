@@ -33,6 +33,7 @@ const UserManagement = (): ReactElement => {
 			sortBy: sortBy,
 			sortOrder: sortOrder,
 			search: '',
+			userType: 'all',
 		}
 	);
 
@@ -45,9 +46,9 @@ const UserManagement = (): ReactElement => {
 	const COL_ARR_USER_MNGT = [
 		// { name: t('First Name'), sortable: true, type: 'text', fieldName: 'first_name' },
 		{ name: t('Email'), sortable: true, type: 'text', fieldName: 'email',headerCenter: true },
-		{ name: t('Subscription status'), sortable: true, type: 'status', fieldName: 'is_subscribed', headerCenter: true },
+		{ name: t('Subscription status'), sortable: true, type: 'subscriptionStatus', fieldName: 'is_subscribed', headerCenter: true },
 		{ name: t('Current streak count'), sortable: false, type: 'number', fieldName: 'current_streak_count',headerCenter: true },
-		{ name: t('Books completed'), sortable: false, type: 'number', fieldName: 'books_completed',headerCenter: true },
+		{ name: t('Books completed'), sortable: true, type: 'number', fieldName: 'books_completed',headerCenter: true },
 		{ name: t('Daily goal'), sortable: false, type: 'number', fieldName: 'daily_goal_minutes',headerCenter: true },
 		{ name: t('Registration At'), sortable: false, type: 'date', fieldName: 'signed_up_at',headerCenter: true },
 		{ name: t('Status'), sortable: true, type: 'status', fieldName: 'is_active', headerCenter: true },
@@ -66,7 +67,8 @@ const UserManagement = (): ReactElement => {
 			search: values.search,
 			isActive: values.isActive,
 			page: DEFAULT_PAGE,
-			limit:limit
+			limit:limit,
+			userType: values.subscriptionStatus,
 		};
 		setFilterData(updatedFilterData);
 		filterServiceProps.saveState('filterusermangment', JSON.stringify(updatedFilterData));
@@ -106,7 +108,7 @@ const UserManagement = (): ReactElement => {
 					<BVDataTable
 					    limit={limit}
     					onLimitChange={handleLimitChange}
-						defaultActions={['delete', 'change_status', 'view', 'multiple_delete']}
+						defaultActions={['delete', 'view', 'multiple_delete']}
 						columns={COL_ARR_USER_MNGT}
 						queryName={GET_USER}
 						sessionFilterName='filterusermangment'

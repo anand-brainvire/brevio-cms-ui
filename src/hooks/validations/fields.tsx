@@ -58,7 +58,6 @@ const useValidationFields = () => {
 	const template = Yup.string().required(translationFun('Please enter template'));
 	const BannerTitleArabic = Yup.string().required(translationFun('Please enter banner title')).min(3, 'Banner title should not be less than 3 characters Please enter valid Banner Title').max(50, translationFun('Enter less than or equal to 50 characters'));
 	const authorName = Yup.string().required(translationFun('Please enter author name')).min(2, 'Name should not be less than 2 characters Please enter valid Author Name').max(50, translationFun('Enter less than or equal to 50 characters'));
-	// const langCode = Yup.string().required(translationFun('Please enter language code')).min(2, translationFun('Language code should not be less than 2 characters Please enter valid language code')).max(10, translationFun('Language code should not be greater than 10 characters'));
 	const BannerImage = Yup.string().required(translationFun('Please upload banner image'));
 	const ruleName = Yup.string().required(translationFun('Please enter rule name'));
 	const descriptionenter = Yup.string().required(translationFun('Please enter description'));
@@ -118,15 +117,15 @@ const useValidationFields = () => {
 	const isRecommendedPlan = Yup.string().required(translationFun('Please select isRecommended plan'));
 	const planStatus = Yup.string().required(translationFun('Please select Plan Status'));
 	const planPrice = Yup.string().required(translationFun('Please enter plan price')).matches(ONLY_DIGIT, translationFun('Plan Price must be numeric'));
-	const bookName = Yup.string().required(translationFun('Please enter book name')).min(2,translationFun('Book name should not be less than 2 characters Please enter valid content')).max(50,translationFun('Book name should not be greater than 50 characters'))
+	const bookName = Yup.string().required(translationFun('Please enter book name')).min(2,translationFun('Book name should not be less than 2 characters Please enter valid content')).max(250,translationFun('Book name should not be greater than 250 characters'))
 	const addCategories = Yup.array().min(1, 'At least one category is required');
 	const AddAuthors = Yup.array().min(1, 'At least one author is required');
-	const whatsInside= Yup.string().max(300,translationFun('what\'s inside should not be greater than 300 characters'));
+	const whatsInside= Yup.string().max(500,translationFun('What\'s inside should not be greater than 500 characters'));
 	const whatsInsidePublish = Yup.string().required(translationFun('What\'s inside is required')).max(300,translationFun('what\'s inside should not be greater than 300 characters'));
-	const aboutAuthor = Yup.string().max(350, translationFun('About author should not be greater than 350 characters'));
+	const aboutAuthor = Yup.string().max(500, translationFun('About author should not be greater than 500 characters'));
 	const aboutAuthorPublish = Yup.string().required(translationFun('About author is required')).max(350,translationFun('About author should not be greater than 350 characters'));
 	const keyPoint = Yup.string().required(translationFun('Please enter key point')).min(3, translationFun('Key point should not be less than 3 characters Please enter valid key point')).max(200, translationFun('Key point should not be greater than 200 characters'));
-	const richText = Yup.string().required(translationFun('Please enter page content')).min(10, translationFun('Rich text should not be less than 10 characters Please enter valid page content')).max(6000, translationFun('page content should not be greater than 6000 characters'));
+	const richText = Yup.string().required(translationFun('Please enter page content')).min(10, translationFun('Rich text should not be less than 10 characters')).max(10000, translationFun('Page content should not be greater than 10000 characters'));
 	const coverImage = Yup.string().required(translationFun('Cover image should not be empty'));
 	const learningPoints = Yup.array().of(
 	  Yup.object().shape({
@@ -144,8 +143,8 @@ const useValidationFields = () => {
 	        }
 	      )
 	      .max(
-	        120,
-	        translationFun('Learning Point should not be greater than 120 characters')
+	        200,
+	        translationFun('Learning Point should not be greater than 200 characters')
 	      ),
 	  })
 	);

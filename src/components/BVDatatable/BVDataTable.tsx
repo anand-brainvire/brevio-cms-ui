@@ -500,7 +500,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 													{row?.[column.fieldName] === true || row?.[column.fieldName] === 1 ? (
 														<span className='badge badge-success rounded'>{t('Active')}</span>
 													) : (
-														<span className='badge badge-danger rounded'>{t('InActive')}</span>
+														<span className='badge badge-danger rounded'>{t('Inactive')}</span>
 													)}
 												</div>
 											)}
@@ -517,6 +517,22 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 													{/* Show "Modified" label if is_content_modified is true */}
 													{row?.is_content_modified && (
 														<span className='text-xs text-gray-500 mt-1'>{t('Modified')}</span>
+													)}
+												</div>
+											)}
+											{column.type === 'subscriptionStatus' && (
+												<div className='flex flex-col items-center justify-center'>
+													{/* If both subscribed and trial are false => Free */}
+													{row?.[column.fieldName] === false && row?.is_trial === false && (
+													<span className='badge badge-danger rounded'>{t('Free')}</span>
+													)}	
+													{/* If subscribed is true => Subscribed */}
+													{row?.[column.fieldName] === true && (
+													<span className='badge badge-success rounded'>{t('Subscribed')}</span>
+													)}	
+													{/* If subscribed is false and trial is true => Trial */}
+													{row?.[column.fieldName] === false && row?.is_trial === true && (
+													<span className='badge badge-warning rounded'>{t('Trial')}</span>
 													)}
 												</div>
 											)}

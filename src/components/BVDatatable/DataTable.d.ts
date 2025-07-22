@@ -5,7 +5,7 @@ export interface IColumnsProps {
 	fieldName: string;
 	name: string;
 	sortable: boolean;
-	type: 'image' | 'text' | 'date' | 'status' | 'action' | 'badge' | 'ratings' | 'number' | 'multilang' | 'multipleText' | 'bookStatus';
+	type: 'image' | 'text' | 'date' | 'status' | 'action' | 'badge' | 'ratings' | 'number' | 'multilang' | 'multipleText' | 'bookStatus' | 'subscriptionStatus';
 	headerCenter?: boolean;
 	conversationValue?: IListData;
 	isBase64ImageUrl?: boolean;

@@ -398,8 +398,8 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                               if (!value || value.trim() === '') {
                                 return 'Insight should not be empty. You should either remove the insight or add content.';
                               }
-                              if (value.length > 120) {
-                                return 'Insight should not be greater than 120 characters';
+                              if (value.length > 250) {
+                                return 'Insight should not be greater than 250 characters';
                               }
                               return true;
                             },

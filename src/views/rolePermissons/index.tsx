@@ -47,6 +47,7 @@ const RolePermissions = () => {
 	const [checkedInt, setCheckedInt] = useState<string[]>([]);
 
 	/** Sets the nodes List to treeview */
+	
 	useEffect(() => {
 		if (data?.fetchPermissions?.data) {
 			setNodes(
@@ -279,7 +280,6 @@ const RolePermissions = () => {
 					<div className='card'>
 						<div className='card-header '>
 							<Dropdown placeholder={t('Select role')} name='role' value={filterRoleData.roleId ? filterRoleData.roleId : ''} onChange={handleChange} options={roleDrpData} id='role' />
-
 							<div>
 								<RoleBaseGuard permissions={[PERMISSION_LIST.Permission.createAccess]}>
 									<Button className='btn-primary ' label={t('Save')} onClick={saveRolePermissionsHandler}>

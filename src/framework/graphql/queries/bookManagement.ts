@@ -53,6 +53,7 @@ export const FETCH_BOOK_BY_ID = gql`
 	    		is_free
 	    		total_unique_completion
 	    		total_completion
+				# published_version_number
 	    		created_at
 	    		updated_at
 	    		created_by

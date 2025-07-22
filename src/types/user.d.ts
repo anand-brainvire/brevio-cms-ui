@@ -8,6 +8,7 @@ export type UserProps = {
 export type FilterUserProps = {
 	search: string;
 	isActive?: string | null;
+	subscriptionStatus?: string;
 };
 
 export type PaginationParams = {

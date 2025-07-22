@@ -99,6 +99,8 @@ const editBooks = (): ReactElement => {
   const [isUploading, setIsUploading] = useState(false);
   const [replacePages, setReplacePages] = useState(false);
   const [shouldTriggerFileClick, setShouldTriggerFileClick] = useState(false);
+  const [isContentModified, setIsContentModified] = useState<boolean>(false);
+  const [versionNumber, setVersionNumber] = useState<number>(0);
   const [generatedBookContent, setGeneratedBookContent] = useState<any>();
   const [showGeneratedPreviewModal, setShowGeneratedPreviewModal] =
     useState(false);
@@ -132,7 +134,7 @@ const editBooks = (): ReactElement => {
   const { loading: authorLoading, fetchMore } = useQuery(GET_AUTHOR, {
     fetchPolicy: 'network-only',
     variables: {
-      limit: 75,
+      limit: 100,
       offset: 0,
       isActive: true,
     },
@@ -191,7 +193,8 @@ const editBooks = (): ReactElement => {
       }
       setIsPublished(book.is_published);
       setIsFreeBook(!!book.is_free);
-
+      setIsContentModified(book.is_content_modified);
+      setVersionNumber(book.published_version_number);
       // const version = book.versions?.find((v: any) => v.status === selectedTab);
       let version;
       if (selectedTab === 'draft') {
@@ -422,7 +425,7 @@ const editBooks = (): ReactElement => {
   */
   const handleUnpublishBook = () => {
     setIsPublished(!isPublished);
-    if (bookVersionStatus === 'published'){
+    if (bookVersionStatus === 'published') {
       setBookVersionStatus('unpublished');
     } else {
       setBookVersionStatus('published');
@@ -880,25 +883,51 @@ const editBooks = (): ReactElement => {
               {/* Right side: Status badge + Free Book checkbox */}
               <div className='flex items-center gap-6'>
                 {/* Status display */}
-                <div className='flex items-center text-sm'>
-                  <span className='text-gray-700 mr-1'>{t('Status')}:</span>
-                  {bookVersionStatus === 'draft' && (
-                    <span className='bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
-                      {t('Draft')}
-                    </span>
-                  )}
-                  {bookVersionStatus === 'published' && (
-                    <span className='bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
-                      {t('Published')}
-                    </span>
-                  )}
-                  {bookVersionStatus === 'unpublished' && (
-                    <span className='bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
-                      {t('Unpublished')}
-                    </span>
-                  )}
-                </div>
+                <div className='flex items-start gap-6'>
+                  {/* Status display */}
+                  <div className='flex text-sm items-center'>
+                    <span className='text-gray-700 mr-1'>{t('Status')}:</span>
 
+                    {bookVersionStatus === 'draft' && (
+                      <>
+                        <span className='bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
+                          {t('Draft')}
+                        </span>
+                        {isContentModified && (
+                          <span className='text-xs text-gray-500 ml-2'>
+                            ({t('Modified')})
+                          </span>
+                        )}
+                      </>
+                    )}
+
+                    {bookVersionStatus === 'published' && (
+                      <>
+                        <span className='bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
+                          {t('Published')}
+                        </span>
+                        {isContentModified && (
+                          <span className='text-xs text-gray-500 ml-2'>
+                            ({t('Modified')})
+                          </span>
+                        )}
+                      </>
+                    )}
+
+                    {bookVersionStatus === 'unpublished' && (
+                      <>
+                        <span className='bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
+                          {t('Unpublished')}
+                        </span>
+                        {isContentModified && (
+                          <span className='text-xs text-gray-500 ml-2'>
+                            ({t('Modified')})
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
                 {/* Free Book Checkbox */}
                 <label className='flex items-center gap-2 text-sm text-gray-700'>
                   <input
@@ -941,7 +970,7 @@ const editBooks = (): ReactElement => {
                   </button>
                 )}
               </div>
-              <div className='flex gap-2'>
+              <div className='flex items-center gap-4'>
                 {isEditable ? (
                   <>
                     <button
@@ -961,6 +990,9 @@ const editBooks = (): ReactElement => {
                   </>
                 ) : (
                   <>
+                    <div className='text-sm text-gray-700 font-medium whitespace-nowrap'>
+                      {t('Version')} : {versionNumber}
+                    </div>
                     <button
                       type='button'
                       className='btn btn-primary'
@@ -1087,7 +1119,7 @@ const editBooks = (): ReactElement => {
                     htmlFor='whatsInside'
                     className='block mb-2 font-medium'
                   >
-                    {t('Whas\'s Inside (About)')}
+                    {t('What\'s Inside (About)')}
                   </label>
                   <div className='flex gap-2 items'>
                     <div className='w-full'>

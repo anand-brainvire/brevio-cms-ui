@@ -25,7 +25,7 @@ const FilterBooks = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { data, refetch: fetchAllCategories } = useQuery(FETCH_CATEGORY, {
-    variables: { isAll: IS_ALL, isActive: true },
+    variables: { isAll: IS_ALL, isActive: true, sortOrder: 'asc', sortBy: 'name'},
   });
   const [categoryDroData, setCategoryDroData] = useState([]);
   // const [isInitialRedirected, setIsInitialRedirected] = useState(false);
@@ -183,16 +183,6 @@ const FilterBooks = ({
               display='chip'
               className='w-full'
             />
-
-            {/* <Dropdown
-							ariaLabel={AccesibilityNames.Status}
-							placeholder={t('Select Status')}
-							name='status'
-							onChange={formik.handleChange}
-							value={formik.values.status ?? ''}
-							options={BOOK_STATUS_DRP}
-							id='status'
-						/> */}
 
             <div className='[.show-menu~div_&]:lg:col-span-3 [.show-menu~div_&]:md:col-span-1 md:col-span-3'>
               <div className='btn-group col-span-3 flex items-start justify-end'>

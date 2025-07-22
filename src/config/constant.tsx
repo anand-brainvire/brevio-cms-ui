@@ -128,10 +128,10 @@ export const SHOW_PAGE_COUNT_ARR1 = [
 	{ name: '30', key: 30 },
 ];
 export const BOOK_STATUS_DRP = [
-	{ name: 'Published', key: '1' },
 	{ name: 'Draft', key: '2' },
-	{ name: 'Unpublished', key: '3' },
+	{ name: 'Published', key: '1' },
 	{ name: 'Published (Modified)', key: '4'},
+	{ name: 'Unpublished', key: '3' },
 	{ name: 'Unpublished (Modified)', key: '5'}
 ];
 
@@ -139,6 +139,13 @@ export const STATUS_DRP = [
 	{ name: 'Select Status', key: '' },
 	{ name: 'Active', key: '1' },
 	{ name: 'Inactive', key: '0' },
+];
+
+export const SUBSCRIPTION_STATUS = [
+	{name: 'Subscription Status', key: 'all'},
+	{name: 'Free', key: 'free'},
+	{name: 'Subscribed', key: 'subscribed'},
+	{name: 'Trial', key: 'trial'},
 ];
 
 export  const STATUS_OPTION = [

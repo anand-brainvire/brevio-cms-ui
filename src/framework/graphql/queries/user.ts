@@ -11,8 +11,8 @@ export const testGetUser = gql`
 
 export const GET_USER = gql`
 	${META_FRAGMENT}
-	query GetAllUsers($search: String, $isActive: Boolean, $sortBy: String, $sortOrder: String, $limit: Int, $offset: Int) {
-	getAllUsers(search: $search, is_active: $isActive, sortBy: $sortBy, sortOrder: $sortOrder, limit: $limit, offset: $offset) {
+		query GetAllUsers($search: String, $isActive: Boolean, $sortBy: String, $sortOrder: String, $limit: Int, $offset: 	Int, $isSubscribed: Boolean, $userType: String) {
+  		getAllUsers(search: $search, is_active: $isActive, sortBy: $sortBy, sortOrder: $sortOrder, limit: $limit, offset: $offset, is_subscribed: $isSubscribed, user_type: $userType) {
 		data {
 			users {
 				uuid
@@ -28,19 +28,19 @@ export const GET_USER = gql`
 				current_streak_count
 				is_trial
 			}
-				count
-			}
-			meta {
-				...MetaFragment
-			}
+			count
 		}
-	}
+		meta {
+			...MetaFragment
+		}
+  	}
+}
 `;
 
 export const GET_USER_BY_ID = gql`
 	${META_FRAGMENT}
 	query GetUserById($uuid: ID!) {
-		getUserById(uuid: $uuid) {
+	getUserById(uuid: $uuid) {
 		data {
 			uuid
 			email
@@ -53,12 +53,26 @@ export const GET_USER_BY_ID = gql`
 			books_completed
 			signed_up_at
 			current_streak_count
-		}
-			meta {
-				...MetaFragment
+			userSubscriptionDetails {
+				subscription_id
+				starts_at
+				expires_at
+				is_trial
+				is_active
+				auto_renew_status
+				product_id
+				product_name
+				receipt_id
+				receipt_identifier
+				original_transaction_id
+				receipt_created_at
 			}
 		}
+		meta {
+			...MetaFragment
+		}
 	}
+}
 `;
 
 export const GET_USER_INTERESTED_CATEGORIES = gql`
@@ -143,4 +157,33 @@ export const GET_USERS_LIST = gql`
 			}
 		}
 	}
+`;
+
+export const GET_MY_ACHIEVEMENTS = gql`
+	${META_FRAGMENT}
+	query GetMyAchievements {
+	getMyAchievements {
+		data {
+			perseverant {
+				level
+				current_progress_in_percentage
+			}
+			smart {
+				level
+				current_progress_in_percentage
+			}
+			wise {
+				level
+				current_progress_in_percentage
+			}
+			influencer {
+				level
+				current_progress_in_percentage
+			}
+		}
+		meta {
+			...MetaFragment
+		}
+	}
+}
 `;
