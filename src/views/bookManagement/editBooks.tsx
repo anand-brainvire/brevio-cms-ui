@@ -78,7 +78,7 @@ const editBooks = (): ReactElement => {
     useMutation(BOOK_PUBLISH_STATUS);
 
   const { data, refetch: fetchAllCategories } = useQuery(FETCH_CATEGORY, {
-    variables: { isAll: IS_ALL, isActive: true, sortBy: 'name', sortOrder: 'asc'},
+    variables: { isAll: IS_ALL, sortBy: 'name', sortOrder: 'asc'},
   });
   const [categoryDroData, setCategoryDroData] = useState<Category[]>([]);
   const [showRefinePopup, setShowRefinePopup] = useState(false);
@@ -119,6 +119,7 @@ const editBooks = (): ReactElement => {
   const [hasMoreAuthors, setHasMoreAuthors] = useState(true);
   type RawAuthor = {
     uuid: string;
+    is_active: boolean;
     author_translations: {
       lang_code: string;
       name: string;
@@ -128,6 +129,7 @@ const editBooks = (): ReactElement => {
   type TransformedAuthor = {
     id: string;
     name: string;
+    isActive: boolean;
   };
 
   const [authors, setAuthors] = useState<TransformedAuthor[]>([]);
@@ -136,7 +138,6 @@ const editBooks = (): ReactElement => {
     variables: {
       limit: 100,
       offset: 0,
-      isActive: true,
       sortBy: 'name',
       sortOrder: 'asc'
     },
@@ -168,6 +169,7 @@ const editBooks = (): ReactElement => {
       return {
         id: author.uuid,
         name,
+        isActive: author.is_active,
       };
     });
   };
@@ -503,7 +505,6 @@ const editBooks = (): ReactElement => {
     const rhfLearningPoints = getValues('learningPoints');
     // Sync RHF learning points to Formik
     const learningPoints = rhfLearningPoints.map((lp) => lp.value);
-
     const payloadToValidate = {
       title: values.title,
       categoryId: values.categoryId,
@@ -511,6 +512,7 @@ const editBooks = (): ReactElement => {
       whatsInside: values.whatsInside,
       aboutAuthor: values.aboutAuthor,
       coverImage: values.coverImage,
+      learningPoints: values.learningPoints
     };
 
     try {
@@ -610,12 +612,13 @@ const editBooks = (): ReactElement => {
       return;
     }
 
-    const isPng =
-      file.type === 'image/png' || file.name.toLowerCase().endsWith('.png');
+    const isValidImage =
+      ['image/png', 'image/jpeg', 'image/jpg'].includes(file.type) ||
+      /\.(png|jpg|jpeg)$/i.test(file.name);
 
-    if (!isPng) {
-      toast.error('Only PNG images are allowed');
-      formik.setFieldError('coverImage', 'Only PNG images are allowed');
+    if (!isValidImage) {
+      toast.error('Only PNG, JPG, or JPEG images are allowed');
+      formik.setFieldError('coverImage', 'Only PNG, JPG, or JPEG images are allowed');
       formik.setFieldValue('coverImage', null);
       return;
     }
@@ -825,30 +828,19 @@ const editBooks = (): ReactElement => {
           return {
             name: translation?.name || category.slug || '',
             key: category.uuid,
+            isActive: category.is_active, // <-- Add this
           };
         }
       );
       setCategoryDroData(tempDataArr);
     }
   }, [data]);
-
   /**
    * Method that redirect to list page
    */
   const onCancelEditBookInfo = useCallback(() => {
     navigate(`/${ROUTES.app}/${ROUTES.manageBooks}/${ROUTES.list}`);
   }, []);
-
-  /**
-   * error message handler
-   * @param fieldName
-   * @returns
-   */
-  const getErrorSubAdmin = (fieldName: keyof editBookInfo) => {
-    return formik.errors[fieldName] && formik.touched[fieldName]
-      ? formik.errors[fieldName]
-      : '';
-  };
 
   /**
    * Handle blur that removes white space's
@@ -1046,7 +1038,7 @@ const editBooks = (): ReactElement => {
                     onChange={formik.handleChange}
                     label={t('Book Title')}
                     value={formik.values.title}
-                    error={getErrorSubAdmin('title')}
+                    error={formik.errors.title}
                   />
                 </div>
                 <div>
@@ -1059,9 +1051,9 @@ const editBooks = (): ReactElement => {
                   <MultiSelect
                     id={'categoryId'}
                     value={formik.values.categoryId || []}
-                    onChange={(e) =>
-                      formik.setFieldValue('categoryId', e.value)
-                    }
+                    onChange={(e) => {
+                      formik.setFieldValue('categoryId', e.value);
+                    }}
                     options={categoryDroData}
                     optionLabel='name'
                     optionValue='key'
@@ -1071,7 +1063,15 @@ const editBooks = (): ReactElement => {
                     className='w-full'
                     maxSelectedLabels={6}
                     disabled={!isEditable}
-                  />
+                    optionDisabled={(option) =>
+                      !option.isActive && !formik.values.categoryId.includes(option.key)
+                    }
+                  /> 
+                  {formik.errors.categoryId && (
+                    <div className="text-red-500 text-sm mt-1 ml-1">
+                      {formik.errors.categoryId}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label htmlFor='authorId' className='block mb-2 font-medium'>
@@ -1080,7 +1080,9 @@ const editBooks = (): ReactElement => {
                   <MultiSelect
                     id='authorId'
                     value={formik.values.authorId || []}
-                    onChange={(e) => formik.setFieldValue('authorId', e.value)}
+                    onChange={(e) => {
+                      formik.setFieldValue('authorId', e.value);
+                    }}
                     options={authors}
                     optionLabel='name'
                     optionValue='id'
@@ -1090,6 +1092,9 @@ const editBooks = (): ReactElement => {
                     placeholder={t('Select Author') ?? 'Select Author'}
                     maxSelectedLabels={6}
                     disabled={!isEditable}
+                    optionDisabled={(option) =>
+                      !option.isActive && !formik.values.authorId.includes(option.id)
+                    }                  
                     virtualScrollerOptions={{
                       itemSize: 75,
                       lazy: true,
@@ -1116,6 +1121,11 @@ const editBooks = (): ReactElement => {
                       },
                     }}
                   />
+                  {formik.errors.authorId && (
+                    <div className="text-red-500 text-sm mt-1 ml-1">
+                      {formik.errors.authorId}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label
@@ -1135,7 +1145,7 @@ const editBooks = (): ReactElement => {
                         value={formik.values.whatsInside}
                         rows={4}
                         className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
-                        error={getErrorSubAdmin('whatsInside')}
+                        error={formik.errors.whatsInside}
                         disabled={!isEditable}
                       />
                     </div>
@@ -1168,7 +1178,7 @@ const editBooks = (): ReactElement => {
                         value={formik.values.aboutAuthor}
                         rows={4}
                         className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
-                        error={getErrorSubAdmin('aboutAuthor')}
+                        error={formik.errors.aboutAuthor}
                         disabled={!isEditable}
                       />
                     </div>
@@ -1225,7 +1235,7 @@ const editBooks = (): ReactElement => {
                             inputRef={fileInputRef}
                             placeholder={t('Cover')}
                             name='coverImage'
-                            error={getErrorSubAdmin('coverImage')}
+                            error={formik.errors.coverImage}
                             className='w-full'
                             disabled={!isEditable}
                             onChange={() => handleImageChange()}
@@ -1268,6 +1278,9 @@ const editBooks = (): ReactElement => {
                           placeholder={`Point ${index + 1}`}
                           className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
                           disabled={!isEditable}
+                          onChange={e => {
+                            register(`learningPoints.${index}.value`).onChange(e);
+                          }}
                         />
 
                         {isEditable && (
@@ -1285,23 +1298,19 @@ const editBooks = (): ReactElement => {
 
                       {formik.errors.learningPoints &&
                         Array.isArray(formik.errors.learningPoints) &&
-                        (
-                          formik.errors.learningPoints as Array<{
-                            value?: string;
-                          }>
-                        )[index]?.value && (
-                          <div className='text-danger text-sm mt-1 ml-1'>
-                            {
-                              (
-                                formik.errors.learningPoints as Array<{
-                                  value?: string;
-                                }>
-                              )[index]?.value
-                            }
+                        (formik.errors.learningPoints as Array<{ value?: string }>)[index]?.value && (
+                          <div className='text-red-500 text-sm mt-1 ml-1'>
+                            {(formik.errors.learningPoints as Array<{ value?: string }>)[index]?.value}
                           </div>
                         )}
                     </div>
                   ))}
+
+                  {typeof formik.errors.learningPoints === 'string' && (
+                    <div className="text-red-500 text-sm mt-1 ml-1">
+                      {formik.errors.learningPoints}
+                    </div>
+                  )}
 
                   {isEditable && (
                     <div className='flex gap-4 mt-2'>

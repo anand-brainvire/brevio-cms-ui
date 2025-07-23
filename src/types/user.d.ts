@@ -17,6 +17,8 @@ export type PaginationParams = {
 	sortBy: string;
 	sortOrder: string;
 	search: string;
+	userType: string | undefined
+	offset: number
 	// email: string;
 	// status: number | null;
 	// gender: number | null;

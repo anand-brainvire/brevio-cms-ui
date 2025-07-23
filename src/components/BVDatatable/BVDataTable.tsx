@@ -38,10 +38,11 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 	const [isImageModelShow, setIsImageModelShow] = useState<boolean>(false);
 	const [imageURL, setImageURL] = useState<string | number>('');
 	const [showDescriptionModelShow, setShowDescriptionModelShow] = useState<boolean>(false);
-
+	const [descriptionLabel, setDescriptionLabel] = useState<string>('Description');
 	const [description, setDescription] = useState<string>('');
-	const descriptionHandler = (value: string) => {
+	const descriptionHandler = (value: string, label: string) => {
 		setDescription(value);
+		setDescriptionLabel(label);
 		setShowDescriptionModelShow((prev) => !prev);
 	};
 	const [loadingState, setLoadingState] = useState<boolean>(false);
@@ -462,8 +463,10 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 											{column.type === 'number' && row?.[column.fieldName]}
 											{column.type === 'text' &&
 												(<TextCell
+													field={column.fieldName}
 													text={getApiColumnName(column.fieldName, row)}
-													descriptionHandler={descriptionHandler}
+													descriptionHandler={(value) => descriptionHandler(value, column.name || column.fieldName)}
+													descriptionLabel={column.name || column.fieldName}
 												/>)}
 											{column.type === 'multilang' && (
 													<TextCell
@@ -478,7 +481,8 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 																  )
 																: ''
 														}
-														descriptionHandler={descriptionHandler}
+														descriptionHandler={( value ) => descriptionHandler(value, column.name || column.fieldName)}
+														descriptionLabel={column.name || column.fieldName}
 													/>
 
 											)}
@@ -492,7 +496,8 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 																	.join(', ')
 															: ''
 													}
-													descriptionHandler={descriptionHandler}
+													descriptionHandler={(value) => descriptionHandler(value, column.name || column.fieldName)}
+													descriptionLabel={column.name || column.fieldName}
 												/>
 											)}
 											{column.type === 'status' && (
@@ -654,7 +659,9 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 				/>
 			)}
 			{isImageModelShow && <ImageModel onClose={onClose} data={`${imageURL}`} show={isImageModelShow} />}
-			{showDescriptionModelShow && <DescriptionModel onClose={onClose} data={description} show={showDescriptionModelShow} />}
+			{showDescriptionModelShow && (
+				<DescriptionModel onClose={onClose} data={description} show={showDescriptionModelShow} label={descriptionLabel} />
+			)}
 		</>
 	);
 };

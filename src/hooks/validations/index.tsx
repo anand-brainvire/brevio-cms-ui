@@ -9,6 +9,7 @@ const useValidation = () => {
 		abuseThreshold,
 		categorSuggestion,
 		newPassword,
+		currentPassword,
 		confirmPassword,
 		metaTitleEnglish,
 		descriptionEnglish,
@@ -88,6 +89,7 @@ const useValidation = () => {
 		whatsInsidePublish,
 		aboutAuthorPublish,
 		coverImage,
+		learningPoint,
 		// whatsInside,
 		// aboutAuthor,
 		// learningPoints,
@@ -108,6 +110,7 @@ const useValidation = () => {
 		address: geoLocationAddress
 	})
 	const changeProfileValidationSchema = Yup.object({
+		oldPassword: currentPassword,
 		newPassword: newPassword,
 		confirmPassword: confirmPassword,
 	});
@@ -231,11 +234,11 @@ const useValidation = () => {
 
 	const addBookInfoValidationSchema = Yup.object({
 		title: bookName,
+		categoryId: addCategories,
+		authorId: AddAuthors
 		// whatsInside: whatsInside,
 		// aboutAuthor: aboutAuthor,
 		// learningPoints: learningPoints,
-		categoryId: addCategories,
-		authorId: AddAuthors
 	});
 
 	const publishBookValidationSchema = Yup.object({
@@ -245,7 +248,7 @@ const useValidation = () => {
 		whatsInside: whatsInsidePublish,
 		aboutAuthor: aboutAuthorPublish,
 		coverImage: coverImage,
-
+		learningPoints: learningPoint
 	});
 	
 	const forgotPasswordValidationSchema = Yup.object({

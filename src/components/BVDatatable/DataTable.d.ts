@@ -75,7 +75,9 @@ export interface IImageCell {
 
 export interface ITextCell {
 	text: string;
-	descriptionHandler: (value: string) => void
+	descriptionHandler: (value: string, label?: string) => void;
+	field?: string;
+	descriptionLabel?: string;
 }
 
 export interface IBadgeCell {

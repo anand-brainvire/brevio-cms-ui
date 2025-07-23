@@ -39,7 +39,6 @@ const UserProfilePasswordChange = (): ReactElement => {
 				variables: {
 					currentPassword: values.oldPassword,
 					newPassword: values.newPassword,
-					// confirmPasssword: values.confirmPassword,
 				},
 			})
 				.then((response) => {
@@ -52,7 +51,6 @@ const UserProfilePasswordChange = (): ReactElement => {
 					}
 				})
 				.catch(() => {
-					toast.error(t('Something went wrong'));
 					return;
 				});
 		},

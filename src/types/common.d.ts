@@ -79,7 +79,8 @@ export type DeleteDataProps = {
 export type DescriptionDataProps = {
 	onClose: () => void;
 	data: string;
-	show?: boolean;
+	show: boolean;
+	label?: string;
 };
 export type ImageDataProps = {
 	onClose: () => void;

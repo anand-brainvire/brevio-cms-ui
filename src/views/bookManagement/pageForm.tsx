@@ -47,6 +47,7 @@ interface PageFormProps {
   onPageSave: (data: any) => void;
   onPageUpdate?: (uuid: string, data: any) => void;
   isEditable: boolean;
+  tempId?: string;
 }
 
 export interface PageFormRef {
@@ -65,6 +66,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
       initialData,
       isEditable,
       isSaved,
+      tempId,
     },
     ref
   ) => {
@@ -620,7 +622,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                       className='btn btn-secondary'
                       onClick={() => {
                         const event = new CustomEvent('removeUnsavedPage', {
-                          detail: { index },
+                          detail: { tempId },
                         });
                         window.dispatchEvent(event);
                       }}

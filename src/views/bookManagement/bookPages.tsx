@@ -27,7 +27,7 @@ const BookPages = ({
   status,
   generatedPages = null,
 }: BookPagesProps) => {
-  const [pages, setPages] = useState<{ initialData?: any }[]>([]);
+  const [pages, setPages] = useState<{ initialData?: any; tempId?: string }[]>([]);
   const [openPages, setOpenPages] = useState<Set<number>>(new Set([0]));
   const pageRefs = useRef<PageFormRef[]>([]);
   const [createBookPage] = useMutation(CREATE_BOOK_PAGE);
@@ -46,8 +46,8 @@ const BookPages = ({
     };
 
     const handleRemoveUnsavedPage = (e: any) => {
-      const { index } = e.detail;
-      RemoveUnsavedPage(index);
+      const { tempId } = e.detail;
+      RemoveUnsavedPage(tempId);
     };
 
     window.addEventListener('deleteSavedPage', handleDeleteSavedPage);
@@ -63,7 +63,7 @@ const BookPages = ({
     if (!generatedPages) {
       return;
     }
-
+    console.log(generatedPages);
     const transformedPages = generatedPages.map((p) => {
       const insights = p.insights.map((i) => ({
         ['key']: i.key,
@@ -157,7 +157,8 @@ const BookPages = ({
 
   const handleAddPage = () => {
     setPages((prev) => {
-      const newPages = [...prev, {}];
+      const newPage = { tempId: `${Date.now()}-${Math.random()}` };
+      const newPages = [...prev, newPage];
       setOpenPages(new Set([newPages.length - 1]));
       return newPages;
     });
@@ -175,14 +176,18 @@ const BookPages = ({
     });
   };
 
-  const RemoveUnsavedPage = (index: number) => {
-    setPages((prev) => prev.filter((_, i) => i !== index));
-    pageRefs.current.splice(index, 1);
+  const RemoveUnsavedPage = (tempId: string) => {
+    setPages((prev) => prev.filter((page) => page.tempId !== tempId));
+    // Remove the corresponding ref
+    const idx = pageRefs.current.findIndex((_ref, i) => pages[i]?.tempId === tempId);
+    if (idx !== -1) {
+      pageRefs.current.splice(idx, 1);
+    }
   };
 
   const DeleteSavedPage = async (uuid: string, index: number) => {
     if (index) {
-      RemoveUnsavedPage(index);
+      RemoveUnsavedPage(uuid);
     }
     try {
       const response = await deleteBookPage({
@@ -225,10 +230,27 @@ const BookPages = ({
         return insightObj;
       });
 
+      // --- Determine the next page number ---
+      let nextPageNumber = 1;
+      let version;
+      if (data && data.getAllBookPages && data.getAllBookPages.data) {
+        if (status === 'draft') {
+          version = data.getAllBookPages.data.find((v: any) => v.version_status === 'draft');
+        } else if (status === 'published') {
+          version = data.getAllBookPages.data.find((v: any) => v.version_status === 'published') ||
+                    data.getAllBookPages.data.find((v: any) => v.version_status === 'unpublished');
+        }
+        if (version && Array.isArray(version.pages) && version.pages.length > 0) {
+          const maxPageNumber = Math.max(...version.pages.map((p: any) => p.page_number || 0));
+          nextPageNumber = maxPageNumber + 1;
+        }
+      }
+
       const variables = {
         ['bookId']: bookUuid,
         ['translations']: [translationObj],
         ['insights']: insightObjs,
+        ['pageNumber']: nextPageNumber,
       };
       const response = await createBookPage({ variables });
       if (response?.data?.createBookPage?.meta?.statusCode !== 201) {
@@ -315,7 +337,7 @@ const BookPages = ({
         <h2 className='text-xl font-semibold mb-4'>Pages</h2>
 
         {pages.map((page, index) => (
-          <div key={index} className='relative border mb-6 rounded shadow'>
+          <div key={page.initialData?.uuid || page.tempId || index} className='relative border mb-6 rounded shadow'>
             <PageForm
               index={index}
               isOpen={openPages.has(index)}
@@ -333,6 +355,7 @@ const BookPages = ({
               initialData={page.initialData}
               isEditable={isEditable}
               isSaved={!!page.initialData?.uuid}
+              tempId={page.tempId}
             />
           </div>
         ))}

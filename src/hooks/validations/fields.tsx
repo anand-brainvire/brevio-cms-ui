@@ -5,7 +5,7 @@ import moment from 'moment';
 
 const useValidationFields = () => {
 	const oldPassword = Yup.string().required(translationFun('Please enter old password'));
-	const currentPassword = Yup.string().required(translationFun('Please enter current password'));
+	const currentPassword = Yup.string().required(translationFun('Please enter current password')).matches(PASSWORD_REGEX, translationFun('Password must contain 1 lower case, 1 upper case, 1 number, 1 special character ( @  $ % ^ & #) & minimum 8 characters')).max(20, translationFun('Enter less than or equal to 20 characters'));
 	const newPassword = Yup.string().required(translationFun('Please enter new password')).matches(PASSWORD_REGEX, translationFun('Password must contain 1 lower case, 1 upper case, 1 number, 1 special character ( @  $ % ^ & #) & minimum 8 characters')).max(20, translationFun('Enter less than or equal to 20 characters'));
 	const confirmPassword = Yup.string()
 		.required(translationFun('Please enter confirm password'))
@@ -127,6 +127,7 @@ const useValidationFields = () => {
 	const keyPoint = Yup.string().required(translationFun('Please enter key point')).min(3, translationFun('Key point should not be less than 3 characters Please enter valid key point')).max(200, translationFun('Key point should not be greater than 200 characters'));
 	const richText = Yup.string().required(translationFun('Please enter page content')).min(10, translationFun('Rich text should not be less than 10 characters')).max(10000, translationFun('Page content should not be greater than 10000 characters'));
 	const coverImage = Yup.string().required(translationFun('Cover image should not be empty'));
+	const learningPoint = Yup.array().min(1, 'At least one learning point is required');
 	const learningPoints = Yup.array().of(
 	  Yup.object().shape({
 	    value: Yup.string()
@@ -240,6 +241,7 @@ const useValidationFields = () => {
 		whatsInside,
 		aboutAuthor,
 		coverImage,
+		learningPoint,
 		learningPoints,
 		AddAuthors,
 		whatsInsidePublish,
