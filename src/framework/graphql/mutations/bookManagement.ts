@@ -233,6 +233,18 @@ export const DELETE_BOOK_PAGE = gql`
 	}
 `;
 
+export const REORDER_BOOK_PAGES = gql`
+	${META_FRAGMENT}
+	mutation ReorderPages($pageUuids: [UUID!]!) {
+	reorderPages(page_uuids: $pageUuids) {
+		meta {
+			...MetaFragment
+		}
+  	}
+}
+`;
+
+
 export const GENERATE_NEW_BOOK = gql`
 	${META_FRAGMENT}
 mutation GenerateBookContent($input: GenerateBookContentInput!) {

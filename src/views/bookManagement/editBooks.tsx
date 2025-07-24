@@ -11,7 +11,7 @@ import React, {
 import { useNavigate, useParams } from 'react-router-dom';
 import TextInput from '@components/textinput/TextInput';
 import {
-  Category,
+  CategoryOption,
   editBookInfo,
   RefineCoverImageData,
 } from '@type/bookManagement';
@@ -80,7 +80,7 @@ const editBooks = (): ReactElement => {
   const { data, refetch: fetchAllCategories } = useQuery(FETCH_CATEGORY, {
     variables: { isAll: IS_ALL, sortBy: 'name', sortOrder: 'asc'},
   });
-  const [categoryDroData, setCategoryDroData] = useState<Category[]>([]);
+  const [categoryDroData, setCategoryDroData] = useState<CategoryOption[]>([]);
   const [showRefinePopup, setShowRefinePopup] = useState(false);
   const [refineData, setRefineData] = useState('');
   const [refineFieldKey, setRefineFieldKey] = useState('');
@@ -324,16 +324,13 @@ const editBooks = (): ReactElement => {
     },
   });
 
-  const getCategoryNames = () => {
-    return categoryDroData
-      .filter((cat) => formik.values.categoryId.includes(cat.uuid))
-      .map((cat) => {
-        const enTranslation = cat.category_translations.find(
-          (t) => t.lang_code === 'en'
-        );
-        return enTranslation?.name || 'Unnamed Category';
-      });
-  };
+const getCategoryNames = () => {
+  const data = categoryDroData
+    .filter((cat) => formik.values.categoryId.includes(cat.key))
+    .map((cat) => cat.name || 'Unnamed Category');
+  return data;
+};
+
 
   const getAuthorNames = () => {
     return authors
@@ -489,7 +486,6 @@ const editBooks = (): ReactElement => {
         err.inner.forEach((e: ValidationError) => {
           if (e.path) {
             fieldErrors[e.path] = e.message;
-            toast.error(e.message);
           }
         });
         formik.setErrors(fieldErrors);

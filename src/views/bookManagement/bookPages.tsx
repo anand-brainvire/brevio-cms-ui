@@ -5,9 +5,12 @@ import {
   CREATE_BOOK_PAGE,
   UPDATE_BOOK_PAGE,
   DELETE_BOOK_PAGE,
+  REORDER_BOOK_PAGES,
+  GENERATE_AUDIO,
 } from '@framework/graphql/mutations/bookManagement';
 import { GET_ALL_BOOK_PAGES } from '@framework/graphql/queries/bookManagement';
 import { toast } from 'react-toastify';
+import { Loader } from '@components/index';
 
 type GeneratedPage = {
   page_number: number;
@@ -27,12 +30,17 @@ const BookPages = ({
   status,
   generatedPages = null,
 }: BookPagesProps) => {
-  const [pages, setPages] = useState<{ initialData?: any; tempId?: string }[]>([]);
+  const [pages, setPages] = useState<{ initialData?: any; tempId?: string }[]>(
+    []
+  );
   const [openPages, setOpenPages] = useState<Set<number>>(new Set([0]));
   const pageRefs = useRef<PageFormRef[]>([]);
   const [createBookPage] = useMutation(CREATE_BOOK_PAGE);
   const [updateBookPage] = useMutation(UPDATE_BOOK_PAGE);
   const [deleteBookPage] = useMutation(DELETE_BOOK_PAGE);
+  const [isProcessingPages, setIsProcessingPages] = useState(false);
+  const [reorderBookPages] = useMutation(REORDER_BOOK_PAGES);
+  const [generateAudio] = useMutation(GENERATE_AUDIO);
   const isEditable = status === 'draft';
   const { data } = useQuery(GET_ALL_BOOK_PAGES, {
     variables: { bookId: bookUuid },
@@ -63,22 +71,21 @@ const BookPages = ({
     if (!generatedPages) {
       return;
     }
-    console.log(generatedPages);
     const transformedPages = generatedPages.map((p) => {
       const insights = p.insights.map((i) => ({
-        ['key']: i.key,
-        ['value']: i.text,
+        key: i.key,
+        value: i.text,
       }));
-      const initialDataObj: any = {};
-      Object.assign(initialDataObj, {
-        ['uuid']: undefined,
-        ['page_number']: p.page_number,
-        ['keyPoint']: p.key_point,
-        ['richText']: p.html_content,
-        ['insights']: insights,
-        ['audioMale']: null,
-        ['audioFemale']: null,
-      });
+
+      const initialDataObj = {
+        uuid: undefined,
+        pageNumber: p.page_number,
+        keyPoint: p.key_point,
+        richText: p.html_content,
+        insights: insights,
+        audioMale: null,
+        audioFemale: null,
+      };
 
       return {
         isOpen: true,
@@ -87,6 +94,38 @@ const BookPages = ({
     });
 
     setPages(transformedPages);
+    setIsProcessingPages(true); // ✅ show loader
+
+    Promise.allSettled(
+      transformedPages.map(async (page, index) => {
+        try {
+          const res = await handleSinglePageSave(index, page.initialData, true);
+          const uuid =
+            res?.data?.createBookPage?.data?.uuid ||
+            res?.data?.updateBookPage?.data?.uuid;
+
+          if (!uuid) {
+            throw new Error(`Page ${index + 1} UUID not found`);
+          }
+
+          const audioRes = await generateAudio({
+            variables: {
+              bookPageUuid: uuid,
+              type: '',
+            },
+          });
+
+          if (audioRes?.data?.generatePageAudio?.meta?.statusCode !== 200) {
+            toast.error(`Audio generation failed for Page ${index + 1}`);
+          }
+        } catch {
+          return;
+        }
+      })
+    ).finally(() => {
+      setIsProcessingPages(false);
+      toast.success('Book details saved successfully');
+    });
   }, [generatedPages]);
 
   useEffect(() => {
@@ -179,16 +218,15 @@ const BookPages = ({
   const RemoveUnsavedPage = (tempId: string) => {
     setPages((prev) => prev.filter((page) => page.tempId !== tempId));
     // Remove the corresponding ref
-    const idx = pageRefs.current.findIndex((_ref, i) => pages[i]?.tempId === tempId);
+    const idx = pageRefs.current.findIndex(
+      (_ref, i) => pages[i]?.tempId === tempId
+    );
     if (idx !== -1) {
       pageRefs.current.splice(idx, 1);
     }
   };
 
   const DeleteSavedPage = async (uuid: string, index: number) => {
-    if (index) {
-      RemoveUnsavedPage(uuid);
-    }
     try {
       const response = await deleteBookPage({
         variables: { uuid: uuid },
@@ -199,14 +237,31 @@ const BookPages = ({
         'Page deleted successfully';
 
       toast.success(message);
-      setPages((prev) => prev.filter((_, i) => i !== index));
-      pageRefs.current.splice(index, 1);
+      // Remove page from state
+      setPages((prev) => {
+        const updatedPages = prev.filter((_, i) => i !== index);
+        pageRefs.current.splice(index, 1);
+
+        // 🧠 Reorder after setting state (on next tick)
+        setTimeout(() => {
+          const savedPageUuids = updatedPages
+            .map((p) => p.initialData?.uuid)
+            .filter((uuid): uuid is string => !!uuid);
+
+          if (savedPageUuids.length > 0) {
+            reorderBookPages({
+              variables: { pageUuids: savedPageUuids },
+            })
+          }
+        });
+        return updatedPages;
+      });
     } catch {
-      return;
+      toast.error('Failed to delete page');
     }
   };
 
-  const handleSinglePageSave = async (_index: number, data: any) => {
+  const handleSinglePageSave = async (_index: number, data: any, silent = false) => {
     try {
       const lang = 'en';
       const translationObj: any = {};
@@ -231,20 +286,27 @@ const BookPages = ({
       });
 
       // --- Determine the next page number ---
-      let nextPageNumber = 1;
-      let version;
-      if (data && data.getAllBookPages && data.getAllBookPages.data) {
-        if (status === 'draft') {
-          version = data.getAllBookPages.data.find((v: any) => v.version_status === 'draft');
-        } else if (status === 'published') {
-          version = data.getAllBookPages.data.find((v: any) => v.version_status === 'published') ||
-                    data.getAllBookPages.data.find((v: any) => v.version_status === 'unpublished');
-        }
-        if (version && Array.isArray(version.pages) && version.pages.length > 0) {
-          const maxPageNumber = Math.max(...version.pages.map((p: any) => p.page_number || 0));
-          nextPageNumber = maxPageNumber + 1;
-        }
-      }
+      const nextPageNumber = _index + 1;
+      // let version;
+      // if (data && data.getAllBookPages && data.getAllBookPages.data) {
+      //   if (status === 'draft') {
+      //     version = data.getAllBookPages.data.find(
+      //       (v: any) => v.version_status === 'draft'
+      //     );
+      //   } else if (status === 'published') {
+      //     version =
+      //       data.getAllBookPages.data.find(
+      //         (v: any) => v.version_status === 'published'
+      //       ) ||
+      //       data.getAllBookPages.data.find(
+      //         (v: any) => v.version_status === 'unpublished'
+      //       );
+      //   }
+      //   // if (version && Array.isArray(version.pages) && version.pages.length > 0) {
+      //   //   const maxPageNumber = Math.max(...version.pages.map((p: any) => p.page_number || 0));
+      //   //   nextPageNumber = maxPageNumber + 1;
+      //   // }
+      // }
 
       const variables = {
         ['bookId']: bookUuid,
@@ -270,11 +332,17 @@ const BookPages = ({
           })
         );
 
-        toast.success(response?.data?.createBookPage?.meta?.message);
+        if (!silent) {
+          toast.success(response?.data?.createBookPage?.meta?.message);
+        }
+        return response;
       } else {
-        toast.error(
-          response?.data?.createBookPage?.meta?.message || 'Failed to save page'
-        );
+        if (!silent) {
+          toast.error(
+            response?.data?.createBookPage?.meta?.message || 'Failed to save page'
+          );
+        }
+        return response;
       }
       // await refetch();
     } catch {
@@ -335,9 +403,12 @@ const BookPages = ({
     <div className='card'>
       <div className='card-body'>
         <h2 className='text-xl font-semibold mb-4'>Pages</h2>
-
+        {(isProcessingPages) && <Loader/>}
         {pages.map((page, index) => (
-          <div key={page.initialData?.uuid || page.tempId || index} className='relative border mb-6 rounded shadow'>
+          <div
+            key={page.initialData?.uuid || page.tempId || index}
+            className='relative border mb-6 rounded shadow'
+          >
             <PageForm
               index={index}
               isOpen={openPages.has(index)}

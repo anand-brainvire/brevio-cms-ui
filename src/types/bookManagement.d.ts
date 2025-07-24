@@ -46,6 +46,11 @@ export type PageFormProps = {
   OnBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
 };
 
+export type CategoryOption = {
+  key: string;
+  name: string;
+}
+
 export type Category = {
   uuid: string;
   slug: string;

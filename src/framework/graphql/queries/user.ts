@@ -11,7 +11,7 @@ export const testGetUser = gql`
 
 export const GET_USER = gql`
 	${META_FRAGMENT}
-		query GetAllUsers($search: String, $isActive: Boolean, $sortBy: String, $sortOrder: String, $limit: Int, $offset: 	Int, $isSubscribed: Boolean, $userType: String) {
+		query GetAllUsers($search: String, $isActive: Boolean, $sortBy: String, $sortOrder: String, $limit: Int, $offset: 	Int, $isSubscribed: Boolean, $userType: [String]) {
   		getAllUsers(search: $search, is_active: $isActive, sortBy: $sortBy, sortOrder: $sortOrder, limit: $limit, offset: $offset, is_subscribed: $isSubscribed, user_type: $userType) {
 		data {
 			users {

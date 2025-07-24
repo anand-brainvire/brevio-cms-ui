@@ -8,6 +8,7 @@ import TextInput from '@components/textinput/TextInput';
 // import filterServiceProps from '@components/filter/filter';
 import { DEFAULT_LIMIT, STATUS_DRP, SUBSCRIPTION_STATUS } from '@config/constant';
 import DropDown from '@components/dropdown/dropDown';
+import { MultiSelect } from 'primereact/multiselect';
 
 const FilterUserManagement = ({
   onSearchUser,
@@ -19,7 +20,7 @@ const FilterUserManagement = ({
   const initialValues: FilterUserProps = {
     search: '',
     isActive: '',
-    subscriptionStatus: '',
+    subscriptionStatus: [],
   };
 
   /**
@@ -66,7 +67,7 @@ const FilterUserManagement = ({
     const resetPayload: any = {
       search: '',
       isActive: null,
-      subscriptionStatus: null,
+      subscriptionStatus: [],
     };
 
     onSearchUser(resetPayload);
@@ -77,7 +78,7 @@ const FilterUserManagement = ({
 	const resetPayload: any = {
       search: '',
       isActive: null,
-      subscriptionStatus: null,
+      subscriptionStatus: [],
     };
 	onSearchUser(resetPayload)
   },[])
@@ -94,12 +95,14 @@ const FilterUserManagement = ({
               onChange={formik.handleChange}
               value={formik.values.search}
             />
-            <DropDown
-              id='subscriptionStatus'
-              name='subscriptionStatus'
-              options={SUBSCRIPTION_STATUS}
+            <MultiSelect
+              value={formik.values.subscriptionStatus ?? []}
               onChange={(e) => formik.setFieldValue('subscriptionStatus', e.target.value)}
-              value={formik.values.subscriptionStatus ?? ''}
+              options={SUBSCRIPTION_STATUS}
+              optionLabel='name'
+              optionValue='key'
+              placeholder={t('Subscription Status') ?? 'Subscription Status'}
+              display='chip'
               className='w-full'
             />
             <DropDown

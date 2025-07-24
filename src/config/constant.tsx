@@ -142,7 +142,6 @@ export const STATUS_DRP = [
 ];
 
 export const SUBSCRIPTION_STATUS = [
-	{name: 'Subscription Status', key: 'all'},
 	{name: 'Free', key: 'free'},
 	{name: 'Subscribed', key: 'subscribed'},
 	{name: 'Trial', key: 'trial'},

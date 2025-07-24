@@ -25,7 +25,7 @@ const UserManagement = (): ReactElement => {
 			sortBy: sortBy,
 			sortOrder: sortOrder,
 			search: '',
-			userType: 'all',
+			userType: [],
 		    offset: 0,
 		}
 	);
@@ -59,7 +59,7 @@ const UserManagement = (): ReactElement => {
 			isActive: values.isActive,
 			page: DEFAULT_PAGE,
 			limit:limit,
-			userType: values.subscriptionStatus,
+			userType: values.subscriptionStatus ?? [],
 		};
 		setFilterData(updatedFilterData);
 		filterServiceProps.saveState('filterusermangment', JSON.stringify(updatedFilterData));

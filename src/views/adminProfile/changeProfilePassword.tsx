@@ -12,6 +12,7 @@ import { CheckCircle, Cross } from '@components/icons/icons';
 import useValidation from '@src/hooks/validations';
 import { whiteSpaceRemover } from '@utils/helpers';
 import { Loader } from '@components/index';
+import EncryptionFunction from '@services/encryption';
 const UserProfilePasswordChange = (): ReactElement => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
@@ -44,6 +45,8 @@ const UserProfilePasswordChange = (): ReactElement => {
 				.then((response) => {
 					const meta = response.data?.changePassword?.meta;
 					if (meta?.statusCode === 200) {
+						localStorage.setItem('authToken', EncryptionFunction(response.data.changePassword.data.accessToken));
+						localStorage.setItem('refreshToken', EncryptionFunction(response.data.changePassword.data.refreshToken));
 						toast.success(meta.message);
 						cancelPassWordHandler();
 					} else {

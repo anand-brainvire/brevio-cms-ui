@@ -8,7 +8,7 @@ export type UserProps = {
 export type FilterUserProps = {
 	search: string;
 	isActive?: string | null;
-	subscriptionStatus?: string;
+	subscriptionStatus?: string[] | [] | undefined;
 };
 
 export type PaginationParams = {
@@ -17,12 +17,8 @@ export type PaginationParams = {
 	sortBy: string;
 	sortOrder: string;
 	search: string;
-	userType: string | undefined
+	userType: string[];
 	offset: number
-	// email: string;
-	// status: number | null;
-	// gender: number | null;
-	// phoneNo: string;
 };
 
 export type UserChangeProps = {
