@@ -186,8 +186,8 @@ export const REFINE_COVER_IMAGE = gql`
 
 export const CREATE_BOOK_PAGE = gql`
 	${META_FRAGMENT}
-	mutation CreateBookPage($bookId: String!, $translations: [BookPageTranslationInput!]!, $insights: [BookPageInsightInput!]!) {
-  	createBookPage(book_id: $bookId, translations: $translations, insights: $insights) {
+	mutation CreateBookPage($bookId: String!, $translations: [BookPageTranslationInput!]!, $insights: [BookPageInsightInput!]!, $pageNumber: Int!) {
+  	createBookPage(book_id: $bookId, translations: $translations, insights: $insights, page_number: $pageNumber) {
     	data {
     		uuid
     		created_at
@@ -232,6 +232,18 @@ export const DELETE_BOOK_PAGE = gql`
 		}
 	}
 `;
+
+export const REORDER_BOOK_PAGES = gql`
+	${META_FRAGMENT}
+	mutation ReorderPages($pageUuids: [UUID!]!) {
+	reorderPages(page_uuids: $pageUuids) {
+		meta {
+			...MetaFragment
+		}
+  	}
+}
+`;
+
 
 export const GENERATE_NEW_BOOK = gql`
 	${META_FRAGMENT}

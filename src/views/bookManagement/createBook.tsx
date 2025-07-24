@@ -24,7 +24,7 @@ const CreateBook = ({ isVisible, onSubmitBook }: AddBookModalProps) => {
 	const [createBook, { loading }] = useMutation(CREATE_BOOK); // define mutation
 	const { addBookValidationSchema } = useValidation(); // create book validation schema
 	const initialValues: BookInputType = {
-		bookName: '',
+		title: '',
 	};
 
 	const formik = useFormik({
@@ -34,7 +34,7 @@ const CreateBook = ({ isVisible, onSubmitBook }: AddBookModalProps) => {
 	    const input = {
 	    	bookData: [
 	    		{
-	    			title: values.bookName,
+	    			title: values.title,
 	    			langCode: 'en',
 	    		},
 	    	],
@@ -93,12 +93,12 @@ const CreateBook = ({ isVisible, onSubmitBook }: AddBookModalProps) => {
 						<form onSubmit={formik.handleSubmit}>
 							<div className="model-body">
 								<TextInput
-									id="bookName"
-									name="bookName"
+									id="title"
+									name="title"
 									placeholder={t('Book Title')}
-									value={formik.values.bookName}
+									value={formik.values.title}
 									onChange={formik.handleChange}
-									error={formik.errors.bookName && formik.touched.bookName ? formik.errors.bookName : ''}
+									error={formik.errors.title && formik.touched.title ? formik.errors.title : ''}
 									label={t('Book Title')}
 									required
 								/>

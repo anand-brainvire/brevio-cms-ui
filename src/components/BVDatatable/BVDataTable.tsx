@@ -21,7 +21,7 @@ import ImageCell from './imageCell';
 import TextCell from './textCell';
 import BadgeCell from './badgeCell';
 
-const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteMutation, updateStatusMutation, sessionFilterName, updatedFilterData, actionWisePermissions, defaultActions, actionData, extraActions, statusKey, idKey, multipleDeleteApiId, rowRefData }: IBVDataTablesProps): ReactElement => {
+const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteMutation, updateStatusMutation, sessionFilterName, updatedFilterData, actionWisePermissions, defaultActions, actionData, extraActions, statusKey, idKey, multipleDeleteApiId, rowRefData, onLimitChange, limit }: IBVDataTablesProps): ReactElement => {
 	const { localFilterData } = useSaveFilterData();
 	const navigate = useNavigate();
 	const { t } = useTranslation();
@@ -38,10 +38,11 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 	const [isImageModelShow, setIsImageModelShow] = useState<boolean>(false);
 	const [imageURL, setImageURL] = useState<string | number>('');
 	const [showDescriptionModelShow, setShowDescriptionModelShow] = useState<boolean>(false);
-
+	const [descriptionLabel, setDescriptionLabel] = useState<string>('Description');
 	const [description, setDescription] = useState<string>('');
-	const descriptionHandler = (value: string) => {
+	const descriptionHandler = (value: string, label: string) => {
 		setDescription(value);
+		setDescriptionLabel(label);
 		setShowDescriptionModelShow((prev) => !prev);
 	};
 	const [loadingState, setLoadingState] = useState<boolean>(false);
@@ -132,7 +133,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 		(sortFieldName: string) => {
 			const updatedFilterData = {
 				...filterData,
-				page: DEFAULT_PAGE,
+				page: filterData.page,
 				sortBy: sortFieldName,
 				sortOrder: filterData.sortOrder === 'asc' ? 'desc' : 'asc',
 			};
@@ -281,19 +282,33 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 					const data = res?.data;
 					const firstLevelKey = Object.keys(data);
 					if (data?.[`${firstLevelKey}`]?.meta?.statusCode === 200) {
-						setLoadingState(false);
 						toast.success(data?.[`${firstLevelKey}`]?.meta?.message);
-						setIsDeletePopup(false);
-						setSingleDeleteId('');
-						onClose(false);
-					}
+						const isLastItem = listData.length === 1;
+						const isLastPage = filterData.page === Math.ceil(totalRecords / filterData.limit);
+						const shouldGoToFirstPage = isLastItem && isLastPage;
+						const newPage = shouldGoToFirstPage ? DEFAULT_PAGE : filterData.page;
+						setFilterData({
+							...filterData,
+							page: newPage,
+							offset: (newPage - 1) * filterData.limit,
+						});
+						filterServiceProps.saveState(sessionFilterName, JSON.stringify({
+							...filterData,
+							page: newPage,
+							offset: (newPage - 1) * filterData.limit,
+						}));
+							setLoadingState(false);
+							setIsDeletePopup(false);
+							setSingleDeleteId('');
+							onClose(false);
+						}
 				})
 				.catch(() => {
 					setIsDeletePopup(false);
 					return setLoadingState(false);
 				});
 		}
-	}, [isDeletePopup, singleDeleteId, loadingState]);
+	}, [isDeletePopup, singleDeleteId, filterData, loadingState]);
 
 	const statusPopup = useCallback(
 		(id: string, status: string | number) => {
@@ -377,10 +392,19 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 				<div className='flex items-center space-x-2 justify-between w-full'>
 					<div>
 						<span className='table-select-dropdown-label'>{t('Show')}</span>
-						<select aria-label={AccesibilityNames.Entries} className='table-select-dropdown' onChange={(e) => handlePageCountChange(e.target.value)} value={filterData.limit}>
-							{SHOW_PAGE_COUNT_ARR?.map((item: number) => {
-								return <option key={item}>{item}</option>;
-							})}
+						<select
+							aria-label={AccesibilityNames.Entries}
+							className='table-select-dropdown'
+							onChange={(e) => {
+								handlePageCountChange(e.target.value); // existing local logic
+								if (onLimitChange) {
+								onLimitChange(Number(e.target.value)); // update parent state
+								}
+							}}    value={limit}
+							>
+							{SHOW_PAGE_COUNT_ARR?.map((item: number) => (
+								<option key={item}>{item}</option>
+							))}
 						</select>
 						<span className='table-select-dropdown-label'>{t('entries')}</span>
 					</div>
@@ -439,8 +463,10 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 											{column.type === 'number' && row?.[column.fieldName]}
 											{column.type === 'text' &&
 												(<TextCell
+													field={column.fieldName}
 													text={getApiColumnName(column.fieldName, row)}
-													descriptionHandler={descriptionHandler}
+													descriptionHandler={(value) => descriptionHandler(value, column.name || column.fieldName)}
+													descriptionLabel={column.name || column.fieldName}
 												/>)}
 											{column.type === 'multilang' && (
 													<TextCell
@@ -455,7 +481,8 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 																  )
 																: ''
 														}
-														descriptionHandler={descriptionHandler}
+														descriptionHandler={( value ) => descriptionHandler(value, column.name || column.fieldName)}
+														descriptionLabel={column.name || column.fieldName}
 													/>
 
 											)}
@@ -469,7 +496,8 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 																	.join(', ')
 															: ''
 													}
-													descriptionHandler={descriptionHandler}
+													descriptionHandler={(value) => descriptionHandler(value, column.name || column.fieldName)}
+													descriptionLabel={column.name || column.fieldName}
 												/>
 											)}
 											{column.type === 'status' && (
@@ -477,7 +505,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 													{row?.[column.fieldName] === true || row?.[column.fieldName] === 1 ? (
 														<span className='badge badge-success rounded'>{t('Active')}</span>
 													) : (
-														<span className='badge badge-danger rounded'>{t('InActive')}</span>
+														<span className='badge badge-danger rounded'>{t('Inactive')}</span>
 													)}
 												</div>
 											)}
@@ -494,6 +522,22 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 													{/* Show "Modified" label if is_content_modified is true */}
 													{row?.is_content_modified && (
 														<span className='text-xs text-gray-500 mt-1'>{t('Modified')}</span>
+													)}
+												</div>
+											)}
+											{column.type === 'subscriptionStatus' && (
+												<div className='flex flex-col items-center justify-center'>
+													{/* If both subscribed and trial are false => Free */}
+													{row?.[column.fieldName] === false && row?.is_trial === false && (
+													<span className='badge badge-danger rounded'>{t('Free')}</span>
+													)}	
+													{/* If subscribed is true => Subscribed */}
+													{row?.[column.fieldName] === true && (
+													<span className='badge badge-success rounded'>{t('Subscribed')}</span>
+													)}	
+													{/* If subscribed is false and trial is true => Trial */}
+													{row?.[column.fieldName] === false && row?.is_trial === true && (
+													<span className='badge badge-warning rounded'>{t('Trial')}</span>
 													)}
 												</div>
 											)}
@@ -615,7 +659,9 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 				/>
 			)}
 			{isImageModelShow && <ImageModel onClose={onClose} data={`${imageURL}`} show={isImageModelShow} />}
-			{showDescriptionModelShow && <DescriptionModel onClose={onClose} data={description} show={showDescriptionModelShow} />}
+			{showDescriptionModelShow && (
+				<DescriptionModel onClose={onClose} data={description} show={showDescriptionModelShow} label={descriptionLabel} />
+			)}
 		</>
 	);
 };

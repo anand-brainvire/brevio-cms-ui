@@ -11,7 +11,7 @@ import React, {
 import { useNavigate, useParams } from 'react-router-dom';
 import TextInput from '@components/textinput/TextInput';
 import {
-  Category,
+  CategoryOption,
   editBookInfo,
   RefineCoverImageData,
 } from '@type/bookManagement';
@@ -78,9 +78,9 @@ const editBooks = (): ReactElement => {
     useMutation(BOOK_PUBLISH_STATUS);
 
   const { data, refetch: fetchAllCategories } = useQuery(FETCH_CATEGORY, {
-    variables: { isAll: IS_ALL, isActive: true },
+    variables: { isAll: IS_ALL, sortBy: 'name', sortOrder: 'asc'},
   });
-  const [categoryDroData, setCategoryDroData] = useState<Category[]>([]);
+  const [categoryDroData, setCategoryDroData] = useState<CategoryOption[]>([]);
   const [showRefinePopup, setShowRefinePopup] = useState(false);
   const [refineData, setRefineData] = useState('');
   const [refineFieldKey, setRefineFieldKey] = useState('');
@@ -97,7 +97,10 @@ const editBooks = (): ReactElement => {
   const [isImageModelShow, setIsImageModelShow] = useState<boolean>(false);
   const [isPublished, setIsPublished] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [replacePages,setReplacePages] = useState(false);
+  const [replacePages, setReplacePages] = useState(false);
+  const [shouldTriggerFileClick, setShouldTriggerFileClick] = useState(false);
+  const [isContentModified, setIsContentModified] = useState<boolean>(false);
+  const [versionNumber, setVersionNumber] = useState<number>(0);
   const [generatedBookContent, setGeneratedBookContent] = useState<any>();
   const [showGeneratedPreviewModal, setShowGeneratedPreviewModal] =
     useState(false);
@@ -116,6 +119,7 @@ const editBooks = (): ReactElement => {
   const [hasMoreAuthors, setHasMoreAuthors] = useState(true);
   type RawAuthor = {
     uuid: string;
+    is_active: boolean;
     author_translations: {
       lang_code: string;
       name: string;
@@ -125,15 +129,17 @@ const editBooks = (): ReactElement => {
   type TransformedAuthor = {
     id: string;
     name: string;
+    isActive: boolean;
   };
 
   const [authors, setAuthors] = useState<TransformedAuthor[]>([]);
   const { loading: authorLoading, fetchMore } = useQuery(GET_AUTHOR, {
     fetchPolicy: 'network-only',
     variables: {
-      limit: 75,
+      limit: 100,
       offset: 0,
-      isActive: true,
+      sortBy: 'name',
+      sortOrder: 'asc'
     },
     onCompleted: (res) => {
       const rawAuthors = res?.getAllAuthors?.data?.authors || [];
@@ -144,6 +150,7 @@ const editBooks = (): ReactElement => {
   });
   const { addBookInfoValidationSchema } = useValidation();
   const { publishBookValidationSchema } = useValidation();
+  const { addBookValidationSchema } = useValidation();
   const initialValues: editBookInfo = {
     title: '',
     categoryId: [],
@@ -162,6 +169,7 @@ const editBooks = (): ReactElement => {
       return {
         id: author.uuid,
         name,
+        isActive: author.is_active,
       };
     });
   };
@@ -190,7 +198,8 @@ const editBooks = (): ReactElement => {
       }
       setIsPublished(book.is_published);
       setIsFreeBook(!!book.is_free);
-
+      setIsContentModified(book.is_content_modified);
+      setVersionNumber(book.published_version_number);
       // const version = book.versions?.find((v: any) => v.status === selectedTab);
       let version;
       if (selectedTab === 'draft') {
@@ -261,7 +270,7 @@ const editBooks = (): ReactElement => {
     };
 
     fetchAndSetData();
-  }, [selectedTab, params.id, i18n.language]);
+  }, [selectedTab, params.id, i18n.language, bookVersionStatus]);
 
   const { register, control, reset, getValues } = useForm({
     defaultValues: {
@@ -309,22 +318,19 @@ const editBooks = (): ReactElement => {
 
   const formik = useFormik({
     initialValues,
-    validationSchema: addBookInfoValidationSchema,
+    validationSchema: addBookValidationSchema,
     onSubmit: async (values) => {
       await UpdateBookInfoFunction(values);
     },
   });
 
-  const getCategoryNames = () => {
-    return categoryDroData
-      .filter((cat) => formik.values.categoryId.includes(cat.uuid))
-      .map((cat) => {
-        const enTranslation = cat.category_translations.find(
-          (t) => t.lang_code === 'en'
-        );
-        return enTranslation?.name || 'Unnamed Category';
-      });
-  };
+const getCategoryNames = () => {
+  const data = categoryDroData
+    .filter((cat) => formik.values.categoryId.includes(cat.key))
+    .map((cat) => cat.name || 'Unnamed Category');
+  return data;
+};
+
 
   const getAuthorNames = () => {
     return authors
@@ -394,20 +400,20 @@ const editBooks = (): ReactElement => {
         toast.success(t('Draft pages deleted successfully'));
         setShowConfirmPopup(false);
         setReplacePages(true);
-          const d = generatedBookContent
-          formik.setValues({
-            title: d.title,
-            categoryId: d.categories.map((c: any) => c.uuid),
-            authorId: d.authors.map((a: any) => a.uuid),
-            whatsInside: d.about_book,
-            aboutAuthor: d.about_authors,
-            coverImage: d.cover_image_url,
-            learningPoints: d.learning_points.map((pt: string) => ({
-              value: pt,
-            })),
-          });
-          remove();
-          d.learning_points.forEach((pt: string) => append({ value: pt }));
+        const d = generatedBookContent;
+        formik.setValues({
+          title: d.title,
+          categoryId: d.categories.map((c: any) => c.uuid),
+          authorId: d.authors.map((a: any) => a.uuid),
+          whatsInside: d.about_book,
+          aboutAuthor: d.about_authors,
+          coverImage: d.cover_image_url,
+          learningPoints: d.learning_points.map((pt: string) => ({
+            value: pt,
+          })),
+        });
+        remove();
+        d.learning_points.forEach((pt: string) => append({ value: pt }));
       } else {
         toast.error(t('Failed to delete draft pages'));
       }
@@ -421,6 +427,11 @@ const editBooks = (): ReactElement => {
   */
   const handleUnpublishBook = () => {
     setIsPublished(!isPublished);
+    if (bookVersionStatus === 'published') {
+      setBookVersionStatus('unpublished');
+    } else {
+      setBookVersionStatus('published');
+    }
     unpublishBook({
       variables: {
         uuid: params.id,
@@ -464,8 +475,8 @@ const editBooks = (): ReactElement => {
       // Only validate title, categoryId, authorId
       const partial = addBookInfoValidationSchema.pick([
         'title',
-        'whatsInside',
-        'aboutAuthor',
+        'authorId',
+        'categoryId',
       ]);
       await partial.validate(formik.values, { abortEarly: false });
       setShowBookGeneratePopup(true);
@@ -475,7 +486,6 @@ const editBooks = (): ReactElement => {
         err.inner.forEach((e: ValidationError) => {
           if (e.path) {
             fieldErrors[e.path] = e.message;
-            toast.error(e.message);
           }
         });
         formik.setErrors(fieldErrors);
@@ -491,7 +501,6 @@ const editBooks = (): ReactElement => {
     const rhfLearningPoints = getValues('learningPoints');
     // Sync RHF learning points to Formik
     const learningPoints = rhfLearningPoints.map((lp) => lp.value);
-
     const payloadToValidate = {
       title: values.title,
       categoryId: values.categoryId,
@@ -499,6 +508,7 @@ const editBooks = (): ReactElement => {
       whatsInside: values.whatsInside,
       aboutAuthor: values.aboutAuthor,
       coverImage: values.coverImage,
+      learningPoints: values.learningPoints
     };
 
     try {
@@ -598,12 +608,13 @@ const editBooks = (): ReactElement => {
       return;
     }
 
-    const isPng =
-      file.type === 'image/png' || file.name.toLowerCase().endsWith('.png');
+    const isValidImage =
+      ['image/png', 'image/jpeg', 'image/jpg'].includes(file.type) ||
+      /\.(png|jpg|jpeg)$/i.test(file.name);
 
-    if (!isPng) {
-      toast.error('Only PNG images are allowed');
-      formik.setFieldError('coverImage', 'Only PNG images are allowed');
+    if (!isValidImage) {
+      toast.error('Only PNG, JPG, or JPEG images are allowed');
+      formik.setFieldError('coverImage', 'Only PNG, JPG, or JPEG images are allowed');
       formik.setFieldValue('coverImage', null);
       return;
     }
@@ -641,6 +652,7 @@ const editBooks = (): ReactElement => {
         const uploadedImageUrl = response?.data?.images?.[0]?.url;
         setOriginalCoverImageUrl(uploadedImageUrl);
         setUplodedImageUrl(uploadedImageUrl);
+        setIsImageUploded(true);
         setIsUploading(false);
       }
       setIsUploading(false);
@@ -733,6 +745,18 @@ const editBooks = (): ReactElement => {
     setIsImageModelShow(true);
   }, []);
 
+  const handleUploadNewImage = () => {
+    setIsImageUploded(false);
+    setShouldTriggerFileClick(true);
+  };
+
+  useEffect(() => {
+    if (!isImageUploded && shouldTriggerFileClick) {
+      fileInputRef?.current?.click();
+      setShouldTriggerFileClick(false); // reset
+    }
+  }, [isImageUploded, shouldTriggerFileClick]);
+
   /**
    * Method that refine the input text
    */
@@ -800,30 +824,19 @@ const editBooks = (): ReactElement => {
           return {
             name: translation?.name || category.slug || '',
             key: category.uuid,
+            isActive: category.is_active, // <-- Add this
           };
         }
       );
       setCategoryDroData(tempDataArr);
     }
   }, [data]);
-
   /**
    * Method that redirect to list page
    */
   const onCancelEditBookInfo = useCallback(() => {
     navigate(`/${ROUTES.app}/${ROUTES.manageBooks}/${ROUTES.list}`);
   }, []);
-
-  /**
-   * error message handler
-   * @param fieldName
-   * @returns
-   */
-  const getErrorSubAdmin = (fieldName: keyof editBookInfo) => {
-    return formik.errors[fieldName] && formik.touched[fieldName]
-      ? formik.errors[fieldName]
-      : '';
-  };
 
   /**
    * Handle blur that removes white space's
@@ -861,25 +874,51 @@ const editBooks = (): ReactElement => {
               {/* Right side: Status badge + Free Book checkbox */}
               <div className='flex items-center gap-6'>
                 {/* Status display */}
-                <div className='flex items-center text-sm'>
-                  <span className='text-gray-700 mr-1'>{t('Status')}:</span>
-                  {bookVersionStatus === 'draft' && (
-                    <span className='bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
-                      {t('Draft')}
-                    </span>
-                  )}
-                  {bookVersionStatus === 'published' && (
-                    <span className='bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
-                      {t('Published')}
-                    </span>
-                  )}
-                  {bookVersionStatus === 'unpublished' && (
-                    <span className='bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
-                      {t('Unpublished')}
-                    </span>
-                  )}
-                </div>
+                <div className='flex items-start gap-6'>
+                  {/* Status display */}
+                  <div className='flex text-sm items-center'>
+                    <span className='text-gray-700 mr-1'>{t('Status')}:</span>
 
+                    {bookVersionStatus === 'draft' && (
+                      <>
+                        <span className='bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
+                          {t('Draft')}
+                        </span>
+                        {isContentModified && (
+                          <span className='text-xs text-gray-500 ml-2'>
+                            ({t('Modified')})
+                          </span>
+                        )}
+                      </>
+                    )}
+
+                    {bookVersionStatus === 'published' && (
+                      <>
+                        <span className='bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
+                          {t('Published')}
+                        </span>
+                        {isContentModified && (
+                          <span className='text-xs text-gray-500 ml-2'>
+                            ({t('Modified')})
+                          </span>
+                        )}
+                      </>
+                    )}
+
+                    {bookVersionStatus === 'unpublished' && (
+                      <>
+                        <span className='bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
+                          {t('Unpublished')}
+                        </span>
+                        {isContentModified && (
+                          <span className='text-xs text-gray-500 ml-2'>
+                            ({t('Modified')})
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
                 {/* Free Book Checkbox */}
                 <label className='flex items-center gap-2 text-sm text-gray-700'>
                   <input
@@ -922,7 +961,7 @@ const editBooks = (): ReactElement => {
                   </button>
                 )}
               </div>
-              <div className='flex gap-2'>
+              <div className='flex items-center gap-4'>
                 {isEditable ? (
                   <>
                     <button
@@ -930,7 +969,7 @@ const editBooks = (): ReactElement => {
                       className='btn btn-primary'
                       onClick={handleGenerateNewBook}
                     >
-                      {t('Generate New Book')}
+                      {t('Generate Book Details')}
                     </button>
                     <button
                       type='button'
@@ -942,6 +981,9 @@ const editBooks = (): ReactElement => {
                   </>
                 ) : (
                   <>
+                    <div className='text-sm text-gray-700 font-medium whitespace-nowrap'>
+                      {t('Version')} : {versionNumber}
+                    </div>
                     <button
                       type='button'
                       className='btn btn-primary'
@@ -992,7 +1034,7 @@ const editBooks = (): ReactElement => {
                     onChange={formik.handleChange}
                     label={t('Book Title')}
                     value={formik.values.title}
-                    error={getErrorSubAdmin('title')}
+                    error={formik.errors.title}
                   />
                 </div>
                 <div>
@@ -1005,9 +1047,9 @@ const editBooks = (): ReactElement => {
                   <MultiSelect
                     id={'categoryId'}
                     value={formik.values.categoryId || []}
-                    onChange={(e) =>
-                      formik.setFieldValue('categoryId', e.value)
-                    }
+                    onChange={(e) => {
+                      formik.setFieldValue('categoryId', e.value);
+                    }}
                     options={categoryDroData}
                     optionLabel='name'
                     optionValue='key'
@@ -1017,7 +1059,15 @@ const editBooks = (): ReactElement => {
                     className='w-full'
                     maxSelectedLabels={6}
                     disabled={!isEditable}
-                  />
+                    optionDisabled={(option) =>
+                      !option.isActive && !formik.values.categoryId.includes(option.key)
+                    }
+                  /> 
+                  {formik.errors.categoryId && (
+                    <div className="text-red-500 text-sm mt-1 ml-1">
+                      {formik.errors.categoryId}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label htmlFor='authorId' className='block mb-2 font-medium'>
@@ -1026,7 +1076,9 @@ const editBooks = (): ReactElement => {
                   <MultiSelect
                     id='authorId'
                     value={formik.values.authorId || []}
-                    onChange={(e) => formik.setFieldValue('authorId', e.value)}
+                    onChange={(e) => {
+                      formik.setFieldValue('authorId', e.value);
+                    }}
                     options={authors}
                     optionLabel='name'
                     optionValue='id'
@@ -1036,6 +1088,9 @@ const editBooks = (): ReactElement => {
                     placeholder={t('Select Author') ?? 'Select Author'}
                     maxSelectedLabels={6}
                     disabled={!isEditable}
+                    optionDisabled={(option) =>
+                      !option.isActive && !formik.values.authorId.includes(option.id)
+                    }                  
                     virtualScrollerOptions={{
                       itemSize: 75,
                       lazy: true,
@@ -1062,13 +1117,18 @@ const editBooks = (): ReactElement => {
                       },
                     }}
                   />
+                  {formik.errors.authorId && (
+                    <div className="text-red-500 text-sm mt-1 ml-1">
+                      {formik.errors.authorId}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label
                     htmlFor='whatsInside'
                     className='block mb-2 font-medium'
                   >
-                    {t('Whas\'s Inside (About)')}
+                    {t('What\'s Inside (About)')}
                   </label>
                   <div className='flex gap-2 items'>
                     <div className='w-full'>
@@ -1081,7 +1141,7 @@ const editBooks = (): ReactElement => {
                         value={formik.values.whatsInside}
                         rows={4}
                         className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
-                        error={getErrorSubAdmin('whatsInside')}
+                        error={formik.errors.whatsInside}
                         disabled={!isEditable}
                       />
                     </div>
@@ -1114,7 +1174,7 @@ const editBooks = (): ReactElement => {
                         value={formik.values.aboutAuthor}
                         rows={4}
                         className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
-                        error={getErrorSubAdmin('aboutAuthor')}
+                        error={formik.errors.aboutAuthor}
                         disabled={!isEditable}
                       />
                     </div>
@@ -1141,15 +1201,16 @@ const editBooks = (): ReactElement => {
                           className='w-[50px] h-[75.03px] object-cover cursor-pointer border border-gray-300 rounded-sm'
                           title='Click to preview'
                         />
-                      {isEditable && (
-                        <button
-                          type='button'
-                          onClick={() => setIsImageUploded(false)}
-                          className='btn btn-secondary'
-                        >
-                          Upload new image
-                        </button>
-                      )}
+                        {isEditable && (
+                          <button
+                            type='button'
+                            onClick={handleUploadNewImage}
+                            className='btn btn-secondary'
+                          >
+                            Upload new image
+                          </button>
+                        )}
+
                         {isEditable && (
                           <button
                             type='button'
@@ -1170,7 +1231,7 @@ const editBooks = (): ReactElement => {
                             inputRef={fileInputRef}
                             placeholder={t('Cover')}
                             name='coverImage'
-                            error={getErrorSubAdmin('coverImage')}
+                            error={formik.errors.coverImage}
                             className='w-full'
                             disabled={!isEditable}
                             onChange={() => handleImageChange()}
@@ -1213,6 +1274,9 @@ const editBooks = (): ReactElement => {
                           placeholder={`Point ${index + 1}`}
                           className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
                           disabled={!isEditable}
+                          onChange={e => {
+                            register(`learningPoints.${index}.value`).onChange(e);
+                          }}
                         />
 
                         {isEditable && (
@@ -1230,23 +1294,19 @@ const editBooks = (): ReactElement => {
 
                       {formik.errors.learningPoints &&
                         Array.isArray(formik.errors.learningPoints) &&
-                        (
-                          formik.errors.learningPoints as Array<{
-                            value?: string;
-                          }>
-                        )[index]?.value && (
-                          <div className='text-danger text-sm mt-1 ml-1'>
-                            {
-                              (
-                                formik.errors.learningPoints as Array<{
-                                  value?: string;
-                                }>
-                              )[index]?.value
-                            }
+                        (formik.errors.learningPoints as Array<{ value?: string }>)[index]?.value && (
+                          <div className='text-red-500 text-sm mt-1 ml-1'>
+                            {(formik.errors.learningPoints as Array<{ value?: string }>)[index]?.value}
                           </div>
                         )}
                     </div>
                   ))}
+
+                  {typeof formik.errors.learningPoints === 'string' && (
+                    <div className="text-red-500 text-sm mt-1 ml-1">
+                      {formik.errors.learningPoints}
+                    </div>
+                  )}
 
                   {isEditable && (
                     <div className='flex gap-4 mt-2'>
@@ -1283,14 +1343,14 @@ const editBooks = (): ReactElement => {
                 </span>
               </Button>
             )}
-              {isEditable && (
-                <Button className='btn-secondary' onClick={onCancelEditBookInfo}>
-                  <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
-                    <Cross />
-                  </span>
-                  {t('Cancel')}
-                </Button>
-              )}
+            {isEditable && (
+              <Button className='btn-secondary' onClick={onCancelEditBookInfo}>
+                <span className='mr-1 w-2.5 h-2.5 text-white inline-block svg-icon'>
+                  <Cross />
+                </span>
+                {t('Cancel')}
+              </Button>
+            )}
           </div>
         </form>
         {showRefinePopup && refineFieldKey && (
@@ -1375,15 +1435,15 @@ const editBooks = (): ReactElement => {
           />
         )}
         {showGeneratedPreviewModal && (
-        <GeneratedBookPreviewModal
-          isOpen={showGeneratedPreviewModal}
-          onClose={() => setShowGeneratedPreviewModal(false)}
-          onAccept={() => {
-            setShowGeneratedPreviewModal(false);
-            setShowConfirmPopup(true);
-          }}
-          bookContent={generatedBookContent}
-        />
+          <GeneratedBookPreviewModal
+            isOpen={showGeneratedPreviewModal}
+            onClose={() => setShowGeneratedPreviewModal(false)}
+            onAccept={() => {
+              setShowGeneratedPreviewModal(false);
+              setShowConfirmPopup(true);
+            }}
+            bookContent={generatedBookContent}
+          />
         )}
       </div>
       {params.id && (

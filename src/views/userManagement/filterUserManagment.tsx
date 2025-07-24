@@ -6,18 +6,21 @@ import { FilterUserProps, UserProps } from '@type/user';
 import { Refresh, Search } from '@components/icons/icons';
 import TextInput from '@components/textinput/TextInput';
 // import filterServiceProps from '@components/filter/filter';
-import { STATUS_DRP } from '@config/constant';
+import { DEFAULT_LIMIT, STATUS_DRP, SUBSCRIPTION_STATUS } from '@config/constant';
 import DropDown from '@components/dropdown/dropDown';
+import { MultiSelect } from 'primereact/multiselect';
 
 const FilterUserManagement = ({
   onSearchUser,
   clearSelectionUserMng,
+  onLimitChange,
 }: UserProps): ReactElement => {
   const { t } = useTranslation();
 
   const initialValues: FilterUserProps = {
     search: '',
     isActive: '',
+    subscriptionStatus: [],
   };
 
   /**
@@ -40,9 +43,9 @@ const FilterUserManagement = ({
     initialValues,
     onSubmit: (values) => {
       clearSelectionUserMng();
-
       const payload: any = {
         search: values.search.trim(),
+        subscriptionStatus: values.subscriptionStatus
       };
       if (values.isActive === '1') {
         payload.isActive = true;
@@ -59,11 +62,12 @@ const FilterUserManagement = ({
    * method that reset filter data
    */
   const onReset = useCallback(() => {
+    onLimitChange(DEFAULT_LIMIT);
     formik.resetForm();
-
     const resetPayload: any = {
       search: '',
       isActive: null,
+      subscriptionStatus: [],
     };
 
     onSearchUser(resetPayload);
@@ -74,10 +78,10 @@ const FilterUserManagement = ({
 	const resetPayload: any = {
       search: '',
       isActive: null,
+      subscriptionStatus: [],
     };
 	onSearchUser(resetPayload)
   },[])
-
   return (
     <div className='card'>
       <form onSubmit={formik.handleSubmit}>
@@ -91,38 +95,48 @@ const FilterUserManagement = ({
               onChange={formik.handleChange}
               value={formik.values.search}
             />
+            <MultiSelect
+              value={formik.values.subscriptionStatus ?? []}
+              onChange={(e) => formik.setFieldValue('subscriptionStatus', e.target.value)}
+              options={SUBSCRIPTION_STATUS}
+              optionLabel='name'
+              optionValue='key'
+              placeholder={t('Subscription Status') ?? 'Subscription Status'}
+              display='chip'
+              className='w-full'
+            />
             <DropDown
               id='isActive'
               name='isActive'
               options={STATUS_DRP}
               onChange={(e) => formik.setFieldValue('isActive', e.target.value)}
               value={formik.values.isActive ?? ''}
-              className='w-64'
+              className='w-full'
             />
-            <div>
-              <div className='flex items-start justify-end col-span-3 btn-group '>
-                <Button
-                  className='btn-primary '
-                  type='submit'
-                  label={t('Search')}
-                >
-                  <span className='svg-icon inline-block h-3.5 w-3.5 mr-1'>
-                    <Search />
-                  </span>
-                </Button>
-                <Button
-                  className='btn-secondary'
-                  onClick={onReset}
-                  label={t('Reset')}
-                >
-                  <span className='svg-icon inline-block h-3.5 w-3.5 mr-1'>
-                    <Refresh />
-                  </span>
-                </Button>
+              <div className='[.show-menu~div_&]:lg:col-span-3 [.show-menu~div_&]:md:col-span-1 md:col-span-3'>
+                <div className='btn-group col-span-3 flex items-start justify-end'>
+                  <Button
+                    className='btn-primary '
+                    type='submit'
+                    label={t('Search')}
+                  >
+                    <span className='svg-icon inline-block h-3.5 w-3.5 mr-1'>
+                      <Search />
+                    </span>
+                  </Button>
+                  <Button
+                    className='btn-secondary'
+                    onClick={onReset}
+                    label={t('Reset')}
+                  >
+                    <span className='svg-icon inline-block h-3.5 w-3.5 mr-1'>
+                      <Refresh />
+                    </span>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
       </form>
     </div>
   );

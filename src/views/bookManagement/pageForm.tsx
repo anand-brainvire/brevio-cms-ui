@@ -5,6 +5,7 @@ import React, {
   useImperativeHandle,
   useEffect,
   useState,
+  useRef,
 } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useFormik } from 'formik';
@@ -40,11 +41,13 @@ interface PageFormProps {
     audioMale?: Url | string;
     audioFemale?: string;
     insights: { key: string; value: string }[];
+    regenerateAudio?: boolean;
   };
   isSaved?: boolean;
   onPageSave: (data: any) => void;
   onPageUpdate?: (uuid: string, data: any) => void;
   isEditable: boolean;
+  tempId?: string;
 }
 
 export interface PageFormRef {
@@ -63,14 +66,17 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
       initialData,
       isEditable,
       isSaved,
+      tempId,
     },
     ref
   ) => {
     const params = useParams();
-    const [audioFile, setAudioFile] = useState<File | null>(null);
     const [showRefinePopup, setShowRefinePopup] = useState(false);
     const [refineData, setRefineData] = useState('');
     const [refineFieldKey, setRefineFieldKey] = useState('');
+    const audioInputRef = useRef<HTMLInputElement>(null);
+    const [shouldTriggerAudioInput, setShouldTriggerAudioInput] =
+      useState(false);
     const { savePageValidationSchema } = useValidation();
     const [isUploading, setIsUploading] = useState(false);
     const [isAudioErrorAcknowledged, setIsAudioErrorAcknowledged] =
@@ -174,7 +180,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
         return toast.error('File size should not exceed 5MB');
       }
 
-      setAudioFile(file);
+      handleAudioSubmit(file);
     };
 
     const handleRefineClick = (key: string, _insightUuid?: string) => {
@@ -251,15 +257,15 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
       });
     };
 
-    const handleAudioSubmit = async () => {
-      if (!audioFile) {
+    const handleAudioSubmit = async (file:File) => {
+      if (!file) {
         return toast.error('No file selected');
       }
       try {
         setIsUploading(true);
         const path = `page-audio?bookUuid=${params.id}&bookPagePageUuid=${initialData?.uuid}&langCode=en`;
         const audioUrl = await uploadFile(
-          [{ name: 'pageAudio', content: audioFile }],
+          [{ name: 'pageAudio', content: file }],
           path
         );
         setUploadedAudioUrl(audioUrl?.data?.url);
@@ -271,14 +277,29 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
       } finally {
         setIsUploading(false);
       }
-
     };
 
     const handleAudioRemove = () => {
-      setAudioFile(null);
       setUploadedAudioUrl(null);
       setIsUploaded(false);
+      setShouldTriggerAudioInput(true);
     };
+
+    useEffect(() => {
+      if (!isUploaded && shouldTriggerAudioInput) {
+        audioInputRef?.current?.click();
+        setShouldTriggerAudioInput(false); // reset
+      }
+    }, [isUploaded, shouldTriggerAudioInput]);
+
+    useEffect(() => {
+      if (isEditable && initialData?.regenerateAudio) {
+        setAudioError('Page content has changed. Please regenerate or upload new audio.');
+        setIsAudioErrorAcknowledged(true);
+      }
+    }, [initialData?.regenerateAudio, isEditable]);
+
+
     return (
       <div className='border mb-6 rounded shadow-sm'>
         <div
@@ -298,33 +319,6 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
               isUploading) && <Loader />}
             <form className='p-4 space-y-6'>
               <label className='block mb-2 font-medium'>
-                {t('Rich Text Editor with Preview')}{' '}
-                <span className='error'>*</span>
-              </label>
-              <CKEditorComponent
-                id={`rich-text-editor-${index}`}
-                label=''
-                required
-                value={formik.values.richText}
-                onChange={(val: string) =>
-                  formik.setFieldValue('richText', val)
-                }
-                error={
-                  formik.errors.richText && formik.touched.richText
-                    ? formik.errors.richText
-                    : ''
-                }
-              />
-              {isEditable && (
-                <button
-                  type='button'
-                  className='btn btn-secondary h-fit mt-1'
-                  onClick={() => handleRefineClick('richText')}
-                >
-                  Refine
-                </button>
-              )}
-              <label className='block mb-2 font-medium'>
                 {t('Key Point')} <span className='error'>*</span>
               </label>
               <TextInput
@@ -343,11 +337,38 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                 }
                 disabled={!isEditable}
               />
-              {isEditable && (
+              {isEditable && isSaved && (
                 <button
                   type='button'
                   className='btn btn-secondary h-fit mt-1'
                   onClick={() => handleRefineClick('keyPoint')}
+                >
+                  Refine
+                </button>
+              )}
+              <label className='block mb-2 font-medium'>
+                {t('Rich Text Editor with Preview')}{' '}
+                <span className='error'>*</span>
+              </label>
+              <CKEditorComponent
+                id={`rich-text-editor-${index}`}
+                label=''
+                required
+                value={formik.values.richText}
+                onChange={(val: string) =>
+                  formik.setFieldValue('richText', val)
+                }
+                error={
+                  formik.errors.richText && formik.touched.richText
+                    ? formik.errors.richText
+                    : ''
+                }
+              />
+              {isEditable && isSaved && (
+                <button
+                  type='button'
+                  className='btn btn-secondary h-fit mt-1'
+                  onClick={() => handleRefineClick('richText')}
                 >
                   Refine
                 </button>
@@ -379,8 +400,8 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                               if (!value || value.trim() === '') {
                                 return 'Insight should not be empty. You should either remove the insight or add content.';
                               }
-                              if (value.length > 120) {
-                                return 'Insight should not be greater than 120 characters';
+                              if (value.length > 250) {
+                                return 'Insight should not be greater than 250 characters';
                               }
                               return true;
                             },
@@ -391,7 +412,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                         />
 
                         {/* Refine button */}
-                        {isEditable && (
+                        {isEditable && isSaved && (
                           <button
                             type='button'
                             className='btn btn-secondary h-fit mt-1'
@@ -479,6 +500,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                   <>
                     <div className='w-2/3'>
                       <TextInput
+                        inputRef={audioInputRef}
                         type='file'
                         accept='audio/*'
                         id={`audio-${index}`}
@@ -491,26 +513,8 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                     </div>
 
                     {/* {audioFile && ( */}
-                    {isEditable && (
+                    {isEditable && isSaved && (
                       <>
-                        <button
-                          type='button'
-                          onClick={handleAudioRemove}
-                          className=''
-                        >
-                          <span className='mr-1 w-2.5 h-2.5 text-black inline-block svg-icon'>
-                            <Cross />
-                          </span>
-                        </button>
-
-                        <button
-                          type='button'
-                          onClick={handleAudioSubmit}
-                          className='btn btn-secondary'
-                        >
-                          Submit
-                        </button>
-
                         <button
                           type='button'
                           className='btn btn-secondary'
@@ -568,7 +572,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                         formik.setTouched({
                           ...formik.touched,
                           richText: true,
-                        });                      
+                        });
                         return;
                       }
 
@@ -592,7 +596,9 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                       }
                     }}
                   >
-                    {isSaved ? `Update Page ${index + 1}` : `Save Page ${index + 1}`}
+                    {isSaved
+                      ? `Update Page ${index + 1}`
+                      : `Save Page ${index + 1}`}
                   </button>
                 )}
 
@@ -616,7 +622,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                       className='btn btn-secondary'
                       onClick={() => {
                         const event = new CustomEvent('removeUnsavedPage', {
-                          detail: { index },
+                          detail: { tempId },
                         });
                         window.dispatchEvent(event);
                       }}

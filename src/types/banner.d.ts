@@ -30,11 +30,13 @@ export type ColArrType = {
 	sortable: boolean;
 	fieldName: string;
 	type: 'image' | 'text' | 'date' | 'status' | 'action';
+	headerCenter?: boolean;
 };
 
 export type BannerProps = {
 	onSearchAuthor: (value: FilterAuthorProps) => void;
 	filterData: authorPagination;
+	onLimitChange: (newLimit: number) => void;
 };
 export type BannerChangeProps = {
 	onClose: () => void;

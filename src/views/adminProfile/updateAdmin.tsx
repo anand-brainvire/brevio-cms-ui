@@ -46,21 +46,11 @@ const UpdateProfileForm = (): ReactElement => {
 	 * handles errorin put input fields
 	 * @param values
 	 */
-	const errorFunction = (values: { firstName: string; lastName: string }) => {
-		if (values.firstName.length > 20 || values.firstName.includes(' ')) {
-			toast.error(`${values.firstName.length > 20 ? t('The first name may not be greater than 20 characters.') : ''}${values.firstName.includes(' ') ? t('The first name may only contain letters.') : ''}`);
-		}
-		if (values.lastName.length > 20 || values.lastName.includes(' ')) {
-			toast.error(`${values.lastName.length > 20 ? t('The last name may not be greater than 20 characters.') : ''}${values.lastName.includes(' ') ? t('The last name may only contain letters.') : ''}`);
-		}
-	};
 	const formik = useFormik({
 		initialValues,
 		validationSchema: updateAdminValidationSchema,
 
 		onSubmit: async (values) => {
-			errorFunction(values);
-			if (values.firstName.length <= 20 && !values.firstName.includes(' ') && values.lastName.length <= 20 && !values.lastName.includes(' ')) {
 				updateUserProfile({
 					variables: {
 						firstName: values.firstName,
@@ -83,7 +73,7 @@ const UpdateProfileForm = (): ReactElement => {
 				localStorage.setItem('valueslistlastname', EncryptionFunction(values.lastName));
 			}
 		},
-	});
+	);
 	/**
 	 * on cancle redirect to dashborad page
 	 */

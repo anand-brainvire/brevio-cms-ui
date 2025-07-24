@@ -6,9 +6,8 @@ import TextInput from '@components/textinput/TextInput';
 import { useTranslation } from 'react-i18next';
 import { SubAdminProps } from '@type/subAdmin';
 
-const FilterSubAdmin = ({ onSearchSubAdmin }: SubAdminProps): ReactElement => {
+const FilterSubAdmin = ({ onSearchSubAdmin, onLimitChange }: SubAdminProps): ReactElement => {
     const { t } = useTranslation();
-
     const initialValues = {
         search: '',
     };
@@ -21,6 +20,7 @@ const FilterSubAdmin = ({ onSearchSubAdmin }: SubAdminProps): ReactElement => {
     });
 
     const onReset = useCallback(() => {
+        onLimitChange(10);
         formik.resetForm();
         onSearchSubAdmin(initialValues);
     }, []);

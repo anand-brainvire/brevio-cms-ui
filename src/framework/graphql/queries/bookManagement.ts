@@ -53,6 +53,7 @@ export const FETCH_BOOK_BY_ID = gql`
 	    		is_free
 	    		total_unique_completion
 	    		total_completion
+				# published_version_number
 	    		created_at
 	    		updated_at
 	    		created_by
@@ -123,6 +124,7 @@ export const GET_ALL_BOOK_PAGES = gql`
 						audio_female
 						total_minutes
 						total_seconds
+						regenerate_audio
 					}
 					insights {
 						uuid

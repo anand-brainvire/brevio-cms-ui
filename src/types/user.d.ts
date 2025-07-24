@@ -2,11 +2,13 @@ export type UserProps = {
 	onSearchUser: (value: FilterUserProps) => void;
 	clearSelectionUserMng: () => void;
 	filterData: PaginationParams
+	onLimitChange: (newLimit: number) => void;
 };
 
 export type FilterUserProps = {
 	search: string;
 	isActive?: string | null;
+	subscriptionStatus?: string[] | [] | undefined;
 };
 
 export type PaginationParams = {
@@ -15,10 +17,8 @@ export type PaginationParams = {
 	sortBy: string;
 	sortOrder: string;
 	search: string;
-	// email: string;
-	// status: number | null;
-	// gender: number | null;
-	// phoneNo: string;
+	userType: string[];
+	offset: number
 };
 
 export type UserChangeProps = {

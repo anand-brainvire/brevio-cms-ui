@@ -5,8 +5,9 @@ import { Refresh, Search } from '@components/icons/icons';
 import TextInput from '@components/textinput/TextInput';
 import { useTranslation } from 'react-i18next';
 import { BannerProps, FilterAuthorProps } from '@type/banner';
+import { DEFAULT_LIMIT } from '@config/constant';
 
-const FilterBanner = ({ onSearchAuthor }: BannerProps) => {
+const FilterBanner = ({ onSearchAuthor,onLimitChange }: BannerProps) => {
 	const { t } = useTranslation();
 
 	const initialValues: FilterAuthorProps = {
@@ -27,6 +28,7 @@ const FilterBanner = ({ onSearchAuthor }: BannerProps) => {
 	}, []);
 
 	const onReset = useCallback(() => {
+		onLimitChange(DEFAULT_LIMIT);
 		formik.resetForm();
 		onSearchAuthor(initialValues);
 	}, []);

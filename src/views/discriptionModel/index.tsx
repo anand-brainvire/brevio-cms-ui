@@ -4,7 +4,7 @@ import { DescriptionDataProps } from '@type/common';
 import { Cross, Message } from '@components/icons/icons';
 import { useTranslation } from 'react-i18next';
 
-const DescriptionModel = ({ onClose, data, show }: DescriptionDataProps) => {
+const DescriptionModel = ({ onClose, data, show, label }: DescriptionDataProps) => {
 	const { t } = useTranslation();
 	/**
 	 * Method that closes pop on outeside click
@@ -25,7 +25,7 @@ const DescriptionModel = ({ onClose, data, show }: DescriptionDataProps) => {
 							<span className='w-wide-1 h-rise-1 mr-1 fill-white text-white svg-icon inline-block'>
 								<Message />
 							</span>
-							<span className='model-title'>{t('Description')}</span>
+							<span className='model-title'>{label ? t(label) : t('Description')}</span>
 						</div>
 						<Button onClick={onClose} title={t('Close') ?? ''}>
 							<span className='mr-1 text-white w-2.5 h-2.5 inline-block svg-icon'>

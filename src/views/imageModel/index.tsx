@@ -53,8 +53,8 @@ const ImageModel = ({ onClose, data, show, showAccept, onAccept }: ImageDataProp
 							alt='Model Preview'
 							className='rounded shadow-md'
 							style={{
-								height: showAccept ? 400 : 300,
-								width: showAccept ? 400 : 300,
+								height: showAccept ? 600 : 600,
+								width: showAccept ? 600 : 600,
 								objectFit: 'contain',
 							}}
 						/>

@@ -128,10 +128,10 @@ export const SHOW_PAGE_COUNT_ARR1 = [
 	{ name: '30', key: 30 },
 ];
 export const BOOK_STATUS_DRP = [
-	{ name: 'Published', key: '1' },
 	{ name: 'Draft', key: '2' },
-	{ name: 'Unpublished', key: '3' },
+	{ name: 'Published', key: '1' },
 	{ name: 'Published (Modified)', key: '4'},
+	{ name: 'Unpublished', key: '3' },
 	{ name: 'Unpublished (Modified)', key: '5'}
 ];
 
@@ -139,6 +139,12 @@ export const STATUS_DRP = [
 	{ name: 'Select Status', key: '' },
 	{ name: 'Active', key: '1' },
 	{ name: 'Inactive', key: '0' },
+];
+
+export const SUBSCRIPTION_STATUS = [
+	{name: 'Free', key: 'free'},
+	{name: 'Subscribed', key: 'subscribed'},
+	{name: 'Trial', key: 'trial'},
 ];
 
 export  const STATUS_OPTION = [
@@ -219,7 +225,7 @@ export const ROUTES: { [key: string]: string } = {
 	forgotPassword: 'forgot-password',
 	resetPassword: 'reset-password',
 	resetToken: 'token',
-	subAdmin: 'sub-admin',
+	subAdmin: 'manage-sub-admin',
 	state: 'state',
 	faq: 'faq',
 	settings: 'settings',
@@ -517,202 +523,6 @@ export const SIDEBAR_NAVLINKS: sidebarNavlinksArray[] = [
 		childRoutes: [],
 		permissions: [PERMISSION_LIST.Author.ListAccess],
 	},
-
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.settings}`,
-	// 	text: 'Settings',
-	// 	icon: <SettingsSliders />,
-	// 	redirectPage: RedirectPages.settings,
-	// 	childRoutes: [],
-	// 	permissions: [PERMISSION_LIST.Settings.ListAccess],
-	// },
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.location}`,
-	// 	text: 'Manage Location',
-	// 	icon: <Marker />,
-	// 	redirectPage: '',
-	// 	childRoutes: [
-	// 		{
-	// 			to: `/${ROUTES.app}/${ROUTES.country}/${ROUTES.list}`,
-	// 			text: 'Manage Country',
-	// 			redirectPage: RedirectPages.country,
-	// 			icon: <ArrowRight />,
-	// 			permissions: [PERMISSION_LIST.Country.ListAccess],
-	// 		},
-	// 		{
-	// 			to: `/${ROUTES.app}/${ROUTES.state}/${ROUTES.list}`,
-	// 			text: 'Manage State',
-	// 			redirectPage: RedirectPages.state,
-	// 			icon: <ArrowRight />,
-	// 			permissions: [PERMISSION_LIST.State.ListAccess],
-	// 		},
-	// 		{
-	// 			to: `/${ROUTES.app}/${ROUTES.city}/${ROUTES.list}`,
-	// 			text: 'Manage City',
-	// 			redirectPage: RedirectPages.city,
-	// 			icon: <ArrowRight />,
-	// 			permissions: [PERMISSION_LIST.City.ListAccess],
-	// 		},
-	// 	],
-	// 	permissions: [PERMISSION_LIST.City.ListAccess, PERMISSION_LIST.State.ListAccess, PERMISSION_LIST.Country.ListAccess],
-	// },
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.CMS}/${ROUTES.list}`,
-	// 	text: 'CMS Management',
-	// 	icon: <Document />,
-	// 	redirectPage: RedirectPages.cms,
-	// 	childRoutes: [],
-	// 	permissions: [PERMISSION_LIST.CMS.ListAccess],
-	// },
-	// {
-	//   to: `/${ROUTES.app}/${ROUTES.category}/${ROUTES.list}`,
-	//   text: 'Manage Category',
-	//   icon: <Category />,
-	//   redirectPage: RedirectPages.category,
-	//   childRoutes: [],
-	// permissions:[]
-
-	// },
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.email}/${ROUTES.list}`,
-	// 	text: 'Email',
-	// 	icon: <Email />,
-	// 	redirectPage: RedirectPages.email,
-	// 	childRoutes: [],
-	// 	permissions: [PERMISSION_LIST.EmailTemplate.ListAccess],
-	// },
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.enquiry}/${ROUTES.list}`,
-	// 	text: 'Enquiry',
-	// 	icon: <PhoneCall />,
-	// 	redirectPage: RedirectPages.enquiry,
-	// 	childRoutes: [],
-	// 	permissions: [PERMISSION_LIST.Enquiry.ListAccess],
-	// },
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.suggestion}/${ROUTES.list}`,
-	// 	text: 'Suggestion',
-	// 	icon: <SuggestionIcon />,
-	// 	redirectPage: RedirectPages.suggestion,
-	// 	childRoutes: [],
-	// 	permissions: [PERMISSION_LIST.Suggestion.ListAccess],
-	// },
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.announcement}/list`,
-	// 	text: 'Announcement',
-	// 	icon: <Megaphone />,
-	// 	redirectPage: RedirectPages.announcement,
-	// 	childRoutes: [],
-	// 	permissions: [PERMISSION_LIST.Announcement.ListAccess],
-	// },
-
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.activityTracking}/${ROUTES.list}`,
-	// 	text: 'Activity Tracking',
-	// 	icon: <TimerIcon />,
-	// 	redirectPage: RedirectPages.activityTracking,
-	// 	childRoutes: [],
-	// 	permissions: [PERMISSION_LIST.ActivityTracking.ListAccess],
-	// },
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.review}/${ROUTES.list}`,
-	// 	text: 'Review',
-	// 	icon: <Star />,
-	// 	redirectPage: RedirectPages.review,
-	// 	childRoutes: [],
-	// 	permissions: [PERMISSION_LIST.Review.ListAccess],
-	// },
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.userReport}/${ROUTES.list}`,
-	// 	text: 'User Report',
-	// 	icon: <UserReportIcon />,
-	// 	redirectPage: RedirectPages.userReport,
-	// 	childRoutes: [],
-	// 	permissions: [PERMISSION_LIST.UserReport.ListAccess],
-	// },
-	// {
-	//   to: `/${ROUTES.app}/${ROUTES.manageRulesSets}/${ROUTES.list}`,
-	//   text: 'Manage Rule Sets',
-	//   icon: <ManageRulesSetsIcon />,
-	//   redirectPage: RedirectPages.manageRulesSets,
-	//   childRoutes: [],
-	// permissions:[]
-
-	// },
-	// {
-	//   to: `/${ROUTES.app}/${ROUTES.event}/${ROUTES.list}`,
-	//   text: 'Event Management',
-	//   icon: <DateCalendar />,
-	//   redirectPage: RedirectPages.events,
-	//   childRoutes: [],
-	// permissions:[]
-
-	// },
-	// {
-	//   to: `/${ROUTES.app}/${ROUTES.notifications}/${ROUTES.list}`,
-	//   text: 'Notification',
-	//   icon: <Bell />,
-	//   redirectPage: RedirectPages.notification,
-	//   childRoutes: [],
-	// permissions:[]
-
-	// },
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.bsMedia}/${ROUTES.list}`,
-	// 	text: 'Bs Media',
-	// 	icon: <ClipBoardIcon />,
-	// 	redirectPage: RedirectPages.bsMedia,
-	// 	childRoutes: [],
-	// 	permissions: [PERMISSION_LIST.BsMedia.ListAccess],
-	// },
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.qrcode}/${ROUTES.list}`,
-	// 	text: 'QR Code',
-	// 	icon: <QrCodeIcon />,
-	// 	redirectPage: RedirectPages.qrcode,
-	// 	childRoutes: [],
-	// 	permissions: [PERMISSION_LIST.Role.ListAccess, PERMISSION_LIST.Permission.ListAccess],
-	// },
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.geoLocation}/${ROUTES.list}`,
-	// 	text: 'Geo Location',
-	// 	icon: <GeoLocationIcon />,
-	// 	redirectPage: RedirectPages.geoLocation,
-	// 	childRoutes: [],
-	// 	permissions: [PERMISSION_LIST.GeoLocation.ListAccess],
-	// },
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.planManagement}/${ROUTES.list}`,
-	// 	text: 'Plan Management',
-	// 	icon: <PlanManagementIcon />,
-	// 	redirectPage: RedirectPages.planManagement,
-	// 	childRoutes: [],
-	// 	permissions: [PERMISSION_LIST.PlanManagement.ListAccess],
-	// },
-
-	// {
-	// 	to: `/${ROUTES.app}/${ROUTES.subscriptionManagement}`,
-	// 	text: 'Subscription Management',
-	// 	icon: <SubscriptionIcon />,
-	// 	redirectPage: '',
-	// 	childRoutes: [
-	// 		{
-	// 			to: `/${ROUTES.app}/${ROUTES.subscriptionManagement}/${ROUTES.list}`,
-	// 			text: 'Subscribe Plan',
-	// 			icon: <ArrowRight />,
-	// 			redirectPage: RedirectPages.subscriptionManagement,
-	// 			permissions: [PERMISSION_LIST.PlanManagement.ListAccess],
-	// 		},
-	// 		{
-	// 			to: `/${ROUTES.app}/${ROUTES.subscribers}/${ROUTES.list}`,
-	// 			text: 'Subscribers List',
-	// 			redirectPage: RedirectPages.subscribers,
-	// 			icon: <ArrowRight />,
-	// 			permissions: [PERMISSION_LIST.PlanManagement.ListAccess],
-	// 		},
-	// 	],
-	// 	permissions: [PERMISSION_LIST.City.ListAccess, PERMISSION_LIST.State.ListAccess, PERMISSION_LIST.Country.ListAccess],
-	// },
 ];
 
 export const EMAIL_TEMPLATE_RADIO_TYPE_LIST = [

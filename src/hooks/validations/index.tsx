@@ -4,11 +4,12 @@ import useValidationFields from '@src/hooks/validations/fields';
 import { validationProps } from '@src/types/common';
 
 const useValidation = () => {
-	const { email, password, firstName, lastName, status, endDate, startDate, address, title, contactNo, confirmPasswordcomman } = useCommanValidationFields();
+	const { email, passwordLogin, password, firstName, lastName, status, endDate, startDate, address, title, contactNo, confirmPasswordcomman } = useCommanValidationFields();
 	const {
 		abuseThreshold,
 		categorSuggestion,
 		newPassword,
+		currentPassword,
 		confirmPassword,
 		metaTitleEnglish,
 		descriptionEnglish,
@@ -88,16 +89,17 @@ const useValidation = () => {
 		whatsInsidePublish,
 		aboutAuthorPublish,
 		coverImage,
-		whatsInside,
-		aboutAuthor,
-		learningPoints,
+		learningPoint,
+		// whatsInside,
+		// aboutAuthor,
+		// learningPoints,
 		keyPoint,
 		richText,
 	} = useValidationFields();
 
 	const loginValidationSchema = Yup.object({
 		email: email,
-		password: password,
+		password: passwordLogin,
 	});
 	const suadminpasswordValidationSchema = Yup.object({
 		newPassword: newPassword,
@@ -108,6 +110,7 @@ const useValidation = () => {
 		address: geoLocationAddress
 	})
 	const changeProfileValidationSchema = Yup.object({
+		oldPassword: currentPassword,
 		newPassword: newPassword,
 		confirmPassword: confirmPassword,
 	});
@@ -226,16 +229,16 @@ const useValidation = () => {
 	});
 
 	const addBookValidationSchema = Yup.object({
-		bookName: bookName
+		title: bookName
 	});
 
 	const addBookInfoValidationSchema = Yup.object({
 		title: bookName,
-		whatsInside: whatsInside,
-		aboutAuthor: aboutAuthor,
-		learningPoints: learningPoints,
-		// categoryId: addCategories,
-		// authorId: AddAuthors
+		categoryId: addCategories,
+		authorId: AddAuthors
+		// whatsInside: whatsInside,
+		// aboutAuthor: aboutAuthor,
+		// learningPoints: learningPoints,
 	});
 
 	const publishBookValidationSchema = Yup.object({
@@ -245,7 +248,7 @@ const useValidation = () => {
 		whatsInside: whatsInsidePublish,
 		aboutAuthor: aboutAuthorPublish,
 		coverImage: coverImage,
-
+		learningPoints: learningPoint
 	});
 	
 	const forgotPasswordValidationSchema = Yup.object({

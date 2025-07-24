@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import {
+  GET_MY_ACHIEVEMENTS,
   GET_MY_STATISTICS,
   GET_USER_BY_ID,
   GET_USER_INTERESTED_CATEGORIES,
@@ -24,12 +25,24 @@ export interface MyStatistics {
   __typename: 'Statistics';
 }
 
+interface AchievementLevel {
+  level: number;
+}
+
+interface AchievementDetails {
+  perseverant?: AchievementLevel;
+  smart?: AchievementLevel;
+  wise?: AchievementLevel;
+  influencer?: AchievementLevel;
+}
+
 const ViewUser = () => {
   const { t } = useTranslation();
   const UserId = useParams();
   const [interestedCategories, setInterestedCategories] = useState([]);
   const [interestedGoals, setInterestedGoals] = useState([]);
   const [myStatistics, setMyStatistics] = useState<MyStatistics>();
+  const [myAchievements, setMyAchievements] = useState<AchievementDetails>();
   const { data, refetch, loading } = useQuery(GET_USER_BY_ID, {
     variables: { uuid: UserId.id },
     skip: !UserId.id,
@@ -45,7 +58,7 @@ const ViewUser = () => {
       }
 
       try {
-        const [categoryResult, goalResult, myStatistics] =
+        const [categoryResult, goalResult, myStatistics, achievements] =
           await Promise.allSettled([
             mobileClient.query({
               query: GET_USER_INTERESTED_CATEGORIES,
@@ -63,6 +76,13 @@ const ViewUser = () => {
             }),
             mobileClient.query({
               query: GET_MY_STATISTICS,
+              fetchPolicy: 'network-only',
+              context: {
+                headers: { 'x-internal-user-uuid': UserId.id },
+              },
+            }),
+            mobileClient.query({
+              query: GET_MY_ACHIEVEMENTS,
               fetchPolicy: 'network-only',
               context: {
                 headers: { 'x-internal-user-uuid': UserId.id },
@@ -91,6 +111,14 @@ const ViewUser = () => {
           setMyStatistics(myStatistics.value.data.getMyStatistics?.data || []);
         } else {
           toast.error('Failed to fetch interested categories');
+        }
+
+        if (achievements.status === 'fulfilled') {
+          setMyAchievements(
+            achievements.value.data.getMyAchievements?.data || []
+          );
+        } else {
+          toast.error('Failed to fetch achievements');
         }
       } catch {
         return;
@@ -149,9 +177,7 @@ const ViewUser = () => {
         </div>
         <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
           <div className='flex pb-2 flex-col bg-gray-100 rounded-lg p-4 gap-4 text-center'>
-            <p className='mr-3 font-bold flex-1'>
-              {t('Number of Books Completed')}
-            </p>
+            <p className='mr-3 font-bold flex-1'>{t('Books Completed')}</p>
             <p className='px-0 sm:px-3 flex-1 text-xl'>
               {user?.books_completed || 0}
             </p>
@@ -161,6 +187,12 @@ const ViewUser = () => {
             <p className='px-0 sm:px-3 flex-1 text-xl'>
               {user?.daily_goal_minutes || 0}
               {' Min'}
+            </p>
+          </div>
+          <div className='flex pb-2 flex-col bg-gray-100 rounded-lg p-4 gap-4 text-center'>
+            <p className='mr-3 font-bold flex-1'>{t('Streak')}</p>
+            <p className='px-0 sm:px-3 flex-1 text-xl'>
+              {user?.current_streak_count || 0}
             </p>
           </div>
           <div className='flex pb-2 flex-col bg-gray-100 rounded-lg p-4 gap-4 text-center'>
@@ -205,6 +237,64 @@ const ViewUser = () => {
               {myStatistics
                 ? `Completed Summaries - ${myStatistics.summaries}, Key Points - ${myStatistics.key_points}`
                 : 'N/A'}
+            </span>
+          </div>
+          <div className='flex gap-6 px-4 py-3 bg-gray-50'>
+            <span className='w-60 font-semibold text-gray-700'>
+              {t('Subscription details')}
+            </span>
+            <span className='text-left'>
+              {user?.userSubscriptionDetails?.is_active ? (
+                <>
+                  Start Date:{' '}
+                  {getDateFromat(
+                    user.userSubscriptionDetails.starts_at,
+                    DATE_FORMAT.momentDateTime24Format
+                  )}{' '}
+                  , End Date:{' '}
+                  {getDateFromat(
+                    user.userSubscriptionDetails.expires_at,
+                    DATE_FORMAT.momentDateTime24Format
+                  )}{' '}
+                  , Subscription Type:{' '}
+                  {user.userSubscriptionDetails.is_trial
+                    ? 'Trial'
+                    : user.userSubscriptionDetails.product_name
+                        ?.toLowerCase()
+                        .includes('week')
+                    ? 'Weekly'
+                    : user.userSubscriptionDetails.product_name
+                        ?.toLowerCase()
+                        .includes('month')
+                    ? 'Monthly'
+                    : user.userSubscriptionDetails.product_name || 'N/A'}
+                </>
+              ) : (
+                'N/A'
+              )}
+            </span>
+          </div>
+          <div className='flex gap-6 px-4 py-3'>
+            <span className='w-60 font-semibold text-gray-700'>
+              {t('Achievements')}
+            </span>
+            <span className='text-left'>
+              {[
+                myAchievements?.perseverant?.level !== undefined
+                  ? `Perseverant Level: ${myAchievements.perseverant.level}`
+                  : null,
+                myAchievements?.smart?.level !== undefined
+                  ? `Smart Level: ${myAchievements.smart.level}`
+                  : null,
+                myAchievements?.wise?.level !== undefined
+                  ? `Wise Level: ${myAchievements.wise.level}`
+                  : null,
+                myAchievements?.influencer?.level !== undefined
+                  ? `Influencer Level: ${myAchievements.influencer.level}`
+                  : null,
+              ]
+                .filter((item) => item !== null)
+                .join(', ') || 'N/A'}
             </span>
           </div>
         </div>

@@ -9,7 +9,6 @@ import {
 import FilterBooks from '@views/bookManagement/filterBooks';
 import Button from '@components/button/button';
 import filterServiceProps from '@components/filter/filter';
-import useSaveFilterData from '@src/hooks/useSaveFilterData';
 import RoleBaseGuard from '@components/roleGuard';
 import { PERMISSION_LIST } from '@config/permission';
 import BVDataTable from '@components/BVDatatable/BVDataTable';
@@ -17,7 +16,6 @@ import { BookIcon, PlusCircle } from '@components/icons/icons';
 import {
   DEFAULT_LIMIT,
   DEFAULT_PAGE,
-  sortOrder,
   ROUTES,
 } from '@config/constant';
 import {
@@ -30,19 +28,20 @@ import CreateBook from './createBook';
 
 const bookManagaement = () => {
   const { t } = useTranslation();
-  const { localFilterData } = useSaveFilterData();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const [defaultCategoryId] = useState<string | null>(
     queryParams.get('categoryId')
   );
   const [isBookModalOpen, setBookModalOpen] = useState(false);
+  const [limit, setLimit] = useState(DEFAULT_LIMIT);
   const [filterData, setFilterData] = useState<PaginationParamsCoupon>(
-    localFilterData('filterCoupon') || {
+    {
       limit: DEFAULT_LIMIT,
-      sortBy: 'updated_at',
-      sortOrder: sortOrder,
-      offset: ((DEFAULT_PAGE ?? DEFAULT_PAGE) - 1) * DEFAULT_LIMIT,
+      sortBy: '',
+      sortOrder: '',
+      offset: 0,
+      page: DEFAULT_PAGE
     }
   );
 
@@ -50,8 +49,8 @@ const bookManagaement = () => {
     if (defaultCategoryId) {
       setFilterData({
         limit: DEFAULT_LIMIT,
-        sortBy: 'updated_at',
-        sortOrder: sortOrder,
+        sortBy: '',
+        sortOrder: '',
         offset: 0,
         filter: {
           categories: [defaultCategoryId],
@@ -59,6 +58,12 @@ const bookManagaement = () => {
       });
     }
   }, [defaultCategoryId]);
+	
+  const handleLimitChange = (newLimit:number) => {
+	  setLimit(newLimit);
+	  setFilterData((prev) => ({ ...prev, limit: newLimit, page: 1 }));
+	};
+
 
   const COL_ARR_COUPONS = [
     {
@@ -99,7 +104,7 @@ const bookManagaement = () => {
     {
       name: t('Last Updated'),
       sortable: true,
-      fieldName: 'start_date',
+      fieldName: 'updated_at',
       type: 'date',
       headerCenter: true,
     },
@@ -109,23 +114,16 @@ const bookManagaement = () => {
    *
    * @param values are used set the filter data
    */
-  const onSearchCoupon = useCallback(
-    (
-      values: FilterCouponsProps & { filter?: PaginationParamsCoupon['filter'] }
-    ) => {
+  const onSearchCoupon = useCallback((values: FilterCouponsProps & { filter?: PaginationParamsCoupon['filter'] }) => {
       setFilterData({
         ...filterData,
         filter: values.filter,
+			  limit:limit
       });
-      filterServiceProps.saveState(
-        'filterCoupon',
-        JSON.stringify({
-          ...filterData,
-          filter: values.filter,
-        })
+      filterServiceProps.saveState('filterCoupon',JSON.stringify({...filterData,filter: values.filter,})
       );
     },
-    [filterData]
+    [limit,filterData]
   );
 
   /**
@@ -149,7 +147,7 @@ const bookManagaement = () => {
 
   return (
     <div>
-      <FilterBooks onSearchCoupon={onSearchCoupon} filterData={filterData} defaultCategoryId={defaultCategoryId}/>
+      <FilterBooks onLimitChange={handleLimitChange} onSearchCoupon={onSearchCoupon} filterData={filterData} defaultCategoryId={defaultCategoryId}/>
       <div className='card-table'>
         <div className='card-header'>
           <div className='flex items-center'>
@@ -175,6 +173,8 @@ const bookManagaement = () => {
         </div>
         <div className='card-body'>
           <BVDataTable
+            limit={limit}
+    				onLimitChange={handleLimitChange}
             defaultActions={[
               'edit',
               'delete',

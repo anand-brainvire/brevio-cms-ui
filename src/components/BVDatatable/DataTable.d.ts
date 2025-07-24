@@ -5,7 +5,7 @@ export interface IColumnsProps {
 	fieldName: string;
 	name: string;
 	sortable: boolean;
-	type: 'image' | 'text' | 'date' | 'status' | 'action' | 'badge' | 'ratings' | 'number' | 'multilang' | 'multipleText' | 'bookStatus';
+	type: 'image' | 'text' | 'date' | 'status' | 'action' | 'badge' | 'ratings' | 'number' | 'multilang' | 'multipleText' | 'bookStatus' | 'subscriptionStatus';
 	headerCenter?: boolean;
 	conversationValue?: IListData;
 	isBase64ImageUrl?: boolean;
@@ -63,6 +63,8 @@ export interface IBVDataTablesProps {
 	statusChangeApiId?: string;
 	statusChangeApiKeyTitle?: string;
 	rowRefData?: (data: IListData) => void;
+	limit?: number;
+    onLimitChange?: (newLimit: number) => void;
 }
 
 export interface IImageCell {
@@ -73,7 +75,9 @@ export interface IImageCell {
 
 export interface ITextCell {
 	text: string;
-	descriptionHandler: (value: string) => void
+	descriptionHandler: (value: string, label?: string) => void;
+	field?: string;
+	descriptionLabel?: string;
 }
 
 export interface IBadgeCell {

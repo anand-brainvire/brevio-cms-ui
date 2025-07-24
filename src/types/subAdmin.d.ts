@@ -5,6 +5,7 @@ export type FilterSubadminProps = {
 export type SubAdminProps = {
 	onSearchSubAdmin: (value: FilterSubadminProps) => void;
 	filterData: PaginationParams;
+	onLimitChange: (newLimit: number) => void;
 };
 
 export type ColArrType = {
@@ -12,6 +13,7 @@ export type ColArrType = {
 	sortable: boolean;
 	fieldName: string;
 	type: 'image' | 'text' | 'date' | 'status' | 'action';
+	headerCenter?: boolean
 };
 
 export type PaginationParams = {

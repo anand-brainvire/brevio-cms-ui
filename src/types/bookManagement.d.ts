@@ -8,11 +8,12 @@ export type PaginationParamsCoupon = {
 	limit: number;
 	offset: number;
 	sortBy: string;
-	sortOrder: string;
+	sortOrder: string;	
+	page?: number;
 };
 
 export type BookInputType = {
-	bookName: string;
+	title: string;
 }
 export type Insight = {
   value: string;
@@ -44,6 +45,11 @@ export type PageFormProps = {
   register: UseFormRegister<FormValues>;
   OnBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
 };
+
+export type CategoryOption = {
+  key: string;
+  name: string;
+}
 
 export type Category = {
   uuid: string;
@@ -78,6 +84,7 @@ export type CouponsManagementProps = {
 	defaultCategoryId?: string | null;
 	onSearchCoupon: (values: FilterCouponsProps) => void;
 	filterData: PaginationParamsCoupon;
+	onLimitChange: (newLimit: number) => void;
 };
 export type FilterCouponsProps = {
 	search: string;
