@@ -425,14 +425,6 @@ The project includes Azure DevOps pipeline configuration:
 - CSRF protection
 - Secure HTTP headers
 
-## 📞 Support
-
-### Demo Environment
-- **URL**: https://basereact18.demo.brainvire.dev/
-- **Credentials**:
-  - Email: amit.shah@brainvire.com
-  - Password: Brain@1234
-
 ### Documentation
 - **Component Library**: See individual component README files
 - **API Documentation**: GraphQL schema documentation
