@@ -21,10 +21,12 @@ function App() {
 
 			<Suspense>
 				<Routes>
+					<Route path="/app" element={<Navigate to="/app/dashboard" replace />} />
 					{/* Public routes  */}
 					<Route element={<PublicLayout />}>
 						<Route path={ROUTES.login} element={<Login />} />
 						<Route path={`${ROUTES.resetPassword}/?`} element={<ResetPassword />} />
+						<Route path={`${ROUTES.setPassWord}/?`} element={<ResetPassword />} />
 						<Route path='' element={<Navigate to={`/${ROUTES.login}`} />} />
 					</Route>
 					{/* Private routes  */}

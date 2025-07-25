@@ -156,6 +156,7 @@ const Dashboard = () => {
           data={bookData.bestSellerBooks}
           xKey='title'
           yKey='read_count'
+          yLabel='Read Count'
         />
       </div>
       <div className='grid grid-cols-1 md:grid-cols-1 gap-4 mb-4'>
@@ -164,6 +165,7 @@ const Dashboard = () => {
           data={bookData.topPopularBooks}
           xKey='title'
           yKey='read_count'
+          yLabel='Read Count'
         />
       </div>
       <div className='grid grid-cols-1 md:grid-cols-1 gap-4 mb-4'>
@@ -172,6 +174,7 @@ const Dashboard = () => {
           data={categoryData.topReadCategories}
           xKey='name'
           yKey='read_count'
+          yLabel='Read Count'
         />
       </div>
       <div className='grid grid-cols-1 md:grid-cols-1 gap-4 mb-4'>
@@ -180,6 +183,7 @@ const Dashboard = () => {
           data={authorData}
           xKey='name'
           yKey='read_count'
+          yLabel='Read Count'
         />
       </div>
       <div className='grid grid-cols-1 md:grid-cols-1 gap-4 mb-4'>
@@ -188,6 +192,7 @@ const Dashboard = () => {
           data={categoryData.categoryBooks}
           xKey='name'
           yKey='total_books'
+          yLabel='Total Books'
           responsive={true}
         />
       </div>

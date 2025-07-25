@@ -78,7 +78,7 @@ const editBooks = (): ReactElement => {
     useMutation(BOOK_PUBLISH_STATUS);
 
   const { data, refetch: fetchAllCategories } = useQuery(FETCH_CATEGORY, {
-    variables: { isAll: IS_ALL, sortBy: 'name', sortOrder: 'asc'},
+    variables: { isAll: IS_ALL, sortBy: 'name', sortOrder: 'asc' },
   });
   const [categoryDroData, setCategoryDroData] = useState<CategoryOption[]>([]);
   const [showRefinePopup, setShowRefinePopup] = useState(false);
@@ -93,7 +93,7 @@ const editBooks = (): ReactElement => {
   const [isImageFromRefine, setIsImageFromRefine] = useState(false);
   const [base64Url, setBase64Url] = useState<RefineCoverImageData>();
   const [uplodedImageUrl, setUplodedImageUrl] = useState<string>();
-  const [originalCoverImageUrl, setOriginalCoverImageUrl] = useState<string>();
+  const [generatedCoverImageUrl, setGeneratedCoverImageUrl] = useState<string>();
   const [isImageModelShow, setIsImageModelShow] = useState<boolean>(false);
   const [isPublished, setIsPublished] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -110,7 +110,8 @@ const editBooks = (): ReactElement => {
   );
   const [hasOnlyOneDraftVersion, setHasOnlyOneDraftVersion] = useState(false);
   const isEditable = selectedTab === 'draft';
-
+  const offsetRef = useRef(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const { loading: loader, refetch } = useQuery(FETCH_BOOK_BY_ID, {
     variables: { uuid: params.id },
     skip: !params.id,
@@ -133,19 +134,26 @@ const editBooks = (): ReactElement => {
   };
 
   const [authors, setAuthors] = useState<TransformedAuthor[]>([]);
-  const { loading: authorLoading, fetchMore } = useQuery(GET_AUTHOR, {
+  const [selectedAuthorIds, setSelectedAuthorIds] = useState<string[]>([]);
+  const {
+    loading: authorLoading,
+    fetchMore,
+    refetch: refetchAuthors,
+  } = useQuery(GET_AUTHOR, {
     fetchPolicy: 'network-only',
     variables: {
-      limit: 100,
+      limit: 75,
       offset: 0,
       sortBy: 'name',
-      sortOrder: 'asc'
+      sortOrder: 'asc',
+      authorUuids: selectedAuthorIds.length > 0 ? selectedAuthorIds : undefined,
     },
     onCompleted: (res) => {
       const rawAuthors = res?.getAllAuthors?.data?.authors || [];
       const newAuthors = transformAuthors(rawAuthors);
       setAuthors(newAuthors);
-      setHasMoreAuthors(newAuthors.length === 75);
+      offsetRef.current = rawAuthors.length;
+      setHasMoreAuthors(rawAuthors.length === 75);
     },
   });
   const { addBookInfoValidationSchema } = useValidation();
@@ -247,6 +255,26 @@ const editBooks = (): ReactElement => {
       const authorId = version.authors?.map((a: any) => a.uuid) || [];
       const categoryId = version.categories?.map((c: any) => c.uuid) || [];
 
+      // Set selected author IDs and refetch authors to prioritize them
+      if (
+        authorId.length > 0 &&
+        JSON.stringify(authorId) !== JSON.stringify(selectedAuthorIds)
+      ) {
+        setSelectedAuthorIds(authorId);
+        // Reset authors state and offset for fresh fetch with selected authors
+        setAuthors([]);
+        offsetRef.current = 0;
+        setHasMoreAuthors(true);
+        // Refetch authors with the selected author IDs
+        refetchAuthors({
+          limit: 75,
+          offset: 0,
+          sortBy: 'name',
+          sortOrder: 'asc',
+          authorUuids: authorId,
+        });
+      }
+
       const learningPoints =
         translation?.learning_points?.map((point: string) => ({
           value: point,
@@ -265,8 +293,12 @@ const editBooks = (): ReactElement => {
         learningPoints,
       });
 
-      remove();
-      learningPoints.forEach((lp: { value: string }) => append(lp));
+      // Use reset instead of remove/append to prevent auto-focus on last input
+      if (learningPoints.length > 0) {
+        reset({ learningPoints });
+      } else {
+        reset({ learningPoints: [{ value: '' }] });
+      }
     };
 
     fetchAndSetData();
@@ -319,18 +351,35 @@ const editBooks = (): ReactElement => {
   const formik = useFormik({
     initialValues,
     validationSchema: addBookValidationSchema,
+    validateOnChange: false, // Disable automatic validation on change
+    validateOnBlur: false,   // Disable validation on blur to control it manually
     onSubmit: async (values) => {
       await UpdateBookInfoFunction(values);
     },
   });
 
-const getCategoryNames = () => {
-  const data = categoryDroData
-    .filter((cat) => formik.values.categoryId.includes(cat.key))
-    .map((cat) => cat.name || 'Unnamed Category');
-  return data;
-};
+  // Custom change handler that only clears error for the specific field being edited
+  const handleFieldChange = useCallback((fieldName: string, value: any) => {
+    // Update the field value
+    formik.setFieldValue(fieldName, value);
+    
+    // Clear only the error for this specific field if it exists
+    if (formik.errors[fieldName as keyof typeof formik.errors]) {
+      const newErrors = { ...formik.errors };
+      delete newErrors[fieldName as keyof typeof formik.errors];
+      formik.setErrors(newErrors);
+    }
+    
+    // Mark field as touched
+    formik.setFieldTouched(fieldName, true, false);
+  }, [formik]);
 
+  const getCategoryNames = () => {
+    const data = categoryDroData
+      .filter((cat) => formik.values.categoryId.includes(cat.key))
+      .map((cat) => cat.name || 'Unnamed Category');
+    return data;
+  };
 
   const getAuthorNames = () => {
     return authors
@@ -401,7 +450,7 @@ const getCategoryNames = () => {
         setShowConfirmPopup(false);
         setReplacePages(true);
         const d = generatedBookContent;
-        formik.setValues({
+        const newFormValues = {
           title: d.title,
           categoryId: d.categories.map((c: any) => c.uuid),
           authorId: d.authors.map((a: any) => a.uuid),
@@ -411,9 +460,31 @@ const getCategoryNames = () => {
           learningPoints: d.learning_points.map((pt: string) => ({
             value: pt,
           })),
-        });
+        };
+
+        if (d.cover_image_url) {
+          try {
+            const file = base64ToFile(
+              d.cover_image_url[0].base64,
+              d.cover_image_url[0].mimeType,
+              `cover-image.${d.cover_image_url[0].extension}`
+            );
+            
+            // Set the file in state and upload it
+            setCoverImageFile(file);
+            formik.setFieldValue('coverImage', file);
+            await handleUploadCoverImage(file);
+          } catch {
+            toast.error('Failed to process cover image');
+          }
+        }
+        
+        formik.setValues(newFormValues);
         remove();
         d.learning_points.forEach((pt: string) => append({ value: pt }));
+        
+        // Automatically save the generated content to the database
+        await UpdateBookInfoFunction(newFormValues);
       } else {
         toast.error(t('Failed to delete draft pages'));
       }
@@ -508,7 +579,7 @@ const getCategoryNames = () => {
       whatsInside: values.whatsInside,
       aboutAuthor: values.aboutAuthor,
       coverImage: values.coverImage,
-      learningPoints: values.learningPoints
+      learningPoints: values.learningPoints,
     };
 
     try {
@@ -563,45 +634,6 @@ const getCategoryNames = () => {
     }
   };
 
-  /*
-  method to validate cover image
-  */
-  // const handleImageChange = () => {
-  //   const file = fileInputRef.current?.files?.[0];
-  //   if (!file) {
-  //     return;
-  //   }
-  //   const img = new Image();
-  //   const objectUrl = URL.createObjectURL(file);
-
-  //   img.onload = () => {
-  //     const width = img.width;
-  //     const height = img.height;
-  //     const ratio = width / height;
-  //     const isRatioValid = Math.abs(ratio - 2 / 3) < 0.01;
-
-  //     if (!isRatioValid) {
-  //       toast.error('Image must be in 2:3 aspect ratio (e.g. 600x900)');
-  //       formik.setFieldError('coverImage', 'Invalid aspect ratio');
-  //       formik.setFieldValue('coverImage', null);
-  //     } else {
-  //       setCoverImageFile(file);
-  //       formik.setFieldValue('coverImage', file);
-  //       handleUploadCoverImage(file);
-  //     }
-
-  //     URL.revokeObjectURL(objectUrl);
-  //   };
-
-  //   img.onerror = () => {
-  //     toast.error('Invalid image file');
-  //     formik.setFieldValue('coverImage', null);
-  //     URL.revokeObjectURL(objectUrl);
-  //   };
-
-  //   img.src = objectUrl;
-  // };
-
   const handleImageChange = () => {
     const file = fileInputRef.current?.files?.[0];
     if (!file) {
@@ -614,7 +646,10 @@ const getCategoryNames = () => {
 
     if (!isValidImage) {
       toast.error('Only PNG, JPG, or JPEG images are allowed');
-      formik.setFieldError('coverImage', 'Only PNG, JPG, or JPEG images are allowed');
+      formik.setFieldError(
+        'coverImage',
+        'Only PNG, JPG, or JPEG images are allowed'
+      );
       formik.setFieldValue('coverImage', null);
       return;
     }
@@ -650,7 +685,7 @@ const getCategoryNames = () => {
       const statusCode = response?.meta?.statusCode;
       if (statusCode === 200 || statusCode === 201) {
         const uploadedImageUrl = response?.data?.images?.[0]?.url;
-        setOriginalCoverImageUrl(uploadedImageUrl);
+        // setOriginalCoverImageUrl(uploadedImageUrl);
         setUplodedImageUrl(uploadedImageUrl);
         setIsImageUploded(true);
         setIsUploading(false);
@@ -680,7 +715,8 @@ const getCategoryNames = () => {
         imageUrl = `data:${data.refineCoverImage.data[0].mimeType};base64,${imageUrl}`;
         setIsImageFromRefine(true);
         setIsImageModelShow(true);
-        setUplodedImageUrl(imageUrl);
+        // setUplodedImageUrl(imageUrl);
+        setGeneratedCoverImageUrl(imageUrl);
         toast.success(data.refineCoverImage.meta.message);
       }
     } catch {
@@ -841,7 +877,7 @@ const getCategoryNames = () => {
   /**
    * Handle blur that removes white space's
    */
-  const OnBlur = useCallback((e: any) => {
+  const OnBlur = useCallback((e: React.FocusEvent<HTMLInputElement> | React.FocusEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLInputElement>) => {
     formik.setFieldValue(e.target.name, whiteSpaceRemover(e));
   }, []);
 
@@ -849,7 +885,7 @@ const getCategoryNames = () => {
     const rhfLearningPoints = getValues('learningPoints');
     formik.setFieldValue('learningPoints', rhfLearningPoints, true);
     formik.handleSubmit();
-  };
+  };  
 
   return (
     <>
@@ -1031,7 +1067,7 @@ const getCategoryNames = () => {
                     required={true}
                     placeholder={t('Book Title')}
                     name='title'
-                    onChange={formik.handleChange}
+                    onChange={(e) => handleFieldChange('title', e.target.value)}
                     label={t('Book Title')}
                     value={formik.values.title}
                     error={formik.errors.title}
@@ -1048,7 +1084,7 @@ const getCategoryNames = () => {
                     id={'categoryId'}
                     value={formik.values.categoryId || []}
                     onChange={(e) => {
-                      formik.setFieldValue('categoryId', e.value);
+                      handleFieldChange('categoryId', e.value);
                     }}
                     options={categoryDroData}
                     optionLabel='name'
@@ -1057,14 +1093,14 @@ const getCategoryNames = () => {
                     placeholder={t('Select Category') ?? 'Select Category'}
                     display='chip'
                     className='w-full'
-                    maxSelectedLabels={6}
                     disabled={!isEditable}
                     optionDisabled={(option) =>
-                      !option.isActive && !formik.values.categoryId.includes(option.key)
+                      !option.isActive &&
+                      !formik.values.categoryId.includes(option.key)
                     }
-                  /> 
+                  />
                   {formik.errors.categoryId && (
-                    <div className="text-red-500 text-sm mt-1 ml-1">
+                    <div className='text-red-500 text-sm mt-1 ml-1'>
                       {formik.errors.categoryId}
                     </div>
                   )}
@@ -1075,9 +1111,18 @@ const getCategoryNames = () => {
                   </label>
                   <MultiSelect
                     id='authorId'
-                    value={formik.values.authorId || []}
+                    value={(() => {
+                      // Get valid author IDs that exist in the options
+                      const availableAuthorIds = new Set(authors.map(author => author.id));
+                      return (formik.values.authorId || [])
+                        .filter((id: string) => id != null && id !== '' && availableAuthorIds.has(id));
+                    })()}
                     onChange={(e) => {
-                      formik.setFieldValue('authorId', e.value);
+                      // Ensure only valid author IDs are selected
+                      const availableAuthorIds = new Set(authors.map(author => author.id));
+                      const filteredValues = (e.value || [])
+                        .filter((id: string) => id != null && id !== '' && availableAuthorIds.has(id));
+                      handleFieldChange('authorId', filteredValues);
                     }}
                     options={authors}
                     optionLabel='name'
@@ -1085,40 +1130,67 @@ const getCategoryNames = () => {
                     filter
                     display='chip'
                     className='w-full'
-                    placeholder={t('Select Author') ?? 'Select Author'}
-                    maxSelectedLabels={6}
-                    disabled={!isEditable}
+                    placeholder='Select Author'
                     optionDisabled={(option) =>
-                      !option.isActive && !formik.values.authorId.includes(option.id)
-                    }                  
+                      !option.isActive &&
+                      !formik.values.authorId.includes(option.id)
+                    }
                     virtualScrollerOptions={{
                       itemSize: 75,
+                      step: 75,
                       lazy: true,
                       showLoader: true,
-                      loading: authorLoading,
-                      items: authors,
+                      loading: authorLoading || isLoadingMore,
+                      numToleratedItems: 5,
                       onLazyLoad: async () => {
-                        if (!hasMoreAuthors || authorLoading) {
+                        // Prevent multiple concurrent requests
+                        if (!hasMoreAuthors || authorLoading || isLoadingMore) {
                           return;
                         }
-                        const { data } = await fetchMore({
-                          variables: {
-                            offset: authors.length,
-                            limit: 75,
-                          },
-                        });
-                        const newFetched = transformAuthors(
-                          data?.getAllAuthors?.data?.authors || []
-                        );
-                        setAuthors((prev) => [...prev, ...newFetched]);
-                        if (newFetched.length < 75) {
-                          setHasMoreAuthors(false);
+                        setIsLoadingMore(true);
+                        try {
+                          const currentOffset = offsetRef.current;
+                          const limit = 75;
+
+                          const { data } = await fetchMore({
+                            variables: {
+                              offset: currentOffset,
+                              limit: limit,
+                            },
+                          });
+
+                          const newAuthors = transformAuthors(
+                            data?.getAllAuthors?.data?.authors || []
+                          );
+
+                          setAuthors((prevAuthors) => {
+                            const existingIds = new Set(
+                              prevAuthors.map((a) => a.id)
+                            );
+                            const filteredNewAuthors = newAuthors.filter(
+                              (author) => !existingIds.has(author.id)
+                            );
+                            return [...prevAuthors, ...filteredNewAuthors];
+                          });
+
+                          // Update offset with actual number of new items fetched
+                          offsetRef.current += newAuthors.length;
+
+                          // Check if we've reached the end
+                          if (newAuthors.length < limit) {
+                            setHasMoreAuthors(false);
+                          }
+                        } catch {
+                          return;
+                        } finally {
+                          setIsLoadingMore(false);
                         }
                       },
                     }}
                   />
+
                   {formik.errors.authorId && (
-                    <div className="text-red-500 text-sm mt-1 ml-1">
+                    <div className='text-red-500 text-sm mt-1 ml-1'>
                       {formik.errors.authorId}
                     </div>
                   )}
@@ -1135,13 +1207,13 @@ const getCategoryNames = () => {
                       <TextArea
                         id='whatsInside'
                         name='whatsInside'
-                        onChange={formik.handleChange}
+                        onChange={(e) => handleFieldChange('whatsInside', e.target.value)}
                         placeholder=''
                         onBlur={OnBlur}
                         value={formik.values.whatsInside}
                         rows={4}
                         className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
-                        error={formik.errors.whatsInside}
+                        error={formik.errors.whatsInside && formik.touched.whatsInside ? formik.errors.whatsInside : ''}
                         disabled={!isEditable}
                       />
                     </div>
@@ -1168,7 +1240,7 @@ const getCategoryNames = () => {
                       <TextArea
                         id='aboutAuthor'
                         name='aboutAuthor'
-                        onChange={formik.handleChange}
+                        onChange={(e) => handleFieldChange('aboutAuthor', e.target.value)}
                         placeholder=''
                         onBlur={OnBlur}
                         value={formik.values.aboutAuthor}
@@ -1274,8 +1346,10 @@ const getCategoryNames = () => {
                           placeholder={`Point ${index + 1}`}
                           className='form-input w-full border border-gray-300 rounded-md px-3 py-2'
                           disabled={!isEditable}
-                          onChange={e => {
-                            register(`learningPoints.${index}.value`).onChange(e);
+                          onChange={(e) => {
+                            register(`learningPoints.${index}.value`).onChange(
+                              e
+                            );
                           }}
                         />
 
@@ -1294,16 +1368,26 @@ const getCategoryNames = () => {
 
                       {formik.errors.learningPoints &&
                         Array.isArray(formik.errors.learningPoints) &&
-                        (formik.errors.learningPoints as Array<{ value?: string }>)[index]?.value && (
+                        (
+                          formik.errors.learningPoints as Array<{
+                            value?: string;
+                          }>
+                        )[index]?.value && (
                           <div className='text-red-500 text-sm mt-1 ml-1'>
-                            {(formik.errors.learningPoints as Array<{ value?: string }>)[index]?.value}
+                            {
+                              (
+                                formik.errors.learningPoints as Array<{
+                                  value?: string;
+                                }>
+                              )[index]?.value
+                            }
                           </div>
                         )}
                     </div>
                   ))}
 
                   {typeof formik.errors.learningPoints === 'string' && (
-                    <div className="text-red-500 text-sm mt-1 ml-1">
+                    <div className='text-red-500 text-sm mt-1 ml-1'>
                       {formik.errors.learningPoints}
                     </div>
                   )}
@@ -1422,11 +1506,8 @@ const getCategoryNames = () => {
             onClose={() => {
               setIsImageModelShow(false);
               setIsImageFromRefine(false);
-              if (isImageFromRefine) {
-                setUplodedImageUrl(originalCoverImageUrl);
-              }
             }}
-            data={uplodedImageUrl}
+            data={isImageFromRefine? generatedCoverImageUrl : uplodedImageUrl}
             show={isImageModelShow}
             {...(isImageFromRefine && {
               showAccept: true,

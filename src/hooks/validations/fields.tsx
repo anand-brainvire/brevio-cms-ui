@@ -5,8 +5,8 @@ import moment from 'moment';
 
 const useValidationFields = () => {
 	const oldPassword = Yup.string().required(translationFun('Please enter old password'));
-	const currentPassword = Yup.string().required(translationFun('Please enter current password')).matches(PASSWORD_REGEX, translationFun('Password must contain 1 lower case, 1 upper case, 1 number, 1 special character ( @  $ % ^ & #) & minimum 8 characters')).max(20, translationFun('Enter less than or equal to 20 characters'));
-	const newPassword = Yup.string().required(translationFun('Please enter new password')).matches(PASSWORD_REGEX, translationFun('Password must contain 1 lower case, 1 upper case, 1 number, 1 special character ( @  $ % ^ & #) & minimum 8 characters')).max(20, translationFun('Enter less than or equal to 20 characters'));
+	const currentPassword = Yup.string().required(translationFun('Please enter current password')).matches(PASSWORD_REGEX, translationFun('Password must contain 1 lower case, 1 upper case, 1 number, 1 special character ( @ $ ! % * ? & ), minimum 8 characters')).max(20, translationFun('Enter less than or equal to 20 characters'));
+	const newPassword = Yup.string().required(translationFun('Please enter new password')).matches(PASSWORD_REGEX, translationFun('Password must contain 1 lower case, 1 upper case, 1 number, 1 special character ( @ $ ! % * ? & ), minimum 8 characters')).max(20, translationFun('Enter less than or equal to 20 characters'));
 	const confirmPassword = Yup.string()
 		.required(translationFun('Please enter confirm password'))
 		.max(20, translationFun('Enter less than or equal to 20 characters'))
@@ -90,10 +90,10 @@ const useValidationFields = () => {
 	const dateOfBirth = Yup.date().max(new Date(), 'Date of birth cannot be in the future').required(translationFun('Please select date of birth'));
 	const userName = Yup.string().required(translationFun('Please enter username')).matches(VALID_NAME, translationFun('Please enter valid username')).max(50, translationFun('User name may not be greater than 50 characters.'));
 	const contentpagetitle = Yup.string().required(translationFun('Please enter content page title'));
-	const oldPasswordsubadmin = Yup.string().required(translationFun('Please enter new password')).matches(PASSWORD_REGEX, translationFun('New Password must contain 1 lower case, 1 upper case, 1 number, 1 special character ( @  $ % ^ & #) & minimum 8 characters')).max(20, translationFun('Enter less than or equal to 20 characters'));
+	const oldPasswordsubadmin = Yup.string().required(translationFun('Please enter new password')).matches(PASSWORD_REGEX, translationFun('New Password must contain 1 lower case, 1 upper case, 1 number, 1 special character ( @ $ ! % * ? & ), minimum 8 characters')).max(20, translationFun('Enter less than or equal to 20 characters'));
 	const newPasswordsubadmin = Yup.string()
 		.required(translationFun('Please enter confirm password'))
-		.matches(PASSWORD_REGEX, translationFun('Confirm Password must contain 1 lower case, 1 upper case, 1 number, 1 special character ( @  $ % ^ & #) & minimum 8 characters'))
+		.matches(PASSWORD_REGEX, translationFun('Confirm Password must contain 1 lower case, 1 upper case, 1 number, 1 special character ( @ $ ! % * ? & ), minimum 8 characters'))
 		.max(20, translationFun('Enter less than or equal to 20 characters'))
 		.oneOf([Yup.ref('oldPasswordsubadmin'), null], translationFun('Confirm Password should match with new password'));
 	const categorSuggestion = Yup.string().required(translationFun('Please select category'));

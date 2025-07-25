@@ -45,7 +45,8 @@ const getFieldLabel = (field: string) => {
   }
 };
 
-const List: React.FC<BookListTableProps> = ({
+const 
+List: React.FC<BookListTableProps> = ({
   books,
   fieldsToDisplay,
   title,

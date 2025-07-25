@@ -3,7 +3,7 @@ import { useMutation } from '@apollo/client';
 import TextInput from '@components/textinput/TextInput';
 import { VERIFY_USER_RESET_PASSWORD } from '@framework/graphql/mutations/user';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useFormik } from 'formik';
 import { ROUTES } from '@config/constant';
@@ -28,7 +28,8 @@ const ResetPassword = (): ReactElement => {
 	const { resetPasswordValidationSchema } = useValidation();
 	// const [resetPassword, { loading: resetLoader }] = useMutation(USER_RESET_PASSWORD);
 	const [verifyResetPassword, { loading: verifyPassword }] = useMutation(VERIFY_USER_RESET_PASSWORD);
-
+	const location = useLocation();
+	const isSetPassword = location.pathname.endsWith('/set-password');
 	const [showPassword, setShowPassword] = useState<boolean>(false);
 	const [confirmShowPassword, setConfirmShowPassword] = useState<boolean>(false);
 	const navigate = useNavigate();
@@ -86,7 +87,9 @@ const ResetPassword = (): ReactElement => {
 			<div className='w-full sm:max-w-wide-2 lg:max-w-wide-3 bg-white rounded py-0 px-1 md:p-6 border border-default'>
 				<form onSubmit={formik.handleSubmit}>
 					<div className='card-body'>
-						<h1 className='text-primary mb-2 font-medium leading-md text-h2'>{t('Reset Password')}</h1>
+						<h1 className='text-primary mb-2 font-medium leading-md text-h2'>
+						  {isSetPassword ? t('Set Password') : t('Reset Password')}
+						</h1>
 						<div className='mb-4'>
 							<TextInput
 								btnShowHide={showPassword}

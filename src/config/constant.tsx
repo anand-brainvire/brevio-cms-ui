@@ -224,6 +224,7 @@ export const ROUTES: { [key: string]: string } = {
 	dashboard: 'dashboard',
 	forgotPassword: 'forgot-password',
 	resetPassword: 'reset-password',
+	setPassWord: 'set-password',
 	resetToken: 'token',
 	subAdmin: 'manage-sub-admin',
 	state: 'state',
@@ -264,6 +265,7 @@ export const ROUTES: { [key: string]: string } = {
 	author: 'manage-author',
 };
 export const RedirectPages = {
+	app: '/app',
 	dashBoard: '/app/dashboard',
 	user: `/${ROUTES.app}/${ROUTES.user}`,
 	role: `/${ROUTES.app}/${ROUTES.role}`,
@@ -299,6 +301,7 @@ export const RedirectPages = {
 
 export const privateRoutes: { path: string; element: React.LazyExoticComponent<() => React.ReactElement>; permission?: string[] }[] = [
 	{ path: ROUTES.dashboard, element: Dashboard },
+	{ path: ROUTES.app, element: Dashboard },
 	{ path: `${ROUTES.subAdmin}/${ROUTES.list}`, element: SubAdmin, permission: [PERMISSION_LIST.SubAdmin.ListAccess] },
 	{ path: `${ROUTES.subAdmin}/add`, element: AddEditSubAdmin, permission: [PERMISSION_LIST.SubAdmin.AddAccess] },
 	{ path: `${ROUTES.subAdmin}/edit/:id`, element: AddEditSubAdmin, permission: [PERMISSION_LIST.SubAdmin.EditAccess] },
