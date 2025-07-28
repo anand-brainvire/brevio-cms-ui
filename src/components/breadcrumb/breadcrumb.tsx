@@ -27,17 +27,30 @@ const Breadcrumb = () => {
 		return convertToTitleCase(parts.join('-'));
 	};
 
-	const routeTitle = secondWord && convertToTitleCase(secondWord);       // Full name e.g. 'Manage Sub Admin'
+	// Convert plural route names to singular for grammatically correct breadcrumbs
+	const getSingularTitle = (title: string): string => {
+		const singularMap: { [key: string]: string } = {
+			'Categories': 'Category',
+			'Authors': 'Author',
+			'Users': 'User',
+			'Sub Admins': 'Sub-Admin',
+			'Books': 'Book',
+		};
+		return singularMap[title] || title;
+	};
+
+	const routeTitle = secondWord && convertToTitleCase(secondWord);      // Full name e.g. 'Manage Sub Admin'
 	const cleanTitle = secondWord && getCleanSecondTitle(secondWord);     // e.g. 'Sub Admin'
+	const singularTitle = cleanTitle && getSingularTitle(cleanTitle);     // e.g. 'Category' instead of 'Categories'
 
 	const getThirdLabel = (word: string): string => {
 		switch (word) {
 			case 'edit':
-				return `${t('Edit')} ${cleanTitle}`;
+				return `${t('Edit')} ${singularTitle}`;
 			case 'view':
-				return `${t('View')} ${cleanTitle}`;
+				return `${t('View')} ${singularTitle}`;
 			case 'add':
-				return `${t('Add')} ${cleanTitle}`;
+				return `${t('Add')} ${singularTitle}`;
 			default:
 				return t(convertToTitleCase(word));
 		}

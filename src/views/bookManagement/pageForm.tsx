@@ -29,6 +29,8 @@ import RefineText from '@components/popup/refineText';
 import { Loader } from '@components/index';
 import useValidation from '@src/hooks/validations';
 import { Tooltip } from 'primereact/tooltip';
+import RoleBaseGuard from '@components/roleGuard';
+import { PERMISSION_LIST } from '@config/permission';
 
 interface PageFormProps {
   index: number;
@@ -346,13 +348,15 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                 disabled={!isEditable}
               />
               {isEditable && isSaved && (
-                <button
-                  type='button'
-                  className='btn btn-secondary h-fit mt-1'
-                  onClick={() => handleRefineClick('keyPoint')}
-                >
-                  Refine
-                </button>
+                <RoleBaseGuard permissions={[PERMISSION_LIST.Book.refineBook]}>
+                  <button
+                    type='button'
+                    className='btn btn-secondary h-fit mt-1'
+                    onClick={() => handleRefineClick('keyPoint')}
+                  >
+                    Refine
+                  </button>
+                </RoleBaseGuard>
               )}
               <label className='block mb-2 font-medium'>
                 {t('Rich Text Editor with Preview')}{' '}
@@ -373,13 +377,15 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                 }
               />
               {isEditable && isSaved && (
-                <button
-                  type='button'
-                  className='btn btn-secondary h-fit mt-1'
-                  onClick={() => handleRefineClick('richText')}
-                >
-                  Refine
-                </button>
+                <RoleBaseGuard permissions={[PERMISSION_LIST.Book.refineBook]}>
+                  <button
+                    type='button'
+                    className='btn btn-secondary h-fit mt-1'
+                    onClick={() => handleRefineClick('richText')}
+                  >
+                    Refine
+                  </button>
+                </RoleBaseGuard>
               )}
               <div>
                 <label className='block mb-2 font-medium'>
@@ -421,15 +427,17 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
 
                         {/* Refine button */}
                         {isEditable && isSaved && (
-                          <button
-                            type='button'
-                            className='btn btn-secondary h-fit mt-1'
-                            onClick={() =>
-                              handleRefineClick('insights', field.id)
-                            }
-                          >
-                            Refine
-                          </button>
+                          <RoleBaseGuard permissions={[PERMISSION_LIST.Book.refineBook]}>
+                            <button
+                              type='button'
+                              className='btn btn-secondary h-fit mt-1'
+                              onClick={() =>
+                                handleRefineClick('insights', field.id)
+                              }
+                            >
+                              Refine
+                            </button>
+                          </RoleBaseGuard>
                         )}
 
                         {/* Remove (Cross) button */}

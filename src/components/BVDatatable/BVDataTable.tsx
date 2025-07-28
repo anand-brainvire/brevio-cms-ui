@@ -65,7 +65,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 	/**
 	 * Data Fetching Query
 	 */
-	const { data, refetch } = useQuery(queryName, {
+	const { data, refetch, loading } = useQuery(queryName, {
 		variables: {
 			...filterData, // Use the merged filterData state
 		},
@@ -387,7 +387,7 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 	};
 	return (
 		<>
-			{loadingState && <LoadingIndicator />}
+			{loadingState || loading && <LoadingIndicator />}
 			<div className='table-select-dropdown-container w-full'>
 				<div className='flex items-center space-x-2 justify-between w-full'>
 					<div>
@@ -520,9 +520,9 @@ const BVDataTable = ({ columns, queryName, singleDeleteMutation, multipleDeleteM
 													)}
 											
 													{/* Show "Modified" label if is_content_modified is true */}
-													{row?.is_content_modified && (
-														<span className='text-xs text-gray-500 mt-1'>{t('Modified')}</span>
-													)}
+    												{row?.[column.fieldName] !== 'draft' && row?.is_content_modified && (
+    												  <span className='text-xs text-gray-500 mt-1'>{t('Modified')}</span>
+    												)}
 												</div>
 											)}
 											{column.type === 'subscriptionStatus' && (

@@ -157,7 +157,7 @@ const bookManagaement = () => {
             <span className='text-sm font-normal'>{t('Book List')}</span>
           </div>
           <div className='flex flex-wrap gap-2'>
-            <RoleBaseGuard permissions={[PERMISSION_LIST.Coupon.AddAccess]}>
+            <RoleBaseGuard permissions={[PERMISSION_LIST.Book.AddAccess]}>
               <Button
                 className='btn-primary  '
                 onClick={openAddBookModal}
@@ -188,10 +188,9 @@ const bookManagaement = () => {
             multipleDeleteMutation={GROUP_DELETE_COUPON}
             updateStatusMutation={BOOK_PUBLISH_STATUS}
             actionWisePermissions={{
-              edit: PERMISSION_LIST.Coupon.EditAccess,
-              delete: PERMISSION_LIST.Coupon.DeleteAccess,
-              changeStatus: PERMISSION_LIST.Coupon.ChangeStatusAccess,
-              multipleDelete: PERMISSION_LIST.Coupon.GroupDeleteAcsess,
+              edit: PERMISSION_LIST.Book.EditAccess,
+              delete: PERMISSION_LIST.Book.DeleteAccess,
+              changeStatus: PERMISSION_LIST.Book.ChangeStatusAccess,
             }}
             updatedFilterData={filterData}
             actionData={{

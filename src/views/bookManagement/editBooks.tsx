@@ -48,6 +48,8 @@ import { GET_AUTHOR } from '@framework/graphql/queries/author';
 import GenerateBookConfirmPopup from '@components/popup/generateBook';
 import useValidation from '@src/hooks/validations';
 import GeneratedBookPreviewModal from './generatedBookPreviewModal';
+import RoleBaseGuard from '@components/roleGuard';
+import { PERMISSION_LIST } from '@config/permission';
 
 const editBooks = (): ReactElement => {
   const { t } = useTranslation();
@@ -409,22 +411,9 @@ const editBooks = (): ReactElement => {
         toast.success(generateRes.data.generateBookContent.meta.message);
         const d = generateRes.data.generateBookContent.data;
         const pages = generateRes.data.generateBookContent.data.pages;
-        setGeneratedBookContent(d);
         setShowGeneratedPreviewModal(true);
+        setGeneratedBookContent(d);
         setGeneratedContent(pages);
-        // formik.setValues({
-        //   title: d.title,
-        //   categoryId: d.categories.map((c: any) => c.uuid),
-        //   authorId: d.authors.map((a: any) => a.uuid),
-        //   whatsInside: d.about_book,
-        //   aboutAuthor: d.about_authors,
-        //   coverImage: d.cover_image_url,
-        //   learningPoints: d.learning_points.map((pt: string) => ({
-        //     value: pt,
-        //   })),
-        // });
-        // remove();
-        // d.learning_points.forEach((pt: string) => append({ value: pt }));
       } else {
         toast.error(t('Failed to generate new book'));
       }
@@ -448,7 +437,6 @@ const editBooks = (): ReactElement => {
       if (statusCode === 200) {
         toast.success(t('Draft pages deleted successfully'));
         setShowConfirmPopup(false);
-        setReplacePages(true);
         const d = generatedBookContent;
         const newFormValues = {
           title: d.title,
@@ -469,8 +457,6 @@ const editBooks = (): ReactElement => {
               d.cover_image_url[0].mimeType,
               `cover-image.${d.cover_image_url[0].extension}`
             );
-            
-            // Set the file in state and upload it
             setCoverImageFile(file);
             formik.setFieldValue('coverImage', file);
             await handleUploadCoverImage(file);
@@ -478,13 +464,15 @@ const editBooks = (): ReactElement => {
             toast.error('Failed to process cover image');
           }
         }
-        
+
         formik.setValues(newFormValues);
         remove();
         d.learning_points.forEach((pt: string) => append({ value: pt }));
-        
         // Automatically save the generated content to the database
         await UpdateBookInfoFunction(newFormValues);
+        // Only after all above is done, trigger new page creation
+        setGeneratedContent(d.pages);
+        setReplacePages(true);
       } else {
         toast.error(t('Failed to delete draft pages'));
       }
@@ -913,7 +901,7 @@ const editBooks = (): ReactElement => {
                 <div className='flex items-start gap-6'>
                   {/* Status display */}
                   <div className='flex text-sm items-center'>
-                    <span className='text-gray-700 mr-1'>{t('Status')}:</span>
+                    <span className='text-gray-700 font-bold mr-1'>{t('Status')}:</span>
 
                     {bookVersionStatus === 'draft' && (
                       <>
@@ -1000,6 +988,7 @@ const editBooks = (): ReactElement => {
               <div className='flex items-center gap-4'>
                 {isEditable ? (
                   <>
+                  <RoleBaseGuard permissions={[PERMISSION_LIST.Book.generateBook]}>
                     <button
                       type='button'
                       className='btn btn-primary'
@@ -1007,6 +996,8 @@ const editBooks = (): ReactElement => {
                     >
                       {t('Generate Book Details')}
                     </button>
+                  </RoleBaseGuard>
+                  <RoleBaseGuard permissions={[PERMISSION_LIST.Book.publishAccess]}>
                     <button
                       type='button'
                       className='btn btn-primary'
@@ -1014,10 +1005,11 @@ const editBooks = (): ReactElement => {
                     >
                       {t('Publish')}
                     </button>
+                  </RoleBaseGuard>
                   </>
                 ) : (
                   <>
-                    <div className='text-sm text-gray-700 font-medium whitespace-nowrap'>
+                    <div className='text-sm text-gray-700 font-bold whitespace-nowrap'>
                       {t('Version')} : {versionNumber}
                     </div>
                     <button
@@ -1084,7 +1076,10 @@ const editBooks = (): ReactElement => {
                     id={'categoryId'}
                     value={formik.values.categoryId || []}
                     onChange={(e) => {
-                      handleFieldChange('categoryId', e.value);
+                      const selected = e.value || [];
+                      if (selected.length <= 10) {
+                        handleFieldChange('categoryId', selected);
+                      }
                     }}
                     options={categoryDroData}
                     optionLabel='name'
@@ -1218,13 +1213,15 @@ const editBooks = (): ReactElement => {
                       />
                     </div>
                     {isEditable && (
-                      <button
-                        type='button'
-                        className='btn btn-secondary h-fit mt-1'
-                        onClick={() => handleRefineClick('whatsInside')}
-                      >
-                        Refine
-                      </button>
+                      <RoleBaseGuard permissions={[PERMISSION_LIST.Book.refineBook]}>
+                        <button
+                          type='button'
+                          className='btn btn-secondary h-fit mt-1'
+                          onClick={() => handleRefineClick('whatsInside')}
+                        >
+                          Refine
+                        </button>
+                      </RoleBaseGuard>
                     )}
                   </div>
                 </div>
@@ -1251,13 +1248,15 @@ const editBooks = (): ReactElement => {
                       />
                     </div>
                     {isEditable && (
-                      <button
-                        type='button'
-                        className='btn btn-secondary h-fit mt-1'
-                        onClick={() => handleRefineClick('aboutAuthor')}
-                      >
-                        Refine
-                      </button>
+                      <RoleBaseGuard permissions={[PERMISSION_LIST.Book.refineBook]}>
+                        <button
+                          type='button'
+                          className='btn btn-secondary h-fit mt-1'
+                          onClick={() => handleRefineClick('aboutAuthor')}
+                        >
+                          Refine
+                        </button>
+                      </RoleBaseGuard>
                     )}
                   </div>
                 </div>
@@ -1284,13 +1283,15 @@ const editBooks = (): ReactElement => {
                         )}
 
                         {isEditable && (
-                          <button
-                            type='button'
-                            className='btn btn-secondary whitespace-nowrap'
-                            onClick={handlGenerateImage}
-                          >
-                            Generate
-                          </button>
+                          <RoleBaseGuard permissions={[PERMISSION_LIST.Book.refineBook]}>
+                            <button
+                              type='button'
+                              className='btn btn-secondary whitespace-nowrap'
+                              onClick={handlGenerateImage}
+                            >
+                              Generate
+                            </button>
+                          </RoleBaseGuard>
                         )}
                       </>
                     ) : (
@@ -1312,20 +1313,15 @@ const editBooks = (): ReactElement => {
 
                         {isEditable && (
                           <div className='flex gap-2'>
-                            {/* <button
-                              type='button'
-                              className='btn btn-secondary whitespace-nowrap'
-                              onClick={() => handleImageChange()}
-                            >
-                              Submit
-                            </button> */}
-                            <button
-                              type='button'
-                              className='btn btn-secondary whitespace-nowrap'
-                              onClick={handlGenerateImage}
-                            >
-                              Generate
-                            </button>
+                            <RoleBaseGuard permissions={[PERMISSION_LIST.Book.refineBook]}>
+                              <button
+                                type='button'
+                                className='btn btn-secondary whitespace-nowrap'
+                                onClick={handlGenerateImage}
+                              >
+                                Generate
+                              </button>
+                            </RoleBaseGuard>
                           </div>
                         )}
                       </>
@@ -1401,13 +1397,15 @@ const editBooks = (): ReactElement => {
                       >
                         + Add Learning Point
                       </button>
-                      <button
-                        type='button'
-                        className='btn btn-secondary'
-                        onClick={() => handleRefineClick('learningPoints')}
-                      >
-                        Refine
-                      </button>
+                      <RoleBaseGuard permissions={[PERMISSION_LIST.Book.refineBook]}>
+                        <button
+                          type='button'
+                          className='btn btn-secondary'
+                          onClick={() => handleRefineClick('learningPoints')}
+                        >
+                          Refine
+                        </button>
+                      </RoleBaseGuard>
                     </div>
                   )}
                 </div>
@@ -1501,13 +1499,13 @@ const editBooks = (): ReactElement => {
             authorNames={getAuthorNames()}
           />
         )}
-        {isImageModelShow && uplodedImageUrl && (
+        {isImageModelShow && (isImageFromRefine ? generatedCoverImageUrl : uplodedImageUrl) && (
           <ImageModel
             onClose={() => {
               setIsImageModelShow(false);
               setIsImageFromRefine(false);
             }}
-            data={isImageFromRefine? generatedCoverImageUrl : uplodedImageUrl}
+            data={isImageFromRefine ? generatedCoverImageUrl : uplodedImageUrl}
             show={isImageModelShow}
             {...(isImageFromRefine && {
               showAccept: true,
@@ -1528,11 +1526,13 @@ const editBooks = (): ReactElement => {
         )}
       </div>
       {params.id && (
-        <BookPages
-          bookUuid={params.id}
-          status={selectedTab}
-          generatedPages={replacePages ? generatedContent : undefined}
-        />
+        // <RoleBaseGuard permissions={[PERMISSION_LIST.Book.ViewAccess]}>
+          <BookPages
+            bookUuid={params.id}
+            status={selectedTab}
+            generatedPages={replacePages ? generatedContent : undefined}
+          />
+        // </RoleBaseGuard>
       )}
     </>
   );
