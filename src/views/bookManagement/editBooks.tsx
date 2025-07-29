@@ -1077,7 +1077,11 @@ const editBooks = (): ReactElement => {
                     value={formik.values.categoryId || []}
                     onChange={(e) => {
                       const selected = e.value || [];
-                      if (selected.length <= 10) {
+                      if (selected.length > 10) {
+                        const limitedValues = selected.slice(0, 10);
+                        handleFieldChange('categoryId', limitedValues);
+                        toast.warning(t('Maximum 10 categories can be selected'));
+                      } else {
                         handleFieldChange('categoryId', selected);
                       }
                     }}
@@ -1113,11 +1117,20 @@ const editBooks = (): ReactElement => {
                         .filter((id: string) => id != null && id !== '' && availableAuthorIds.has(id));
                     })()}
                     onChange={(e) => {
-                      // Ensure only valid author IDs are selected
+                      const selected = e.value || [];
+                      // Ensure only valid author IDs are selected and limit to 10
                       const availableAuthorIds = new Set(authors.map(author => author.id));
-                      const filteredValues = (e.value || [])
+                      const filteredValues = selected
                         .filter((id: string) => id != null && id !== '' && availableAuthorIds.has(id));
-                      handleFieldChange('authorId', filteredValues);
+                      
+                      // If trying to add more than 10 authors, keep only the first 10
+                      if (filteredValues.length > 10) {
+                        const limitedValues = filteredValues.slice(0, 10);
+                        handleFieldChange('authorId', limitedValues);
+                        toast.warning(t('Maximum 10 authors can be selected'));
+                      } else {
+                        handleFieldChange('authorId', filteredValues);
+                      }
                     }}
                     options={authors}
                     optionLabel='name'
@@ -1131,7 +1144,7 @@ const editBooks = (): ReactElement => {
                       !formik.values.authorId.includes(option.id)
                     }
                     virtualScrollerOptions={{
-                      itemSize: 75,
+                      itemSize: 50,
                       step: 75,
                       lazy: true,
                       showLoader: true,

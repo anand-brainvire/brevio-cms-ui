@@ -200,7 +200,7 @@ meter {
 		li {
 			&:hover {
 				svg {
-					@apply fill-white text-white;
+					@apply fill-black text-black !important;
 				}
 			}
 		}
@@ -208,9 +208,18 @@ meter {
 		.sub-list {
 			a:hover {
 				svg {
-					@apply text-white fill-white;
+					@apply text-black fill-black !important;
 				}
 			}
+		}
+	}
+
+	/* Additional overrides to ensure sidebar icons stay black */
+	.sidebar-li {
+		li:hover svg,
+		a:hover svg,
+		.svg-icon svg {
+			@apply text-black fill-black !important;
 		}
 	}
 

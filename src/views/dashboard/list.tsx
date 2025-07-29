@@ -24,7 +24,7 @@ const getFormattedValue = (book: Book, field: string): string => {
 
     case 'publishedDate':
       return book.publishedDate
-        ? moment(Number(book.publishedDate)).format('DD MMM YYYY')
+        ? moment(Number(book.publishedDate)).format('MM/DD/YYYY hh:mm:ss A')
         : '-';
 
     default:

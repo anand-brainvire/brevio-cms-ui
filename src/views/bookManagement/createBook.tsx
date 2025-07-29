@@ -65,6 +65,13 @@ const CreateBook = ({ isVisible, onSubmitBook }: AddBookModalProps) => {
 		return () => document.removeEventListener('click', handleOutsideClick);
 	}, [onSubmitBook]);
 
+	// Reset form when popup is closed
+	useEffect(() => {
+		if (!isVisible) {
+			formik.resetForm();
+		}
+	}, [isVisible]);
+
         /**
          * Method handles out side click
          */

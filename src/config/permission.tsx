@@ -183,7 +183,8 @@ export const PERMISSION_LIST = {
 		DeleteAccess: 'DELETE_BOOK',
 		publishAccess: 'PUBLISH_BOOK',
 		refineBook: 'REFINE_BOOK_DATA',
-		generateBook: 'GENERATE_BOOK_DATA'
+		generateBook: 'GENERATE_BOOK_DATA',
+		viewAccess: 'VIEW_BOOK',
 	},
 	Category: {
 		ListAccess: 'LIST_CATEGORY',
