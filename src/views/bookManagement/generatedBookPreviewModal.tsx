@@ -32,7 +32,11 @@ interface GeneratedBookPreviewModalProps {
   bookContent: {
     title: string;
     pages: Page[];
-    cover_image_url: string;
+    cover_image_url: {
+      base64: string;
+      mimeType: string;
+      extension: string;
+    }[];
     learning_points: string[];
     about_book: string;
     about_authors: string;
@@ -67,10 +71,15 @@ const GeneratedBookPreviewModal = ({
 
   if (!isOpen) {
     return null;
-  } 
-
+  }
+  const coverImageData = bookContent.cover_image_url?.[0];
+  const coverImageBase64Url =
+    coverImageData?.base64 && coverImageData?.mimeType
+      ? `data:${coverImageData.mimeType};base64,${coverImageData.base64}`
+      : '';
   const authorNames = bookContent.authors?.map((a) => a.name).join(', ') || '';
-  const categoryNames = bookContent.categories?.map((c) => c.name).join(', ') || '';
+  const categoryNames =
+    bookContent.categories?.map((c) => c.name).join(', ') || '';
 
   return (
     <>
@@ -95,9 +104,11 @@ const GeneratedBookPreviewModal = ({
             {/* Cover Image */}
             {bookContent.cover_image_url && (
               <div>
-                <label className='block font-bold text-gray-700 mb-1'>Cover Image:</label>
+                <label className='block font-bold text-gray-700 mb-1'>
+                  Cover Image:
+                </label>
                 <img
-                  src={bookContent.cover_image_url}
+                  src={coverImageBase64Url}
                   alt='Cover Thumbnail'
                   onClick={() => setShowImageModal(true)}
                   className='w-[50px] h-[75.03px] object-cover cursor-pointer border border-gray-300 rounded-sm'
@@ -107,16 +118,26 @@ const GeneratedBookPreviewModal = ({
             )}
 
             {/* Meta Info */}
-              <div className='space-y-2'>
-                <p><strong>What’s Inside:</strong> {bookContent.about_book}</p>
-                <p><strong>About Author:</strong> {bookContent.about_authors}</p>
-                <p><strong>Authors:</strong> {authorNames}</p>
-                <p><strong>Categories:</strong> {categoryNames}</p>
-              </div>
+            <div className='space-y-2'>
+              <p>
+                <strong>What’s Inside:</strong> {bookContent.about_book}
+              </p>
+              <p>
+                <strong>About Author:</strong> {bookContent.about_authors}
+              </p>
+              <p>
+                <strong>Authors:</strong> {authorNames}
+              </p>
+              <p>
+                <strong>Categories:</strong> {categoryNames}
+              </p>
+            </div>
             {/* Learning Points */}
             {bookContent.learning_points?.length > 0 && (
               <div>
-                <label className='block font-medium text-gray-700 mb-1'>Learning Points:</label>
+                <label className='block font-medium text-gray-700 mb-1'>
+                  Learning Points:
+                </label>
                 <ul className='list-disc list-inside pl-4'>
                   {bookContent.learning_points.map((pt, i) => (
                     <li key={i}>{pt}</li>
@@ -148,7 +169,11 @@ const GeneratedBookPreviewModal = ({
 
           <div className='flex justify-end items-center gap-4 px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-lg'>
             <Button className='btn-secondary' onClick={onClose} label='Close' />
-            <Button className='btn-primary' onClick={onAccept} label='Accept & Replace Pages' />
+            <Button
+              className='btn-primary'
+              onClick={onAccept}
+              label='Accept & Replace Pages'
+            />
           </div>
         </div>
       </div>
@@ -156,7 +181,7 @@ const GeneratedBookPreviewModal = ({
       {/* Image Preview Modal */}
       <ImageModel
         onClose={() => setShowImageModal(false)}
-        data={bookContent.cover_image_url}
+        data={coverImageBase64Url}
         show={showImageModal}
         showAccept={false}
       />

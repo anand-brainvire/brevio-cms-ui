@@ -175,6 +175,17 @@ export const PERMISSION_LIST = {
 		DeleteAccess: 'DELETE_PLAN_MANAGEMENT',
 		GroupDeleteAcsess: 'GROUP_DELETE_PLAN_MANAGEMENT',
 	},
+	Book: {
+		ListAccess: 'LIST_BOOK',
+		AddAccess: 'CREATE_BOOK',
+		EditAccess: 'UPDATE_BOOK',
+		ChangeStatusAccess: 'BOOK_CHANGE_STATUS',
+		DeleteAccess: 'DELETE_BOOK',
+		publishAccess: 'PUBLISH_BOOK',
+		refineBook: 'REFINE_BOOK_DATA',
+		generateBook: 'GENERATE_BOOK_DATA',
+		viewAccess: 'VIEW_BOOK',
+	},
 	Category: {
 		ListAccess: 'LIST_CATEGORY',
 		AddAccess: 'CREATE_CATEGORY',

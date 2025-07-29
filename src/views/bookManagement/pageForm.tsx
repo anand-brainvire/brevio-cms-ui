@@ -28,6 +28,9 @@ import {
 import RefineText from '@components/popup/refineText';
 import { Loader } from '@components/index';
 import useValidation from '@src/hooks/validations';
+import { Tooltip } from 'primereact/tooltip';
+import RoleBaseGuard from '@components/roleGuard';
+import { PERMISSION_LIST } from '@config/permission';
 
 interface PageFormProps {
   index: number;
@@ -118,11 +121,18 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
           : [{ value: '' }],
       },
     });
-
     const { fields, append, remove } = useFieldArray({
       control,
       name: 'insights',
     });
+    
+    // Sync audio state when initialData changes (e.g., after audio generation)
+    useEffect(() => {
+      if (initialData?.audioMale) {
+        setUploadedAudioUrl(initialData.audioMale);
+        setIsUploaded(true);
+      }
+    }, [initialData?.audioMale]);
 
     useEffect(() => {
       if (initialData?.insights?.length) {
@@ -306,7 +316,7 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
           className='flex justify-between items-center px-4 py-2 bg-gray-100 cursor-pointer'
           onClick={toggle}
         >
-          <h3 className='text-lg font-semibold'>Page {index + 1}</h3>
+          <h3 className='text-lg font-semibold'>Page {index + 1}: {initialData?.keyPoint}</h3>
           <div>{isOpen ? <AngleUp /> : <AngleDown />}</div>
         </div>
 
@@ -338,13 +348,15 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                 disabled={!isEditable}
               />
               {isEditable && isSaved && (
-                <button
-                  type='button'
-                  className='btn btn-secondary h-fit mt-1'
-                  onClick={() => handleRefineClick('keyPoint')}
-                >
-                  Refine
-                </button>
+                <RoleBaseGuard permissions={[PERMISSION_LIST.Book.refineBook]}>
+                  <button
+                    type='button'
+                    className='btn btn-secondary h-fit mt-1'
+                    onClick={() => handleRefineClick('keyPoint')}
+                  >
+                    Refine
+                  </button>
+                </RoleBaseGuard>
               )}
               <label className='block mb-2 font-medium'>
                 {t('Rich Text Editor with Preview')}{' '}
@@ -365,13 +377,15 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                 }
               />
               {isEditable && isSaved && (
-                <button
-                  type='button'
-                  className='btn btn-secondary h-fit mt-1'
-                  onClick={() => handleRefineClick('richText')}
-                >
-                  Refine
-                </button>
+                <RoleBaseGuard permissions={[PERMISSION_LIST.Book.refineBook]}>
+                  <button
+                    type='button'
+                    className='btn btn-secondary h-fit mt-1'
+                    onClick={() => handleRefineClick('richText')}
+                  >
+                    Refine
+                  </button>
+                </RoleBaseGuard>
               )}
               <div>
                 <label className='block mb-2 font-medium'>
@@ -413,15 +427,17 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
 
                         {/* Refine button */}
                         {isEditable && isSaved && (
-                          <button
-                            type='button'
-                            className='btn btn-secondary h-fit mt-1'
-                            onClick={() =>
-                              handleRefineClick('insights', field.id)
-                            }
-                          >
-                            Refine
-                          </button>
+                          <RoleBaseGuard permissions={[PERMISSION_LIST.Book.refineBook]}>
+                            <button
+                              type='button'
+                              className='btn btn-secondary h-fit mt-1'
+                              onClick={() =>
+                                handleRefineClick('insights', field.id)
+                              }
+                            >
+                              Refine
+                            </button>
+                          </RoleBaseGuard>
                         )}
 
                         {/* Remove (Cross) button */}
@@ -499,18 +515,26 @@ const PageForm = forwardRef<PageFormRef, PageFormProps>(
                 ) : (
                   <>
                     <div className='w-2/3'>
-                      <TextInput
-                        inputRef={audioInputRef}
-                        type='file'
-                        accept='audio/*'
-                        id={`audio-${index}`}
-                        onBlur={handleBlur}
-                        placeholder={t('Audio')}
-                        name='audio'
-                        onChange={handleAudioChange}
-                        disabled={!isEditable}
-                      />
+                      <div
+                        data-pr-tooltip={
+                          !isSaved ? 'Please save the page first to add audio' : ''
+                        }
+                        data-pr-position='top'
+                      >
+                        <TextInput
+                          inputRef={audioInputRef}
+                          type='file'
+                          accept='audio/*'
+                          id={`audio-${index}`}
+                          onBlur={handleBlur}
+                          placeholder={t('Audio')}
+                          name='audio'
+                          onChange={handleAudioChange}
+                          disabled={!isEditable || !isSaved}
+                        />
+                      </div>
                     </div>
+                    <Tooltip target='[data-pr-tooltip]' />
 
                     {/* {audioFile && ( */}
                     {isEditable && isSaved && (

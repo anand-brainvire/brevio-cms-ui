@@ -27,7 +27,7 @@ function Author() {
 			search: '',
 			createdBy: '',
 			status: null,
-			sortBy: 'created_at',
+			sortBy: 'updated_at',
 			sortOrder: sortOrder,
 			offset: ((DEFAULT_PAGE ?? DEFAULT_PAGE) - 1) * DEFAULT_LIMIT,
 		}

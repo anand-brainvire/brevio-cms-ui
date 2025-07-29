@@ -94,7 +94,7 @@ const BookPages = ({
     });
 
     setPages(transformedPages);
-    setIsProcessingPages(true); // ✅ show loader
+    setIsProcessingPages(true);
 
     Promise.allSettled(
       transformedPages.map(async (page, index) => {
@@ -115,7 +115,27 @@ const BookPages = ({
             },
           });
 
-          if (audioRes?.data?.generatePageAudio?.meta?.statusCode !== 200) {
+          if (audioRes?.data?.generatePageAudio?.meta?.statusCode === 200) {
+            // Capture the generated audio URL from the response
+            const generatedAudioUrl = audioRes?.data?.generatePageAudio?.data?.url;
+            // Update the page state with the audio URL
+            setPages((prevPages) =>
+              prevPages.map((page, pageIndex) => {
+                if (pageIndex === index) {
+                  return {
+                    ...page,
+                    initialData: {
+                      ...page.initialData,
+                      uuid: uuid, // Set the UUID
+                      audioMale: generatedAudioUrl,
+                      audioFemale: generatedAudioUrl, // You can differentiate if needed
+                    },
+                  };
+                }
+                return page;
+              })
+            );
+          } else {
             toast.error(`Audio generation failed for Page ${index + 1}`);
           }
         } catch {
@@ -325,6 +345,10 @@ const BookPages = ({
                 initialData: {
                   ...(page.initialData || {}),
                   uuid, // ✅ add the saved uuid
+                  keyPoint: data.keyPoint, // ✅ preserve the form data
+                  richText: data.richText, // ✅ preserve the form data
+                  insights: data.insights, // ✅ preserve the form data
+                  pageNumber: nextPageNumber, // ✅ add page number
                 },
               };
             }
@@ -407,7 +431,7 @@ const BookPages = ({
         {pages.map((page, index) => (
           <div
             key={page.initialData?.uuid || page.tempId || index}
-            className='relative border mb-6 rounded shadow'
+            className='relative mb-6 rounded shadow'
           >
             <PageForm
               index={index}

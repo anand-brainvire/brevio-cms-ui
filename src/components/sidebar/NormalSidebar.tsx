@@ -32,7 +32,7 @@ const NormalSideBar = ({ show, menuHandler }: SideBarProps): ReactElement => {
 
 	const colorChangerNormalSidebar = useCallback(
 		(Redirect: string, className: string) => {
-			return location.pathname.includes(Redirect) ? 'text-white' : `${className}`;
+			return location.pathname.includes(Redirect) ? 'text-black' : `${className}`;
 		},
 		[location]
 	);
@@ -132,13 +132,13 @@ const NormalSideBar = ({ show, menuHandler }: SideBarProps): ReactElement => {
 									to={ROUTES.dashboard}
 									className={({ isActive }) =>
 										`flex items-center justify-start font-normal h-11 px-4 py-3 text-sm 
-										${isActive ? 'bg-primary text-white' : 'text-black hover:bg-primary hover:text-white'} 
+										${isActive ? 'bg-primary text-black' : 'text-black hover:bg-primary hover:text-black'} 
 										${locationChangerNormalSidebar(RedirectPages.dashBoard, 'bg-primary')}`
 									}
 								>
 									{({ isActive }) => (
 										<>
-											<span className={`svg-icon flex items-center justify-center mr-3 h-3.5 w-3.5s ${colorChangerNormalSidebar(RedirectPages.dashBoard, isActive ? 'text-white' : 'text-base-font-1')}`}>
+											<span className={`svg-icon flex items-center justify-center mr-3 h-3.5 w-3.5s ${colorChangerNormalSidebar(RedirectPages.dashBoard, isActive ? 'text-black' : 'text-base-font-1')}`}>
 												<Home />
 											</span>
 											<span className='toggle-text-sidebar'>{t('Dashboard')}</span>
@@ -154,14 +154,14 @@ const NormalSideBar = ({ show, menuHandler }: SideBarProps): ReactElement => {
 												to={listName.to}
 												className={({ isActive }) =>
 													`flex items-center justify-start font-normal h-11 px-4 py-3 text-sm 
-													${isActive ? 'bg-primary text-white' : 'text-black hover:bg-primary hover:text-white'} 
+													${isActive ? 'bg-primary text-black' : 'text-black hover:bg-primary hover:text-black'} 
 													${locationChangerNormalSidebar(listName.redirectPage, 'bg-primary')}`
 												}
 											>
 												{({ isActive }) => (
 													<>
 														<span
-															className={`svg-icon flex items-center justify-center mr-3 h-3.5 w-3.5 ${colorChangerNormalSidebar(listName.redirectPage, isActive ? 'text-white' : 'text-base-font-1')}`}
+															className={`svg-icon flex items-center justify-center mr-3 h-3.5 w-3.5 ${colorChangerNormalSidebar(listName.redirectPage, isActive ? 'text-black' : 'text-base-font-1')}`}
 														>
 															{listName.icon}
 														</span>
@@ -176,7 +176,7 @@ const NormalSideBar = ({ show, menuHandler }: SideBarProps): ReactElement => {
 											<li key={listName.text}>
 												<ul>
 													<RoleBaseGuard permissions={listName.permissions}>
-														<li aria-label='open-close' aria-hidden='true' className='flex items-center font-normal h-11 px-4 py-3 text-sm text-white hover:bg-primary cursor-pointer relative sub-menu-active' onClick={handleParentClick}>
+														<li aria-label='open-close' aria-hidden='true' className='flex items-center font-normal h-11 px-4 py-3 text-sm text-black hover:bg-primary cursor-pointer relative sub-menu-active' onClick={handleParentClick}>
 															<span className='svg-icon inline-block mr-3 h-3.5 w-3.5 text-base-font-1'>{listName.icon}</span>
 															<span className='text-sm'>
 																<span className='toggle-text-sidebar'>{t(`${listName.text}`)}</span>
@@ -198,7 +198,7 @@ const NormalSideBar = ({ show, menuHandler }: SideBarProps): ReactElement => {
 														{listName.childRoutes.map((child: childRoutesLinksArray) => (
 															<RoleBaseGuard permissions={child.permissions} key={child.text}>
 																<li className='sub-list'>
-																	<NavLink to={child.to} className={`flex items-center font-normal h-11 bg-bg-4 px-3 py-3 box-border text-sm text-white hover:bg-primary [.menu-horizontal_&]:bg-light-black ${locationChangerNormalSidebar(child.redirectPage, 'bg-primary')}`}>
+																	<NavLink to={child.to} className={`flex items-center font-normal h-11 bg-bg-4 px-3 py-3 box-border text-sm text-black hover:bg-primary [.menu-horizontal_&]:bg-light-black ${locationChangerNormalSidebar(child.redirectPage, 'bg-primary')}`}>
 																		<span className={`${colorChangerNormalSidebar(child.redirectPage, 'text-base-font-1')} mr-3 !w-wide-1 !h-auto ml-4 svg-icon`}>{child.icon}</span>
 																		<span className='toggle-text-sidebar'>{t(`${child.text}`)}</span>
 																	</NavLink>

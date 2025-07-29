@@ -111,6 +111,7 @@
 						}
 
 						&:after {
+							content: "";
 							@apply absolute left-1 top-1.5 bg-primary rounded-full w-2 h-2;
 						}
 					}

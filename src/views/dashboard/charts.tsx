@@ -17,6 +17,7 @@ interface BarChartCardProps {
   data: Array<Record<string, any>> | undefined;
   xKey: string;
   yKey: string;
+  yLabel: string;
   barColors?: string[];
   height?: number;
   responsive?: boolean;
@@ -42,11 +43,40 @@ const CustomXAxisTick = ({ x, y, payload }: any) => {
   );
 };
 
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+  yLabel,
+  yKey,
+}: {
+  active: boolean;
+  payload: any;
+  label?: string | number;
+  yLabel?: string;
+  yKey: string;
+}) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className='bg-white border rounded p-2 shadow text-sm'>
+        <p className='font-semibold text-gray-700'>{label}</p>
+        <p className='font-semibold text-gray-700'>
+          {yLabel ?? yKey} - {payload[0].value}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
+
+
 const BarChartCard: React.FC<BarChartCardProps> = ({
   title,
   data,
   xKey,
   yKey,
+  yLabel,
   height = 300,
   responsive = false,
 }) => {
@@ -88,7 +118,9 @@ const BarChartCard: React.FC<BarChartCardProps> = ({
                 height={60}
               />
               <YAxis tick={{ fontSize: 12 }} />
-              <Tooltip />
+                <Tooltip content={(props) => (
+                  <CustomTooltip {...props} yLabel={yLabel} yKey={yKey} />
+                )} />
               <Bar dataKey={yKey} radius={[6, 6, 0, 0]}>
                 {(data ?? []).map((_, index) => (
                   <Cell key={index} fill='#6200FF' />

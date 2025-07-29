@@ -261,7 +261,11 @@ mutation GenerateBookContent($input: GenerateBookContentInput!) {
 			about_book
 			about_authors
 			learning_points
-			cover_image_url
+			cover_image_url {
+    		    mimeType
+    		    extension
+    		    base64
+    		}
 			pages {
 				page_number
 				key_point

@@ -84,7 +84,7 @@ export type DescriptionDataProps = {
 };
 export type ImageDataProps = {
 	onClose: () => void;
-	data: string;
+	data: string | undefined;
 	show?: boolean;
 	showAccept?: boolean; 
 	onAccept?: () => void;

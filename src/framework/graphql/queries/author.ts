@@ -3,8 +3,8 @@ import { META_FRAGMENT } from '@framework/graphql/fragments';
 
 export const GET_AUTHOR = gql`
 	${META_FRAGMENT}
-		query GetAllAuthors($search: String, $isActive: Boolean, $sortBy: String, $sortOrder: String, $limit: Int, $offset: Int) {
-		  	getAllAuthors(search: $search, is_active: $isActive, sortBy: $sortBy, sortOrder: $sortOrder, limit: $limit, offset: $offset) {
+		query GetAllAuthors($search: String, $isActive: Boolean, $sortBy: String, $sortOrder: String, $limit: Int, $offset: Int, $authorUuids: [UUID]) {
+		  	getAllAuthors(search: $search, is_active: $isActive, sortBy: $sortBy, sortOrder: $sortOrder, limit: $limit, offset: $offset, authorUuids: $authorUuids) {
 		    	data {
 		    	  	authors {
 		    	    	uuid
