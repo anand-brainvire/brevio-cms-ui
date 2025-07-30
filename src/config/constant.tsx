@@ -114,6 +114,8 @@ export const DELETE_WARING_TEXT = 'Are you sure want to delete this record ?';
 
 export const CHANGESTATUS_WARING_TEXT = 'Are you sure want to change status ?';
 
+export const TAB_CHANGE_WARNING_TEXT = 'You have unsaved changes. Switching tabs will discard them. Are you sure you want to continue?';
+
 export const GROUP_DELETE_WARING_TEXT = 'Are you sure want to delete this records ?';
 
 export const PAGE_LENGTH = 2;

@@ -35,7 +35,7 @@ import {
 } from '@framework/graphql/mutations/bookManagement';
 import Button from '@components/button/button';
 import { CheckCircle, Cross } from '@components/icons/icons';
-import { IS_ALL, ROUTES } from '@config/constant';
+import { IS_ALL, ROUTES, TAB_CHANGE_WARNING_TEXT } from '@config/constant';
 import { FETCH_BOOK_BY_ID } from '@framework/graphql/queries/bookManagement';
 import { FETCH_CATEGORY } from '@framework/graphql/queries/category';
 import { MultiSelect } from 'primereact/multiselect';
@@ -50,6 +50,7 @@ import useValidation from '@src/hooks/validations';
 import GeneratedBookPreviewModal from './generatedBookPreviewModal';
 import RoleBaseGuard from '@components/roleGuard';
 import { PERMISSION_LIST } from '@config/permission';
+import CommonModel from '@components/common/commonModel';
 
 const editBooks = (): ReactElement => {
   const { t } = useTranslation();
@@ -76,6 +77,7 @@ const editBooks = (): ReactElement => {
     useMutation(DELETE_DRAFT_BOOK_PAGE);
   const [restoreToDraf, { loading: restoreToDraftLoader }] =
     useMutation(RESTORE_TO_DRAFT);
+  const [shouldRefetchPages, setShouldRefetchPages] = useState(false);
   const [unpublishBook, { loading: unpublishBookLoader }] =
     useMutation(BOOK_PUBLISH_STATUS);
 
@@ -111,6 +113,8 @@ const editBooks = (): ReactElement => {
     'draft'
   );
   const [hasOnlyOneDraftVersion, setHasOnlyOneDraftVersion] = useState(false);
+  const [showTabChangeConfirmation, setShowTabChangeConfirmation] = useState(false);
+  const [pendingTabChange, setPendingTabChange] = useState<'draft' | 'published' | null>(null);
   const isEditable = selectedTab === 'draft';
   const offsetRef = useRef(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -182,6 +186,33 @@ const editBooks = (): ReactElement => {
         isActive: author.is_active,
       };
     });
+  };
+
+  // Function to handle tab change with confirmation
+  const handleTabChange = (newTab: 'draft' | 'published') => {
+    // If changing from draft to published, show confirmation
+    if (selectedTab === 'draft' && newTab === 'published') {
+      setPendingTabChange(newTab);
+      setShowTabChangeConfirmation(true);
+    } else {
+      // Direct change for other cases
+      setSelectedTab(newTab);
+    }
+  };
+
+  // Function to confirm tab change
+  const confirmTabChange = () => {
+    if (pendingTabChange) {
+      setSelectedTab(pendingTabChange);
+      setPendingTabChange(null);
+    }
+    setShowTabChangeConfirmation(false);
+  };
+
+  // Function to cancel tab change
+  const cancelTabChange = () => {
+    setPendingTabChange(null);
+    setShowTabChangeConfirmation(false);
   };
 
   useEffect(() => {
@@ -520,6 +551,10 @@ const editBooks = (): ReactElement => {
         const data = res.data;
         if (data?.clonePublishToDraft?.meta?.statusCode === 200) {
           toast.success(data.clonePublishToDraft.meta.message);
+          // Trigger refetch of pages to get new UUIDs
+          setShouldRefetchPages(true);
+          // Reset the flag after a short delay
+          setTimeout(() => setShouldRefetchPages(false), 100);
         }
       })
       .catch(() => {
@@ -961,7 +996,7 @@ const editBooks = (): ReactElement => {
               <div className='flex border border-gray-300 rounded-tl-lg rounded-tr-lg overflow-hidden w-fit'>
                 <button
                   type='button'
-                  onClick={() => setSelectedTab('draft')}
+                  onClick={() => handleTabChange('draft')}
                   className={`px-8 py-4 text-sm font-medium rounded-none ${
                     selectedTab === 'draft'
                       ? 'bg-primary text-white'
@@ -974,7 +1009,7 @@ const editBooks = (): ReactElement => {
                 {!hasOnlyOneDraftVersion && (
                   <button
                     type='button'
-                    onClick={() => setSelectedTab('published')}
+                    onClick={() => handleTabChange('published')}
                     className={`px-8 py-4 text-sm font-medium rounded-none ${
                       selectedTab === 'published'
                         ? 'bg-primary text-white'
@@ -1537,15 +1572,28 @@ const editBooks = (): ReactElement => {
             bookContent={generatedBookContent}
           />
         )}
+        {showTabChangeConfirmation && (
+           <CommonModel
+             show={showTabChangeConfirmation}
+             onClose={cancelTabChange}
+             action={confirmTabChange}
+             warningText={TAB_CHANGE_WARNING_TEXT}
+             actionLabel={t('OK') || 'OK'}
+             onCloseLabel={t('Cancel') || 'Cancel'}
+             headerTitle={t('Confirm Tab Change') || 'Confirm Tab Change'}
+           />
+         )}
       </div>
       {params.id && (
-        // <RoleBaseGuard permissions={[PERMISSION_LIST.Book.ViewAccess]}>
           <BookPages
             bookUuid={params.id}
             status={selectedTab}
             generatedPages={replacePages ? generatedContent : undefined}
+            onRefetch={shouldRefetchPages ? () => {
+              // This function is called when shouldRefetchPages is true
+              // The BookPages component will handle the refetch internally
+            } : undefined}
           />
-        // </RoleBaseGuard>
       )}
     </>
   );

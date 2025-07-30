@@ -23,12 +23,14 @@ type BookPagesProps = {
   bookUuid: string;
   status: 'draft' | 'published';
   generatedPages?: GeneratedPage[] | null;
+  onRefetch?: () => void;
 };
 
 const BookPages = ({
   bookUuid,
   status,
   generatedPages = null,
+  onRefetch,
 }: BookPagesProps) => {
   const [pages, setPages] = useState<{ initialData?: any; tempId?: string }[]>(
     []
@@ -42,7 +44,7 @@ const BookPages = ({
   const [reorderBookPages] = useMutation(REORDER_BOOK_PAGES);
   const [generateAudio] = useMutation(GENERATE_AUDIO);
   const isEditable = status === 'draft';
-  const { data } = useQuery(GET_ALL_BOOK_PAGES, {
+  const { data, refetch } = useQuery(GET_ALL_BOOK_PAGES, {
     variables: { bookId: bookUuid },
     skip: !bookUuid || generatedPages !== null,
     fetchPolicy: 'network-only',
@@ -66,6 +68,13 @@ const BookPages = ({
       window.removeEventListener('removeUnsavedPage', handleRemoveUnsavedPage);
     };
   }, []);
+
+  // Listen for refetch trigger from parent component
+  useEffect(() => {
+    if (onRefetch) {
+      refetch();
+    }
+  }, [onRefetch, refetch]);
 
   useEffect(() => {
     if (!generatedPages) {
@@ -307,27 +316,6 @@ const BookPages = ({
 
       // --- Determine the next page number ---
       const nextPageNumber = _index + 1;
-      // let version;
-      // if (data && data.getAllBookPages && data.getAllBookPages.data) {
-      //   if (status === 'draft') {
-      //     version = data.getAllBookPages.data.find(
-      //       (v: any) => v.version_status === 'draft'
-      //     );
-      //   } else if (status === 'published') {
-      //     version =
-      //       data.getAllBookPages.data.find(
-      //         (v: any) => v.version_status === 'published'
-      //       ) ||
-      //       data.getAllBookPages.data.find(
-      //         (v: any) => v.version_status === 'unpublished'
-      //       );
-      //   }
-      //   // if (version && Array.isArray(version.pages) && version.pages.length > 0) {
-      //   //   const maxPageNumber = Math.max(...version.pages.map((p: any) => p.page_number || 0));
-      //   //   nextPageNumber = maxPageNumber + 1;
-      //   // }
-      // }
-
       const variables = {
         ['bookId']: bookUuid,
         ['translations']: [translationObj],

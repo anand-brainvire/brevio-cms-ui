@@ -121,13 +121,33 @@ const useValidationFields = () => {
 	const addCategories = Yup.array().min(1, 'At least one category is required');
 	const AddAuthors = Yup.array().min(1, 'At least one author is required');
 	const whatsInside= Yup.string().max(500,translationFun('What\'s inside should not be greater than 500 characters'));
-	const whatsInsidePublish = Yup.string().required(translationFun('What\'s inside is required')).max(300,translationFun('what\'s inside should not be greater than 300 characters'));
+	const whatsInsidePublish = Yup.string().required(translationFun('What\'s inside is required')).max(500,translationFun('what\'s inside should not be greater than 500 characters'));
 	const aboutAuthor = Yup.string().max(500, translationFun('About author should not be greater than 500 characters'));
-	const aboutAuthorPublish = Yup.string().required(translationFun('About author is required')).max(350,translationFun('About author should not be greater than 350 characters'));
+	const aboutAuthorPublish = Yup.string().required(translationFun('About author is required')).max(500,translationFun('About author should not be greater than 500 characters'));
 	const keyPoint = Yup.string().required(translationFun('Please enter key point')).min(3, translationFun('Key point should not be less than 3 characters Please enter valid key point')).max(200, translationFun('Key point should not be greater than 200 characters'));
 	const richText = Yup.string().required(translationFun('Please enter page content')).min(10, translationFun('Rich text should not be less than 10 characters')).max(10000, translationFun('Page content should not be greater than 10000 characters'));
 	const coverImage = Yup.string().required(translationFun('Cover image should not be empty'));
-	const learningPoint = Yup.array().min(1, 'At least one learning point is required');
+	const learningPoint = Yup.array().min(1, 'At least one learning point is required').of(
+	  Yup.object().shape({
+	    value: Yup.string()
+	      .test(
+	        'is-valid-learning-point',
+	        translationFun(
+	          'Learning Point should not be empty. You should either remove the Learning point or add content.'
+	        ),
+	        function (val) {
+	          if (val === undefined || val === null || val.trim() === '') {
+	            return false;
+	          }
+	          return true;
+	        }
+	      )
+	      .max(
+	        200,
+	        translationFun('Learning Point should not be greater than 200 characters')
+	      ),
+	  })
+	);
 	const learningPoints = Yup.array().of(
 	  Yup.object().shape({
 	    value: Yup.string()
