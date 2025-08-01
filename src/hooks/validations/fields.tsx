@@ -52,12 +52,30 @@ const useValidationFields = () => {
 	const logo = Yup.mixed().notRequired();
 	const eventName = Yup.string().required(translationFun('Please enter event name'));
 	const announcementType = Yup.string().required(translationFun('Please select type'));
-	const description = Yup.string().required(translationFun('Please enter description')).max(50, translationFun('Description should not be greater than 50 characters'));
-	const categoryName = Yup.string().required(translationFun('Please enter category name')).min(2, translationFun('Category name should not be less than 2 characters')).max(50, translationFun('Category name should not be greater than 50 characters'));
-	const categorySlug = Yup.string().required(translationFun('Please enter category slug')).min(2, translationFun('Category slug should not be less than 2 characters')).max(100, translationFun('Category slug should not be greater than 100 characters'));
+	const description = Yup.string().required(translationFun('Please enter description')).min(2, translationFun('Description should not be less than 2 characters')).max(50, translationFun('Description should not be greater than 50 characters'));
+	const categoryName = Yup.string()
+		.required(translationFun('Please enter category name'))
+		.test('trim', translationFun('Please enter category name'), function(value) {
+			return value ? value.trim().length > 0 : false;
+		})
+		.min(2, translationFun('Category name should not be less than 2 characters'))
+		.max(50, translationFun('Category name should not be greater than 50 characters'));
+	const categorySlug = Yup.string()
+		.required(translationFun('Please enter category slug'))
+		.test('trim', translationFun('Please enter category slug'), function(value) {
+			return value ? value.trim().length > 0 : false;
+		})
+		.min(2, translationFun('Category slug should not be less than 2 characters'))
+		.max(100, translationFun('Category slug should not be greater than 100 characters'));
 	const template = Yup.string().required(translationFun('Please enter template'));
 	const BannerTitleArabic = Yup.string().required(translationFun('Please enter banner title')).min(3, 'Banner title should not be less than 3 characters Please enter valid Banner Title').max(50, translationFun('Enter less than or equal to 50 characters'));
-	const authorName = Yup.string().required(translationFun('Please enter author name')).min(2, 'Name should not be less than 2 characters Please enter valid Author Name').max(50, translationFun('Enter less than or equal to 50 characters'));
+	const authorName = Yup.string()
+		.required(translationFun('Please enter author name'))
+		.test('trim', translationFun('Please enter author name'), function(value) {
+			return value ? value.trim().length > 0 : false;
+		})
+		.min(2, 'Name should not be less than 2 characters Please enter valid Author Name')
+		.max(50, translationFun('Enter less than or equal to 50 characters'));
 	const BannerImage = Yup.string().required(translationFun('Please upload banner image'));
 	const ruleName = Yup.string().required(translationFun('Please enter rule name'));
 	const descriptionenter = Yup.string().required(translationFun('Please enter description'));
@@ -124,8 +142,20 @@ const useValidationFields = () => {
 	const whatsInsidePublish = Yup.string().required(translationFun('What\'s inside is required')).max(500,translationFun('what\'s inside should not be greater than 500 characters'));
 	const aboutAuthor = Yup.string().max(500, translationFun('About author should not be greater than 500 characters'));
 	const aboutAuthorPublish = Yup.string().required(translationFun('About author is required')).max(500,translationFun('About author should not be greater than 500 characters'));
-	const keyPoint = Yup.string().required(translationFun('Please enter key point')).min(3, translationFun('Key point should not be less than 3 characters Please enter valid key point')).max(200, translationFun('Key point should not be greater than 200 characters'));
-	const richText = Yup.string().required(translationFun('Please enter page content')).min(10, translationFun('Rich text should not be less than 10 characters')).max(10000, translationFun('Page content should not be greater than 10000 characters'));
+	const keyPoint = Yup.string()
+		.required(translationFun('Please enter key point'))
+		.test('trim', translationFun('Please enter key point'), function(value) {
+			return value ? value.trim().length > 0 : false;
+		})
+		.min(3, translationFun('Key point should not be less than 3 characters Please enter valid key point'))
+		.max(200, translationFun('Key point should not be greater than 200 characters'));
+	const richText = Yup.string()
+		.required(translationFun('Please enter page content'))
+		.test('trim', translationFun('Please enter page content'), function(value) {
+			return value ? value.trim().length > 0 : false;
+		})
+		.min(10, translationFun('Rich text should not be less than 10 characters'))
+		.max(10000, translationFun('Page content should not be greater than 10000 characters'));
 	const coverImage = Yup.string().required(translationFun('Cover image should not be empty'));
 	const learningPoint = Yup.array().min(1, 'At least one learning point is required').of(
 	  Yup.object().shape({

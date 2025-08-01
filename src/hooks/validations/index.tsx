@@ -90,7 +90,7 @@ const useValidation = () => {
 		aboutAuthorPublish,
 		coverImage,
 		learningPoint,
-w		whatsInside,
+		whatsInside,
 		aboutAuthor,
 		learningPoints,
 		keyPoint,

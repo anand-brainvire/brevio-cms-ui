@@ -469,18 +469,8 @@ const editBooks = (): ReactElement => {
         toast.success(t('Draft pages deleted successfully'));
         setShowConfirmPopup(false);
         const d = generatedBookContent;
-        const newFormValues = {
-          title: d.title,
-          categoryId: d.categories.map((c: any) => c.uuid),
-          authorId: d.authors.map((a: any) => a.uuid),
-          whatsInside: d.about_book,
-          aboutAuthor: d.about_authors,
-          coverImage: d.cover_image_url,
-          learningPoints: d.learning_points.map((pt: string) => ({
-            value: pt,
-          })),
-        };
-
+        let coverImageUrl = null;
+        
         if (d.cover_image_url) {
           try {
             const file = base64ToFile(
@@ -489,21 +479,38 @@ const editBooks = (): ReactElement => {
               `cover-image.${d.cover_image_url[0].extension}`
             );
             setCoverImageFile(file);
-            formik.setFieldValue('coverImage', file);
-            await handleUploadCoverImage(file);
+            // Upload the cover image and wait for it to complete
+            coverImageUrl = await handleUploadCoverImage(file);
           } catch {
             toast.error('Failed to process cover image');
           }
         }
+        
+        const newFormValues = {
+          title: d.title,
+          categoryId: d.categories.map((c: any) => c.uuid),
+          authorId: d.authors.map((a: any) => a.uuid),
+          whatsInside: d.about_book,
+          aboutAuthor: d.about_authors,
+          coverImage: coverImageUrl || '', // Use the uploaded URL or empty string
+          learningPoints: d.learning_points.map((pt: string) => ({
+            value: pt,
+          })),
+        };
 
         formik.setValues(newFormValues);
+        // Clear validation errors after setting new values
+        formik.setErrors({});
+        formik.setTouched({});        
         remove();
-        d.learning_points.forEach((pt: string) => append({ value: pt }));
+        d.learning_points.forEach((pt: string) => append({ value: pt }));        
         // Automatically save the generated content to the database
         await UpdateBookInfoFunction(newFormValues);
         // Only after all above is done, trigger new page creation
         setGeneratedContent(d.pages);
         setReplacePages(true);
+        formik.setTouched({});
+        formik.setErrors({});
       } else {
         toast.error(t('Failed to delete draft pages'));
       }
@@ -601,7 +608,7 @@ const editBooks = (): ReactElement => {
       authorId: values.authorId,
       whatsInside: values.whatsInside,
       aboutAuthor: values.aboutAuthor,
-      coverImage: values.coverImage,
+      coverImage: typeof values.coverImage === 'string' ? values.coverImage : '',
       learningPoints: values.learningPoints,
     };
 
@@ -645,7 +652,7 @@ const editBooks = (): ReactElement => {
         error.inner.forEach((err: any) => {
           if (err.path) {
             formikErrors[err.path] = err.message;
-            formik.setFieldTouched(err.path, true, false); // still call this
+            formik.setFieldTouched(err.path, true, false); 
           }
         });
 
@@ -690,7 +697,7 @@ const editBooks = (): ReactElement => {
     const fileToUpload = file || coverImageFile;
 
     if (!bookUuid || !fileToUpload) {
-      return;
+      return null;
     }
 
     try {
@@ -711,12 +718,17 @@ const editBooks = (): ReactElement => {
         // setOriginalCoverImageUrl(uploadedImageUrl);
         setUplodedImageUrl(uploadedImageUrl);
         setIsImageUploded(true);
+        // Update Formik field value with the uploaded URL
+        formik.setFieldValue('coverImage', uploadedImageUrl);
         setIsUploading(false);
+        return uploadedImageUrl;
       }
       setIsUploading(false);
+      return null;
     } catch {
       setIsUploading(false);
       toast.error('Something went wrong while uploading cover image');
+      return null;
     }
   };
 
@@ -909,7 +921,6 @@ const editBooks = (): ReactElement => {
     formik.setFieldValue('learningPoints', rhfLearningPoints, true);
     formik.handleSubmit();
   };  
-
   return (
     <>
       <div className='card'>
@@ -940,20 +951,15 @@ const editBooks = (): ReactElement => {
 
                     {bookVersionStatus === 'draft' && (
                       <>
-                        <span className='bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
+                        <span className='bg-warning text-black-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
                           {t('Draft')}
                         </span>
-                        {isContentModified && (
-                          <span className='text-xs text-gray-500 ml-2'>
-                            ({t('Modified')})
-                          </span>
-                        )}
                       </>
                     )}
 
                     {bookVersionStatus === 'published' && (
                       <>
-                        <span className='bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
+                        <span className='bg-success text-white text-xs font-semibold px-2.5 py-0.5 rounded'>
                           {t('Published')}
                         </span>
                         {isContentModified && (
@@ -966,7 +972,7 @@ const editBooks = (): ReactElement => {
 
                     {bookVersionStatus === 'unpublished' && (
                       <>
-                        <span className='bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded'>
+                        <span className='bg-danger text-white text-xs font-semibold px-2.5 py-0.5 rounded'>
                           {t('Unpublished')}
                         </span>
                         {isContentModified && (
