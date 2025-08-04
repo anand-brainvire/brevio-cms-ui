@@ -28,7 +28,6 @@ const FilterBooks = ({
     variables: { isAll: IS_ALL, sortOrder: 'asc', sortBy: 'name'},
   });
   const [categoryDroData, setCategoryDroData] = useState([]);
-  // const [isInitialRedirected, setIsInitialRedirected] = useState(false);
   const initialValues: FilterCouponsProps = {
     search: '',
     categoryId: defaultCategoryId? [defaultCategoryId] : [],
@@ -168,6 +167,7 @@ const FilterBooks = ({
               optionLabel='name'
               optionValue='key'
               filter
+              resetFilterOnHide={true}
               placeholder={t('Select Category') ?? 'Select Category'}
               display='chip'
               className='w-full'
@@ -180,6 +180,8 @@ const FilterBooks = ({
               options={BOOK_STATUS_DRP}
               optionLabel='name'
               optionValue='key'
+              filter
+              resetFilterOnHide={true}
               placeholder={t('Select Status') ?? 'Select Status'}
               display='chip'
               className='w-full'

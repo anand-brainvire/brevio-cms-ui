@@ -42,8 +42,8 @@ const GenerateBookConfirmPopup = ({
       setError('Page count is required and must be greater than 0.');
       return;
     }
-    if (pageCount > 20) {
-      setError('You cannot generate more than 20 pages of book details using AI');
+    if (pageCount > 25) {
+      setError('You cannot generate more than 25 pages of book details using AI');
       return;
     }
     setError('');

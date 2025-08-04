@@ -73,12 +73,25 @@ const AddEditRole = ({ isRoleModelShow, onSubmitRole, onClose, isRoleEditable, r
 				if (data?.updateRole?.meta?.statusCode === 200) {
 					onSubmitRole();
 					toast.success(data?.updateRole?.meta?.message);
+					formik.resetForm();
 				}
 			})
 			.catch(() => {
 				return;
 			});
 	};
+
+	// Reset form values when modal opens, mode changes, or roleObj changes
+	useEffect(() => {
+		if (isRoleModelShow) {
+			formik.setValues({
+				role: isRoleEditable ? (roleObj?.role_name ?? '') : '',
+			});
+			formik.setTouched({});
+			formik.setErrors({});
+		}
+	}, [isRoleModelShow, isRoleEditable, roleObj?.role_name, roleObj?.uuid]);
+	
 	/**
 	 * Method handles out side click
 	 */

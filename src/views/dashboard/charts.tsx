@@ -24,20 +24,25 @@ interface BarChartCardProps {
 }
 
 // ✅ Custom Tick Renderer to adjust label position
+const truncateLabel = (str: string, maxLength: number) => {
+  return str.length > maxLength ? str.slice(0, maxLength) + '…' : str;
+};
+
 const CustomXAxisTick = ({ x, y, payload }: any) => {
-  const adjustedX = x + 15; // shift to right slightly
+  const adjustedX = x + 20;
+  const truncatedLabel = truncateLabel(payload.value, 20); // Change 15 as needed
 
   return (
     <text
       x={adjustedX}
       y={y}
       textAnchor='end'
-      transform={`rotate(-15, ${adjustedX}, ${y})`}
+      transform={`rotate(-30, ${adjustedX}, ${y})`}
       fontSize={12}
       fill='#666'
     >
       <tspan x={adjustedX} dy='0.71em'>
-        {payload.value}
+        {truncatedLabel}
       </tspan>
     </text>
   );

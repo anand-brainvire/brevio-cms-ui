@@ -113,7 +113,7 @@ const RolePermission = ({ refetchRoleData }: RoleProps) => {
 				</div>
 				<RoleBaseGuard permissions={[PERMISSION_LIST.Role.AddAccess]}>
 					<div>
-						<Button className='btn-primary  ' onClick={createNewRole} type='button' label={t('Add New')}>
+						<Button className='btn-primary' onClick={createNewRole} type='button' label={t('Add New')}>
 							<span className='inline-block w-4 h-4 mr-1 svg-icon'>
 								<PlusCircle />
 							</span>

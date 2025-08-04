@@ -52,7 +52,11 @@ const useValidationFields = () => {
 	const logo = Yup.mixed().notRequired();
 	const eventName = Yup.string().required(translationFun('Please enter event name'));
 	const announcementType = Yup.string().required(translationFun('Please select type'));
-	const description = Yup.string().required(translationFun('Please enter description')).min(2, translationFun('Description should not be less than 2 characters')).max(50, translationFun('Description should not be greater than 50 characters'));
+	const description = Yup.string().required(translationFun('Please enter description'))		
+	.test('trim', translationFun('Please enter description'), function(value) {
+			return value ? value.trim().length > 0 : false;
+		})
+	.min(2, translationFun('Description should not be less than 2 characters')).max(50, translationFun('Description should not be greater than 50 characters'));
 	const categoryName = Yup.string()
 		.required(translationFun('Please enter category name'))
 		.test('trim', translationFun('Please enter category name'), function(value) {
