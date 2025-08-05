@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import FilterUserManagement from '@views/userManagement/filterUserManagment';
 import { FilterUserProps, PaginationParams } from '@type/user';
 import { GET_USER } from '@framework/graphql/queries/user';
-import PassWordChange from '@views/userManagement/changeUserPassword';
 import filterServiceProps from '@components/filter/filter';
 import { PERMISSION_LIST } from '@config/permission';
 import BVDataTable from '@components/BVDatatable/BVDataTable';
@@ -15,7 +14,6 @@ import { DELETE_USER, CHANGE_USER_STATUS} from '@framework/graphql/mutations/use
 
 const UserManagement = (): ReactElement => {
 	const { t } = useTranslation();
-	const [isChangeUserPassword, setIsChangeUserPassword] = useState<boolean>(false);
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 	const [limit, setLimit] = useState(DEFAULT_LIMIT);
 	const [filterData, setFilterData] = useState<PaginationParams>(
@@ -71,9 +69,6 @@ const UserManagement = (): ReactElement => {
 		},
 		[userObj]
 	);
-	const onClose = useCallback(() => {
-		setIsChangeUserPassword(false);
-	}, []);
 
 	const clearSelectionUserMng = useCallback(() => {
 		setSelectedUsers([]);
@@ -129,7 +124,6 @@ const UserManagement = (): ReactElement => {
 					/>
 				</div>
 			</div>
-			{isChangeUserPassword && <PassWordChange onClose={onClose} UserObj={userObj} show={isChangeUserPassword} />}
 		</div>
 	);
 };

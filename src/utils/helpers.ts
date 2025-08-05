@@ -1,9 +1,8 @@
-import { DATE_FORMAT, DOWLOAD_FILE_TYPE, IMAGE_BASE_URL, KEYS, REACT_APP_API_IMAGE_UPLOAD_URL, ROUTES } from '@config/constant';
+import { DATE_FORMAT, KEYS, REACT_APP_API_IMAGE_UPLOAD_URL, ROUTES } from '@config/constant';
 import { MetaRes } from '@framework/graphql/graphql';
 import moment from 'moment';
 import { toast } from 'react-toastify';
 import { OptionsPropsForButton } from '@type/component';
-import { t } from 'i18next';
 import DecryptionFunction from '@services/decryption';
 /**
  * Method that verify authentication
@@ -242,47 +241,6 @@ export const getUserPermissions = () => {
 	const DecryptedPermissions = EncryptedPermissions && DecryptionFunction(EncryptedPermissions);
 	const userPermissions = Permissions && JSON.parse(DecryptedPermissions);
 	return userPermissions;
-};
-/**
- * Method used to dowload a file in rest api
- * @param moduleType
- * @param exportType
- * @param filter
- * @param filterData
- */
-export const downloadFile = async (moduleType: string, exportType: string, filter: string, filterData: { [key: string]: string | number | null | Date }) => {
-	try {
-		const url = `${IMAGE_BASE_URL}${'/export-data'}`;
-		const encryptedToken = localStorage.getItem('authToken') as string;
-		const token = encryptedToken && DecryptionFunction(encryptedToken);
-		const obj = { 'module_type': moduleType, 'export_type': exportType, filter: filter, ...filterData };
-		const response = await fetch(url, {
-			method: 'POST',
-			body: JSON.stringify(obj),
-			headers: {
-				Authorization: `Bearer ${token}`,
-				'Content-Type': 'application/json',
-			},
-		});
-		if (response.ok) {
-			const blob = await response.blob();
-			const URL = window.URL.createObjectURL(blob);
-			const a = document.createElement('a');
-			a.style.display = 'none';
-			a.href = URL;
-			a.download = `download.${DOWLOAD_FILE_TYPE[exportType]}`;
-			document.body.appendChild(a);
-			a.click();
-			window.URL.revokeObjectURL(URL);
-		} else {
-			const data = await response.json();
-			errorHandler(data.meta);
-		}
-	} catch (error) {
-		if (error) {
-			toast.error(t('Failed to upload file'));
-		}
-	}
 };
 /**
  * Method used to get year from date

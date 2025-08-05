@@ -1,6 +1,4 @@
 import React from 'react';
-import { loadStripe } from '@stripe/stripe-js';
-// import { BannerIcon, ClipBoardIcon, Document, Email, Gift, Lock, PhoneCall, ProfileIcon, Question, SettingsSliders, User, ArrowRight, Marker, TimerIcon, SuggestionIcon, UserReportIcon, Star, Megaphone, QrCodeIcon, GeoLocationIcon, PlanManagementIcon, SubscriptionIcon } from '@components/icons/icons';
 import { AuthorIcon, BookIcon, Listing,Lock, MultipleProfileIcon, ProfileIcon, User } from '@components/icons/icons';
 
 import { uuid } from '@utils/helpers';
@@ -11,60 +9,18 @@ import { DataMapping } from '@framework/graphql/graphql';
 const Dashboard = React.lazy(() => import('@views/dashboard'));
 const SubAdmin = React.lazy(() => import('@views/subAdmin'));
 const AddEditSubAdmin = React.lazy(() => import('@views/subAdmin/addEditSubAdmin'));
-const State = React.lazy(() => import('@views/state'));
-const AddEditState = React.lazy(() => import('@views/state/addEditState'));
-const CMS = React.lazy(() => import('@views/CMS'));
-const AddEditCms = React.lazy(() => import('@views/CMS/addEditCms'));
-const AddSuggestion = React.lazy(() => import('@views/suggestion/addSuggestion'));
 const categoryManagement = React.lazy(() => import('@views/categoryManagement'));
 const AddEditCategory = React.lazy(() => import('@views/categoryManagement/addEditCategory'));
-const Enquiry = React.lazy(() => import('@views/enquiry'));
-const AddEnquiry = React.lazy(() => import('@views/enquiry/addEnquiry'));
-const ManageCategory = React.lazy(() => import('@views/manageCategory'));
-const Settings = React.lazy(() => import('@views/settingsPage'));
-const Review = React.lazy(() => import('@views/review'));
-const Country = React.lazy(() => import('@views/country'));
-const AddEditCountry = React.lazy(() => import('@views/country/addEditCountry'));
 const UserManagement = React.lazy(() => import('@views/userManagement'));
-const Announcement = React.lazy(() => import('@views/announcement'));
-const AddAnnouncement = React.lazy(() => import('@views/announcement/addAnnouncement'));
-const City = React.lazy(() => import('@views/city'));
-const AddEditCity = React.lazy(() => import('@views/city/addEditCity'));
-const EventManagement = React.lazy(() => import('@views/eventsManagement'));
-const AddEditEvents = React.lazy(() => import('@views/eventsManagement/addEditEvent'));
-const ViewEvent = React.lazy(() => import('@views/viewEvent'));
-const NotificationsTemplate = React.lazy(() => import('@views/notifications'));
-const AddEditNotification = React.lazy(() => import('@views/notifications/addEditNotification'));
-// const AddEditCategory = React.lazy(() => import('@views/manageCategory/addEditCategory'));
-const ViewNotification = React.lazy(() => import('@views/viewNotification'));
-const Suggestion = React.lazy(() => import('@views/suggestion'));
 const ManageRulesSets = React.lazy(() => import('@views/rulesSestsManagement'));
 const AddEditRulesSets = React.lazy(() => import('@views/rulesSestsManagement/addEditRulesSet'));
-const ViewAnnouncement = React.lazy(() => import('@views/viewAnnouncement'));
 const RolePermissions = React.lazy(() => import('@views/rolePermissons'));
-const CategoryTreeView = React.lazy(() => import('@views/manageCategory/categoryTreeView'));
 const ManageBooks = React.lazy(() => import('@views/bookManagement'));
 const AddeditManageBooks = React.lazy(() => import('@views/bookManagement/editBooks'));
-const ActivityTracking = React.lazy(() => import('@views/activityTracking'));
-const EmailNotificationTemplate = React.lazy(() => import('@views/emailNotificationTemplate'));
-const AddEditEmailTemplate = React.lazy(() => import('@views/emailNotificationTemplate/addEditEmailTemplate'));
-const BsMedia = React.lazy(() => import('@views/bs-media/index'));
-const UserReport = React.lazy(() => import('@views/userReport/index'));
-// const AddEditUser = React.lazy(() => import('@views/userManagement/addEditUser'));
 const ViewUser = React.lazy(() => import('@views/userManagement/viewUser'));
-const ViewGeoLocation = React.lazy(() => import('@views/geoLocation/viewGeoLocation'));
 const Author = React.lazy(() => import('@views/Author/index'));
 const AddEditAuthor = React.lazy(() => import('@views/Author/addEditAuthor'));
 const UpdateProfileForm = React.lazy(() => import('@views/adminProfile/updateAdmin'));
-const QrCode = React.lazy(() => import('@views/qrCode/index'));
-const AddEditQrCode = React.lazy(() => import('@views/qrCode/addEditQrCode'));
-const GeoLocation = React.lazy(() => import('@views/geoLocation/index'));
-const AddEditGeoLocation = React.lazy(() => import('@views/geoLocation/addEditGeoLocation'));
-
-const PlanManagement = React.lazy(() => import('@views/planManagement/index'));
-const AddEditPlanManagement = React.lazy(() => import('@views/planManagement/addEditPlanManagement'));
-const SubscribersCard = React.lazy(() => import('@views/subscriptionManagement/index'));
-const SubcribersList = React.lazy(() => import('@views/subscriptionManagement/subscribedUsersList'));
 
 export const sortOrder = 'desc';
 export const sortBy = 'created_at';
@@ -307,54 +263,16 @@ export const privateRoutes: { path: string; element: React.LazyExoticComponent<(
 	{ path: `${ROUTES.subAdmin}/${ROUTES.list}`, element: SubAdmin, permission: [PERMISSION_LIST.SubAdmin.ListAccess] },
 	{ path: `${ROUTES.subAdmin}/add`, element: AddEditSubAdmin, permission: [PERMISSION_LIST.SubAdmin.AddAccess] },
 	{ path: `${ROUTES.subAdmin}/edit/:id`, element: AddEditSubAdmin, permission: [PERMISSION_LIST.SubAdmin.EditAccess] },
-	{ path: `${ROUTES.state}/list`, element: State, permission: [PERMISSION_LIST.State.ListAccess] },
-	{ path: `${ROUTES.state}/add`, element: AddEditState, permission: [PERMISSION_LIST.State.AddAccess] },
-	{ path: `${ROUTES.state}/edit/:id`, element: AddEditState, permission: [PERMISSION_LIST.State.EditAccess] },
-	{ path: `${ROUTES.CMS}/list`, element: CMS, permission: [PERMISSION_LIST.CMS.ListAccess] },
-	{ path: `${ROUTES.CMS}/add`, element: AddEditCms, permission: [PERMISSION_LIST.CMS.AddAccess] },
-	{ path: `${ROUTES.CMS}/edit/:id`, element: AddEditCms, permission: [PERMISSION_LIST.CMS.EditAccess] },
-	{ path: `${ROUTES.review}/list`, element: Review, permission: [PERMISSION_LIST.CMS.ListAccess] },
-	{ path: `${ROUTES.country}/list`, element: Country, permission: [PERMISSION_LIST.Country.ListAccess] },
-	{ path: `${ROUTES.country}/add`, element: AddEditCountry, permission: [PERMISSION_LIST.Country.AddAccess] },
-	{ path: `${ROUTES.country}/edit/:id`, element: AddEditCountry, permission: [PERMISSION_LIST.Country.EditAccess] },
 	{ path: `${ROUTES.category}/list`, element: categoryManagement, permission: [PERMISSION_LIST.FAQ.ListAccess] },
 	{ path: `${ROUTES.category}/add`, element: AddEditCategory, permission: [PERMISSION_LIST.FAQ.AddAccess] },
 	{ path: `${ROUTES.category}/edit/:id`, element: AddEditCategory, permission: [PERMISSION_LIST.FAQ.EditAccess] },
-	{ path: `${ROUTES.settings}`, element: Settings, permission: [] },
-	{ path: `${ROUTES.enquiry}/list`, element: Enquiry, permission: [PERMISSION_LIST.Enquiry.ListAccess] },
-	{ path: `${ROUTES.enquiry}/add`, element: AddEnquiry, permission: [PERMISSION_LIST.Enquiry.AddAccess] },
-	{ path: `${ROUTES.suggestion}/list`, element: Suggestion, permission: [PERMISSION_LIST.Suggestion.ListAccess] },
-	{ path: `${ROUTES.suggestion}/Add`, element: AddSuggestion, permission: [PERMISSION_LIST.Suggestion.AddAccess] },
 	{ path: `${ROUTES.user}/list`, element: UserManagement, permission: [PERMISSION_LIST.UserManagement.ListAccess] },
-	{ path: `${ROUTES.announcement}/list`, element: Announcement, permission: [PERMISSION_LIST.Announcement.AddAccess] },
-	{ path: `${ROUTES.announcement}/add`, element: AddAnnouncement, permission: [PERMISSION_LIST.Announcement.AddAccess] },
-	{ path: `${ROUTES.announcement}/view/:id`, element: ViewAnnouncement, permission: [PERMISSION_LIST.Announcement.ViewAccess] },
-	// { path: `${ROUTES.user}/add`, element: AddEditUser, permission: [PERMISSION_LIST.UserManagement.AddAccess] },
-	// { path: `${ROUTES.user}/edit/:id`, element: AddEditUser, permission: [PERMISSION_LIST.UserManagement.EditAccess] },
 	{ path: `${ROUTES.user}/view/:id`, element: ViewUser, permission: [PERMISSION_LIST.UserManagement.ViewAccess] },
-	{ path: `${ROUTES.geoLocation}/view/:id`, element: ViewGeoLocation, permission: [PERMISSION_LIST.GeoLocation.ViewAccess] },
-
-	{ path: `${ROUTES.city}/list`, element: City, permission: [PERMISSION_LIST.City.ListAccess] },
-	{ path: `${ROUTES.city}/add`, element: AddEditCity, permission: [PERMISSION_LIST.City.AddAccess] },
-	{ path: `${ROUTES.city}/edit/:id`, element: AddEditCity, permission: [PERMISSION_LIST.City.EditAccess] },
 	{ path: `${ROUTES.author}/list`, element: Author, permission: [PERMISSION_LIST.Author.ListAccess] },
 	{ path: `${ROUTES.author}/add`, element: AddEditAuthor, permission: [PERMISSION_LIST.Author.AddAccess] },
 	{ path: `${ROUTES.author}/edit/:id`, element: AddEditAuthor, permission: [PERMISSION_LIST.Author.EditAccess] },
-	{ path: `${ROUTES.event}/list`, element: EventManagement, permission: [] },
-	{ path: `${ROUTES.event}/edit/:id`, element: AddEditEvents, permission: [] },
-	{ path: `${ROUTES.event}/view/:id`, element: ViewEvent, permission: [] },
-	{ path: `${ROUTES.event}/add`, element: AddEditEvents, permission: [] },
-	{ path: `${ROUTES.category}`, element: ManageCategory, permission: [] },
-	{ path: `${ROUTES.category}/list`, element: ManageCategory, permission: [PERMISSION_LIST.Category.ListAccess] },
 	{ path: `${ROUTES.category}/edit/:id`, element: AddEditCategory, permission: [PERMISSION_LIST.Category.EditAccess] },
 	{ path: `${ROUTES.category}/add`, element: AddEditCategory, permission: [PERMISSION_LIST.Category.AddAccess] },
-	{ path: `${ROUTES.category}/treeview`, element: CategoryTreeView, permission: [] },
-	{ path: `${ROUTES.notifications}/list`, element: NotificationsTemplate, permission: [] },
-	{ path: `${ROUTES.notifications}/add`, element: AddEditNotification, permission: [] },
-	{ path: `${ROUTES.notifications}/edit/:id`, element: AddEditNotification, permission: [] },
-	{ path: `${ROUTES.notifications}/view/:id`, element: ViewNotification, permission: [] },
-	{ path: `${ROUTES.suggestion}/list`, element: Suggestion, permission: [PERMISSION_LIST.Suggestion.ListAccess] },
-	{ path: `${ROUTES.suggestion}/add`, element: AddSuggestion, permission: [PERMISSION_LIST.Suggestion.AddAccess] },
 	{ path: `${ROUTES.manageRulesSets}/list`, element: ManageRulesSets, permission: [] },
 	{ path: `${ROUTES.manageRulesSets}/add`, element: AddEditRulesSets, permission: [] },
 	{ path: `${ROUTES.manageRulesSets}/edit/:id`, element: AddEditRulesSets, permission: [] },
@@ -362,23 +280,6 @@ export const privateRoutes: { path: string; element: React.LazyExoticComponent<(
 	{ path: `${ROUTES.rolePermissions}`, element: RolePermissions, permission: [PERMISSION_LIST.Role.ListAccess] },
 	{ path: `${ROUTES.manageBooks}/list`, element: ManageBooks, permission: [PERMISSION_LIST.Book.ListAccess] },
 	{ path: `${ROUTES.manageBooks}/edit/:id`, element: AddeditManageBooks, permission: [PERMISSION_LIST.Book.EditAccess] },
-	{ path: `${ROUTES.activityTracking}/list`, element: ActivityTracking },
-	{ path: `${ROUTES.email}/list`, element: EmailNotificationTemplate, permission: [PERMISSION_LIST.EmailTemplate.ListAccess] },
-	{ path: `${ROUTES.email}/add`, element: AddEditEmailTemplate, permission: [PERMISSION_LIST.EmailTemplate.AddAccess] },
-	{ path: `${ROUTES.email}/edit/:id`, element: AddEditEmailTemplate, permission: [PERMISSION_LIST.EmailTemplate.EditAccess] },
-	{ path: `${ROUTES.bsMedia}/list`, element: BsMedia, permission: [PERMISSION_LIST.BsMedia.ListAccess] },
-	{ path: `${ROUTES.userReport}/list`, element: UserReport, permission: [PERMISSION_LIST.UserReport.ListAccess] },
-	{ path: `${ROUTES.qrcode}/list`, element: QrCode, permission: [PERMISSION_LIST.QrCode.ListAccess] },
-	{ path: `${ROUTES.qrcode}/add`, element: AddEditQrCode, permission: [PERMISSION_LIST.QrCode.AddAccess] },
-	{ path: `${ROUTES.qrcode}/edit/:id`, element: AddEditQrCode, permission: [PERMISSION_LIST.QrCode.EditAccess] },
-	{ path: `${ROUTES.geoLocation}/list`, element: GeoLocation, permission: [PERMISSION_LIST.GeoLocation.ListAccess] },
-	{ path: `${ROUTES.geoLocation}/add`, element: AddEditGeoLocation, permission: [PERMISSION_LIST.GeoLocation.AddAccess] },
-	{ path: `${ROUTES.geoLocation}/edit/:id`, element: AddEditGeoLocation, permission: [PERMISSION_LIST.GeoLocation.EditAccess] },
-	{ path: `${ROUTES.planManagement}/list`, element: PlanManagement, permission: [PERMISSION_LIST.PlanManagement.ListAccess] },
-	{ path: `${ROUTES.planManagement}/add`, element: AddEditPlanManagement, permission: [PERMISSION_LIST.PlanManagement.AddAccess] },
-	{ path: `${ROUTES.planManagement}/edit/:id`, element: AddEditPlanManagement, permission: [PERMISSION_LIST.PlanManagement.EditAccess] },
-	{ path: `${ROUTES.subscriptionManagement}/list`, element: SubscribersCard, permission: [PERMISSION_LIST.PlanManagement.ListAccess] },
-	{ path: `${ROUTES.subscribers}/list`, element: SubcribersList, permission: [PERMISSION_LIST.PlanManagement.ListAccess] },
 ];
 
 export const CK_EDITOR_CONFIGURATION = {
@@ -396,8 +297,6 @@ export const CK_EDITOR_CONFIGURATION = {
 	buttons: 'bold,italic,underline,strikethrough,eraser,ul,ol,font,fontsize,paragraph,lineHeight,superscript,subscript,spellcheck,cut,copy,paste,selectall,hr,table,link,indent,outdent,brush,undo,redo,source,align',
 	disablePlugins: 'inline-popup,image-properties',
 };
-
-export const GOOGLE_MAP_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
 export const LANGUAGE_DROPDOWN_LIST = [
 	{ data: 'en', content: 'EN' },
@@ -576,7 +475,6 @@ export const TEMPLATE_TYPE: { [key: string]: string } = {
 	'3': 'SMS',
 };
 
-export const IMAGE_BASE_URL = process.env.REACT_APP_API_BASENODE;
 export const UPLOAD_IMAGE_URL = process.env.REACT_APP_API_IMAGE_URL;
 export const REACT_APP_API_GATEWAY_URL = process.env.REACT_APP_API_GATEWAY_URL;
 export const REACT_APP_ENCRYPTION_DECRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_DECRYPTION_KEY;
@@ -829,5 +727,3 @@ export const PLAN_MANAGEMENT_ISRECOMMENDED_DRPDOWN = [
 	{ name: 'Yes', key: true },
 	{ name: 'No', key: false },
 ];
-
-export const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY as string);
