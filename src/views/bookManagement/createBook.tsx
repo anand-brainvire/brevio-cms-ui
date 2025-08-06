@@ -47,7 +47,6 @@ const CreateBook = ({ isVisible, onSubmitBook }: AddBookModalProps) => {
 				toast.success(data.createBook.meta.message);
 				navigate(`/${ROUTES.app}/${ROUTES.manageBooks}/edit/${data?.createBook?.data?.uuid}`);
                 formik.resetForm();
-                // onSubmitBook();
 			}
 		})
 		.catch(() => {

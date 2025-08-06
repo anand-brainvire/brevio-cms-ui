@@ -241,7 +241,6 @@ const editBooks = (): ReactElement => {
       setIsFreeBook(!!book.is_free);
       setIsContentModified(book.is_content_modified);
       setVersionNumber(book.published_version_number);
-      // const version = book.versions?.find((v: any) => v.status === selectedTab);
       let version;
       if (selectedTab === 'draft') {
         version = book.versions?.find((v: any) => v.status === 'draft');
@@ -349,7 +348,6 @@ const editBooks = (): ReactElement => {
   });
 
   const UpdateBookInfoFunction = (values: editBookInfo) => {
-    // const langCode = i18n.language || 'en';
     updateBookInfo({
       variables: {
         bookUuid: params?.id,
@@ -372,8 +370,6 @@ const editBooks = (): ReactElement => {
         const data = res.data;
         if (data.updateBook?.meta?.statusCode === 201) {
           toast.success(t('Book updated successfully'));
-          // formik.resetForm();
-          // onCancelEditBookInfo();
         }
       })
       .catch(() => {
@@ -715,7 +711,6 @@ const editBooks = (): ReactElement => {
       const statusCode = response?.meta?.statusCode;
       if (statusCode === 200 || statusCode === 201) {
         const uploadedImageUrl = response?.data?.images?.[0]?.url;
-        // setOriginalCoverImageUrl(uploadedImageUrl);
         setUplodedImageUrl(uploadedImageUrl);
         setIsImageUploded(true);
         // Update Formik field value with the uploaded URL
@@ -750,7 +745,6 @@ const editBooks = (): ReactElement => {
         imageUrl = `data:${data.refineCoverImage.data[0].mimeType};base64,${imageUrl}`;
         setIsImageFromRefine(true);
         setIsImageModelShow(true);
-        // setUplodedImageUrl(imageUrl);
         setGeneratedCoverImageUrl(imageUrl);
         toast.success(data.refineCoverImage.meta.message);
       }

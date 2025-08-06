@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { FilterUserProps, UserProps } from '@type/user';
 import { Refresh, Search } from '@components/icons/icons';
 import TextInput from '@components/textinput/TextInput';
-// import filterServiceProps from '@components/filter/filter';
 import { DEFAULT_LIMIT, STATUS_DRP, SUBSCRIPTION_STATUS } from '@config/constant';
 import DropDown from '@components/dropdown/dropDown';
 import { MultiSelect } from 'primereact/multiselect';
@@ -22,22 +21,6 @@ const FilterUserManagement = ({
     isActive: '',
     subscriptionStatus: [],
   };
-
-  /**
-   * Method that sets the filterdata in local storage
-   */
-//   useEffect(() => {
-//     const savedFilterDataJSONUser = filterServiceProps.getState(
-//       'filterusermangment',
-//       JSON.stringify(filterData)
-//     );
-
-    // Parse the JSON data retrieved from local storage
-    // const savedFilterData = JSON.parse(savedFilterDataJSONUser);
-
-    // Set the formik field values using setValues
-    // formik.setValues(savedFilterData || initialValues);
-//   }, [filterData]);
 
   const formik = useFormik({
     initialValues,

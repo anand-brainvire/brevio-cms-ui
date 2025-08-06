@@ -1,4 +1,4 @@
-import { Home, AngleDownSidebar } from '@components/icons/icons';
+import { Home, AngleDownSidebar, AngleLeft } from '@components/icons/icons';
 import RoleBaseGuard from '@components/roleGuard';
 import { ROUTES, RedirectPages, SIDEBAR_NAVLINKS } from '@config/constant';
 import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
@@ -110,7 +110,7 @@ const NormalSideBar = ({ show, menuHandler }: SideBarProps): ReactElement => {
 
 	const asideCommonClasses = asideTogglerClasses + ' fixed sm:sticky h-full top-14 z-50 -ml-sidebar-space md:ml-0 bg-opacity-70 bg-black';
 
-	const onIconShowHoverClasses = asideCommonClasses + ' ' + (iconShower && show ? '' : '');
+	const onIconShowHoverClasses = asideCommonClasses;
 
 	const onShowerClasses = onIconShowHoverClasses + ' ' + (show ? 'w-wide-8 translate-x-0' : 'w-full sm:w-wide-8 md:w-0 !ml-0 md:!-ml-sidebar-space md:-translate-x-full');
 
@@ -187,7 +187,7 @@ const NormalSideBar = ({ show, menuHandler }: SideBarProps): ReactElement => {
 																</span>
 															) : (
 																<span className={`ml-5 angle-down inline-block svg-icon ${iconShower ? '' : 'hidden'}`}>
-																	<AngleDownSidebar />
+																	<AngleLeft />
 																</span>
 															)}
 														</li>

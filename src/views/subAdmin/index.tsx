@@ -80,13 +80,6 @@ const SubAdmin = (): ReactElement => {
 	}, []);
 
 	/**
-	 * Method that enables passowrd popup
-	 */
-	// const changePasswordSubAdminFun = useCallback(() => {
-	// 	setIsChangePasswordModel(true);
-	// }, [subAdminObj, isChangePasswordModel]);
-
-	/**
 	 * Get data from ref
 	 */
 	const handleRowRef = useCallback(

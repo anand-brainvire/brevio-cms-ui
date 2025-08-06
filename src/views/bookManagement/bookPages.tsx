@@ -356,7 +356,6 @@ const BookPages = ({
         }
         return response;
       }
-      // await refetch();
     } catch {
       return;
     }

@@ -17,10 +17,10 @@ interface BookListTableProps {
 const getFormattedValue = (book: Book, field: string): string => {
   switch (field) {
     case 'title':
-      return book.title || '-';
+      return book.title ?? '-';
 
     case 'categories':
-      return book.categories?.map((cat) => cat.name).join(', ') || '-';
+      return book.categories?.map((cat) => cat.name).join(', ') ?? '-';
 
     case 'publishedDate':
       return book.publishedDate

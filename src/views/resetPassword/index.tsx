@@ -26,7 +26,6 @@ const ResetPassword = (): ReactElement => {
 	}, []);
 
 	const { resetPasswordValidationSchema } = useValidation();
-	// const [resetPassword, { loading: resetLoader }] = useMutation(USER_RESET_PASSWORD);
 	const [verifyResetPassword, { loading: verifyPassword }] = useMutation(VERIFY_USER_RESET_PASSWORD);
 	const location = useLocation();
 	const isSetPassword = location.pathname.endsWith('/set-password');

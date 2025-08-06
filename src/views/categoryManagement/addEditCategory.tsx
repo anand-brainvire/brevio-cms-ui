@@ -55,14 +55,14 @@ const AddEditCategory = (): ReactElement => {
         let translation;
         if (Array.isArray(goal.translations)) {
           translation =
-            goal.translations.find((tr) => tr.lang_code === i18n.language) ||
-            goal.translations.find((tr) => tr.lang_code === 'en') ||
+            goal.translations.find((tr) => tr.lang_code === i18n.language) ??
+            goal.translations.find((tr) => tr.lang_code === 'en') ??
             goal.translations[0];
         } else {
           translation = undefined;
         }
         return {
-          name: translation?.title || goal.key || '',
+          name: translation?.title ?? goal.key ?? '',
           key: goal.uuid,
         };
       });

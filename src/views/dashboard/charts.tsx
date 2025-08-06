@@ -18,7 +18,6 @@ interface BarChartCardProps {
   xKey: string;
   yKey: string;
   yLabel: string;
-  barColors?: string[];
   height?: number;
   responsive?: boolean;
 }

@@ -10,7 +10,6 @@ import { LoginInput } from '@type/views';
 import Button from '@components/button/button';
 import { Email, Lock } from '@components/icons/icons';
 import TextInput from '@components/textinput/TextInput';
-// import { GET_SETTINGS_BY_ID } from '@framework/graphql/mutations/settings';
 import useValidation from '@src/hooks/validations';
 import ForgetModel from './forgetModel';
 import EncryptionFunction from 'src/services/encryption';
@@ -25,7 +24,6 @@ const Login = (): ReactElement => {
 	const [login, { loading }] = useMutation(LOGIN_USER);
 	const navigate = useNavigate();
 	const [showPassword, setShowPassword] = useState<boolean>(false);
-	// const [getSettings] = useLazyQuery(GET_SETTINGS_BY_ID);
 	const { loginValidationSchema } = useValidation();
 	const [isShowForgetModel, setIsShowForgetModel] = useState<boolean>(false);
 	const [rememberMe, setRememberMe] = useState<boolean>(false);
@@ -67,18 +65,6 @@ const Login = (): ReactElement => {
 						localStorage.setItem('expireTime', EncryptionFunction(data.login.data.expiresAt));
 						localStorage.setItem('refreshToken', EncryptionFunction(data.login.data.refreshToken));
 						localStorage.setItem('expiresIn', EncryptionFunction(data.login.data.expiresIn));
-
-						// getSettings().then((res) => {
-						// 	const data = res?.data?.getSettingDetails?.data as SettingsDataArr[];
-						// 	data?.forEach((mappedSettingsData: SettingsDataArr) => {
-						// 		if (mappedSettingsData.key === 'favicon') {
-						// 			localStorage.setItem('favicon', mappedSettingsData?.value);
-						// 		}
-						// 		if (mappedSettingsData.key === 'logo') {
-						// 			localStorage.setItem('profileImage', mappedSettingsData?.value);
-						// 		}
-						// 	});
-						// });
 						navigate(`/${ROUTES.app}/${ROUTES.dashboard}`);
 					} else {
 						// Show toast for error
@@ -90,11 +76,6 @@ const Login = (): ReactElement => {
 				});
 		},
 	});
-
-	// const validNameMakerFunction = (name: string) => {
-	// 	const NewName = name.replace(SPACE_REMOVER_REGEX, '');
-	// 	return NewName.replace(SPECIAL_CHARACTERS_REMOVER, '');
-	// };
 
 	/**
 	 * Method that gets the cookie and sets the user login detials

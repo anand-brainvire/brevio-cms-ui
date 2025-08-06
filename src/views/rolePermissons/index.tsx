@@ -98,18 +98,6 @@ const RolePermissions = () => {
 	};
 
 	/**
-	 * @param calEachNodeCount used added parent node by comparing with original nodeList
-	 */
-	// const parentNodeChecker = (calEachNodeCount: { [key: number | string]: { count: number } }) => {
-	// 	Object.keys(calEachNodeCount).forEach((i: string) => {
-	// 		if (nodeList.current[i]['list'].length === calEachNodeCount[i]['count']) {
-	// 			setSelectedKeys((prev) => {
-	// 				return { ...prev, [i]: { checked: true, partialChecked: false } };
-	// 			});
-	// 		}
-	// 	});
-	// };
-	/**
 	 * @param value it use to fetch permissions seleted in dropdown
 	 */
 

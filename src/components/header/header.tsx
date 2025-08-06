@@ -16,7 +16,6 @@ const Header = ({ onClick, logoutConformation, toggleHeaderImage }: HeaderProps)
 	const [isShowLanguageModel, setIsShowLanguageModel] = useState<boolean>(false);
 	const [profileNameList, setProfileNameList] = useState<string | null>();
 	const [profileLastName, setProfileLastName] = useState<string | null>();
-	// const [logo] = useState<string>('');
 	/**
 	 * function that handle's profile dropdown open and close
 	 */
@@ -66,11 +65,6 @@ const Header = ({ onClick, logoutConformation, toggleHeaderImage }: HeaderProps)
 	/**
 	 * function that handle's language dropdown open and close
 	 */
-	// const languageHandler = useCallback(() => {
-	// 	setIsShowProfileModel(false);
-	// 	setIsShowLanguageModel((prev) => !prev);
-	// }, [setIsShowLanguageModel, setIsShowProfileModel]);
-
 	const OnClickHandler = useCallback(() => {
 		onClick((prev) => !prev);
 	}, []);
